@@ -1,0 +1,44 @@
+# 定义所有服务
+services:
+  # MySQL 服务
+  mysql:
+    image: mysql:8.0.45
+    container_name: ${MYSQL_CONTAINER_NAME}
+    ports:
+      - "${MYSQL_PORT}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      TZ: ${TZ}
+    volumes:
+      - mysql_data:/var/lib/mysql  # 数据持久化
+      - ${PWD}/mysql/my.cnf:/etc/my.cnf  # 配置文件
+    command: --default-authentication-plugin=mysql_native_password  # 兼容旧客户端
+    restart: unless-stopped
+    networks:
+      - my-network
+
+  # Redis 服务
+  redis:
+    image: redis:alpine
+    container_name: ${REDIS_CONTAINER_NAME}
+    ports:
+      - "${REDIS_PORT}:6379"
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - redis_data:/data # 数据持久化
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - my-network
+
+# 定义数据卷（持久化存储）
+volumes:
+  mysql_data:
+  redis_data:
+
+# 定义自定义网络（让服务之间可以互相访问）
+networks:
+  my-network:
+    driver: bridge

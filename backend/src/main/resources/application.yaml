@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db_voice_accounting?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false
+    username: root
+    password: root@XH2001!
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: root@XH2001!
+      database: 0
+      timeout: 10000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.hfh.api.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+server:
+  port: 8080
+
+# Knife4j 配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: '管理端接口'
+      paths-to-match: '/admin/**'
+      packages-to-scan: com.hfh.api.admin.controller
+    - group: '用户端接口'
+      paths-to-match: '/api/**'
+      packages-to-scan: com.hfh.api.user.controller
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+    enable-swagger-models: true
+    enable-document-manage: true
+    swagger-model-name: 实体类列表
+
+# Sa-Token 配置
+sa-token:
+  # token名称（同时也是cookie名称）
+  token-name: Authorization
+  # token有效期（单位：秒），默认30天，这里设置为2小时
+  timeout: 7200
+  # token临时有效期（指定时间内无操作则过期），默认-1（不开启）
+  active-timeout: -1
+  # 是否允许同一账号多地同时登录（为true时允许，为false时新登录挤掉旧登录）
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token
+  is-share: false
+  # token风格（uuid可读性更好）
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: false
