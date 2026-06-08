@@ -9,8 +9,8 @@ export const adminTransactionApi = {
    * @param {Object} params - 查询参数
    * @param {number} params.current - 当前页码，默认1
    * @param {number} params.size - 每页大小，默认10
-   * @param {number} [params.bookId] - 账本ID
-   * @param {number} [params.categoryId] - 分类ID
+   * @param {string} [params.bookId] - 账本ID（字符串类型的雪花ID）
+   * @param {string} [params.categoryId] - 分类ID（字符串类型的雪花ID）
    * @param {number} [params.type] - 类型：1-支出 2-收入
    * @param {string} [params.startDate] - 开始日期（yyyy-MM-dd）
    * @param {string} [params.endDate] - 结束日期（yyyy-MM-dd）
@@ -21,7 +21,7 @@ export const adminTransactionApi = {
 
   /**
    * 根据ID查询记账记录详情
-   * @param {number} id - 记录ID
+   * @param {string} id - 记录ID（字符串类型的雪花ID）
    */
   getById(id) {
     return request.get(`/admin/transaction/${id}`)
@@ -29,7 +29,7 @@ export const adminTransactionApi = {
 
   /**
    * 修改记账记录
-   * @param {number} id - 记录ID
+   * @param {string} id - 记录ID（字符串类型的雪花ID）
    * @param {Object} data - 记账数据
    */
   update(id, data) {
@@ -38,7 +38,7 @@ export const adminTransactionApi = {
 
   /**
    * 删除记账记录
-   * @param {number} id - 记录ID
+   * @param {string} id - 记录ID（字符串类型的雪花ID）
    */
   delete(id) {
     return request.delete(`/admin/transaction/${id}`)

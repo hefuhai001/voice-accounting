@@ -21,6 +21,7 @@ export const authApi = {
    * @param {string} data.username - 用户名（3-20字符）
    * @param {string} data.password - 密码（6-20字符）
    * @param {string} data.email - 邮箱
+   * @param {string} data.code - 邮箱验证码
    * @param {string} [data.nickname] - 昵称（可选）
    */
   register(data) {
@@ -48,5 +49,39 @@ export const authApi = {
    */
   getUserInfo() {
     return request.get('/api/auth/info')
+  },
+}
+
+/**
+ * 验证码API
+ */
+export const captchaApi = {
+  /**
+   * 获取滑块验证码
+   * @returns {Promise<{token: string, backgroundImage: string, sliderImage: string, sliderY: number}>}
+   */
+  getSliderCaptcha() {
+    return request.get('/api/captcha/slider')
+  },
+
+  /**
+   * 校验滑块位置
+   * @param {Object} data
+   * @param {string} data.token - 滑块验证token
+   * @param {number} data.position - 滑块位置
+   * @returns {Promise<string>} 返回验证通过的captchaToken
+   */
+  verifySlider(data) {
+    return request.post('/api/captcha/slider/verify', data)
+  },
+
+  /**
+   * 发送邮箱验证码（需先通过滑块验证）
+   * @param {Object} data
+   * @param {string} data.email - 邮箱
+   * @param {string} data.captchaToken - 滑块验证通过后的token
+   */
+  sendEmailCode(data) {
+    return request.post('/api/captcha/email/send', data)
   },
 }

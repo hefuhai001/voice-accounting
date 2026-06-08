@@ -119,18 +119,18 @@
               class="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0"
               :class="record.type === 1 ? 'bg-orange-50' : 'bg-emerald-50'"
             >
-              {{ getCategoryEmoji(record.category) }}
+              {{ getCategoryEmoji(record.categoryIcon, record.categoryName) }}
             </div>
             <div class="min-w-0">
-              <p class="text-[15px] font-medium text-[#1c1c1e] truncate">{{ record.category }}</p>
-              <p class="text-xs text-[#8e8e93] mt-0.5">{{ record.remark || record.date }}</p>
+              <p class="text-[15px] font-medium text-[#1c1c1e] truncate">{{ record.categoryName }}</p>
+              <p class="text-xs text-[#8e8e93] mt-0.5">{{ record.remark || record.transactionDate }}</p>
             </div>
           </div>
           <span
             class="text-[15px] font-bold shrink-0 ml-3"
             :class="record.type === 1 ? 'text-red-500' : 'text-emerald-500'"
           >
-            {{ record.type === 1 ? '-' : '+' }}¥{{ record.amount }}
+            {{ record.type === 1 ? '-' : '+' }}¥{{ Number(record.amount).toFixed(2) }}
           </span>
         </div>
       </div>
@@ -148,7 +148,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import {
   UnorderedListOutlined,
   BellOutlined,
@@ -156,9 +156,11 @@ import {
   BookOutlined,
   AppstoreOutlined,
 } from '@ant-design/icons-vue'
+import { dashboardApi } from '@/api'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
+const userId = computed(() => authStore.userInfo?.id)
 
 // 当前日期
 const currentDate = computed(() => {
@@ -174,11 +176,14 @@ const currentMonth = computed(() => {
 
 // 统计数据
 const stats = reactive({
-  monthExpense: 3560.5,
-  monthIncome: 12000.0,
-  recordCount: 28,
-  pendingReminders: 3,
+  monthExpense: 0,
+  monthIncome: 0,
+  recordCount: 0,
+  pendingReminders: 0,
 })
+
+// 最近记录
+const recentRecords = ref([])
 
 // 快捷操作
 const quickActions = [
@@ -212,18 +217,50 @@ const quickActions = [
   },
 ]
 
-// 最近记录
-const recentRecords = ref([
-  { id: 1, date: '2026-06-03', category: '餐饮', remark: '午餐', amount: '35.00', type: 1 },
-  { id: 2, date: '2026-06-03', category: '交通', remark: '地铁', amount: '5.00', type: 1 },
-  { id: 3, date: '2026-06-02', category: '工资', remark: '月薪', amount: '12,000.00', type: 2 },
-  { id: 4, date: '2026-06-02', category: '购物', remark: '日用品', amount: '128.50', type: 1 },
-  { id: 5, date: '2026-06-01', category: '娱乐', remark: '电影票', amount: '60.00', type: 1 },
-])
+// 图标显示：emoji直接显示，英文单词只取首字母大写
+function getIconDisplay(icon) {
+  if (!icon) return ''
+  if (/[\u0080-\uffff]/.test(icon)) return icon
+  return icon.charAt(0).toUpperCase()
+}
 
 // 分类 emoji 映射
-function getCategoryEmoji(category) {
-  const map = { 餐饮: '', 交通: '', 工资: '', 购物: '', 娱乐: '' }
-  return map[category] || ''
+function getCategoryEmoji(icon, name) {
+  if (icon) return getIconDisplay(icon)
+  const map = { 餐饮: '🍜', 交通: '🚗', 工资: '💰', 购物: '🛒', 娱乐: '🎮', 住房: '🏠', 医疗: '💊', 教育: '📚' }
+  return map[name] || '📝'
 }
+
+// 加载数据
+async function loadData() {
+  if (!userId.value) return
+  try {
+    const [statsRes, recentRes] = await Promise.all([
+      dashboardApi.getStats(userId.value),
+      dashboardApi.getRecent(userId.value, 5),
+    ])
+    Object.assign(stats, {
+      monthExpense: Number(statsRes.data.monthExpense) || 0,
+      monthIncome: Number(statsRes.data.monthIncome) || 0,
+      recordCount: statsRes.data.recordCount || 0,
+      pendingReminders: statsRes.data.pendingReminders || 0,
+    })
+    recentRecords.value = recentRes.data || []
+  } catch (error) {
+    console.error('加载首页数据失败:', error)
+  }
+}
+
+// 监听 userId 变化
+watch(userId, (newUserId) => {
+  if (newUserId) loadData()
+})
+
+// 页面加载时检查登录状态
+onMounted(async () => {
+  if (!authStore.userInfo) {
+    await authStore.checkLoginStatus()
+  }
+  if (userId.value) loadData()
+})
 </script>

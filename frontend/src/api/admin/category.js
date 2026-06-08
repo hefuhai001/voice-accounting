@@ -18,7 +18,7 @@ export const adminCategoryApi = {
 
   /**
    * 根据ID查询分类详情
-   * @param {number} id - 分类ID
+   * @param {string} id - 分类ID（字符串类型的雪花ID）
    */
   getById(id) {
     return request.get(`/admin/category/${id}`)
@@ -34,7 +34,7 @@ export const adminCategoryApi = {
 
   /**
    * 修改分类
-   * @param {number} id - 分类ID
+   * @param {string} id - 分类ID（字符串类型的雪花ID）
    * @param {Object} data - 分类数据
    */
   update(id, data) {
@@ -43,7 +43,7 @@ export const adminCategoryApi = {
 
   /**
    * 删除分类
-   * @param {number} id - 分类ID
+   * @param {string} id - 分类ID（字符串类型的雪花ID）
    */
   delete(id) {
     return request.delete(`/admin/category/${id}`)

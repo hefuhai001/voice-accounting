@@ -9,7 +9,7 @@ export const adminReminderApi = {
    * @param {Object} params - 查询参数
    * @param {number} params.current - 当前页码，默认1
    * @param {number} params.size - 每页大小，默认10
-   * @param {number} [params.userId] - 用户ID
+   * @param {string} [params.userId] - 用户ID（字符串类型的雪花ID）
    * @param {number} [params.status] - 状态：0-待提醒 1-已提醒 2-已关闭
    * @param {string} [params.title] - 提醒标题（模糊搜索）
    */
@@ -19,7 +19,7 @@ export const adminReminderApi = {
 
   /**
    * 根据ID查询提醒详情
-   * @param {number} id - 提醒ID
+   * @param {string} id - 提醒ID（字符串类型的雪花ID）
    */
   getById(id) {
     return request.get(`/admin/reminder/${id}`)
@@ -27,7 +27,7 @@ export const adminReminderApi = {
 
   /**
    * 修改提醒
-   * @param {number} id - 提醒ID
+   * @param {string} id - 提醒ID（字符串类型的雪花ID）
    * @param {Object} data - 提醒数据
    */
   update(id, data) {
@@ -36,7 +36,7 @@ export const adminReminderApi = {
 
   /**
    * 关闭提醒
-   * @param {number} id - 提醒ID
+   * @param {string} id - 提醒ID（字符串类型的雪花ID）
    */
   close(id) {
     return request.put(`/admin/reminder/${id}/close`)
@@ -44,7 +44,7 @@ export const adminReminderApi = {
 
   /**
    * 删除提醒
-   * @param {number} id - 提醒ID
+   * @param {string} id - 提醒ID（字符串类型的雪花ID）
    */
   delete(id) {
     return request.delete(`/admin/reminder/${id}`)

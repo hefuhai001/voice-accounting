@@ -31,16 +31,27 @@
         <div class="flex items-start justify-between">
           <div class="flex items-center gap-3 min-w-0">
             <div
-              class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
+              class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
               :class="
                 book.type === 1 ? 'bg-blue-50' : book.type === 2 ? 'bg-teal-50' : 'bg-purple-50'
               "
             >
-              {{ book.type === 1 ? '' : book.type === 2 ? '' : '' }}
+              <!-- 日常账本 -->
+              <svg v-if="book.type === 1" class="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+              </svg>
+              <!-- 旅行账本 -->
+              <svg v-else-if="book.type === 2" class="w-6 h-6 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+              </svg>
+              <!-- 共享账本 -->
+              <svg v-else class="w-6 h-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+              </svg>
             </div>
-            <div class="min-w-0">
+            <div class="min-w-0 mt-2">
               <div class="flex items-center gap-2">
-                <p class="text-[15px] font-semibold text-[#1c1c1e] truncate">{{ book.name }}</p>
+                <p class="text-[15px] font-semibold text-[#1c1c1e] truncate m-0">{{ book.name }}</p>
                 <a-tag
                   v-if="book.isDefault === 1"
                   color="orange"
@@ -56,7 +67,7 @@
           </div>
           <button
             @click.stop="confirmDelete(book)"
-            class="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-[#c7c7cc] hover:bg-red-50 hover:text-red-500 active:bg-red-100 transition-colors"
+            class="mt-2 shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-[#c7c7cc] hover:bg-red-50 hover:text-red-500 active:bg-red-100 transition-colors"
           >
             <svg
               class="w-4 h-4"
@@ -135,10 +146,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { message } from 'ant-design-vue'
-import { BookOutlined } from '@ant-design/icons-vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
+import { message, Modal } from 'ant-design-vue'
 import { bookApi } from '@/api'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
+const userId = computed(() => authStore.userInfo?.id)
 
 const loading = ref(false)
 const books = ref([])
@@ -152,14 +166,16 @@ const formState = reactive({
   type: 1,
   description: '',
   isDefault: false,
+  userId: null,
 })
 
 const getTypeName = (type) => ({ 1: '日常账本', 2: '旅行账本', 3: '共享账本' })[type] || '未知'
 
 async function loadData() {
+  if (!userId.value) return
   loading.value = true
   try {
-    const res = await bookApi.getPage({ userId: 1, current: 1, size: 100 })
+    const res = await bookApi.getPage({ userId: userId.value, current: 1, size: 100 })
     books.value = res.data.records
   } catch (error) {
     console.error('加载失败:', error)
@@ -170,7 +186,7 @@ async function loadData() {
 
 function showAddModal() {
   isEdit.value = false
-  Object.assign(formState, { name: '', type: 1, description: '', isDefault: false })
+  Object.assign(formState, { name: '', type: 1, description: '', isDefault: false, userId: userId.value })
   modalVisible.value = true
 }
 
@@ -182,6 +198,7 @@ function handleEdit(record) {
     type: record.type,
     description: record.description,
     isDefault: record.isDefault === 1,
+    userId: record.userId,
   })
   modalVisible.value = true
 }
@@ -189,11 +206,12 @@ function handleEdit(record) {
 async function handleSubmit() {
   submitting.value = true
   try {
+    const data = { ...formState, isDefault: formState.isDefault ? 1 : 0 }
     if (isEdit.value) {
-      await bookApi.update(editId.value, formState)
+      await bookApi.update(editId.value, data)
       message.success('修改成功')
     } else {
-      await bookApi.save({ ...formState, userId: 1 })
+      await bookApi.save(data)
       message.success('创建成功')
     }
     modalVisible.value = false
@@ -205,15 +223,35 @@ async function handleSubmit() {
   }
 }
 
-async function confirmDelete(book) {
-  try {
-    await bookApi.delete(book.id)
-    message.success('删除成功')
-    loadData()
-  } catch (error) {
-    console.error('删除失败:', error)
-  }
+function confirmDelete(book) {
+  Modal.confirm({
+    title: '确认删除',
+    content: `确定要删除账本「${book.name}」吗？删除后不可恢复。`,
+    okText: '删除',
+    okType: 'danger',
+    cancelText: '取消',
+    onOk: async () => {
+      try {
+        await bookApi.delete(book.id)
+        message.success('删除成功')
+        loadData()
+      } catch (error) {
+        console.error('删除失败:', error)
+      }
+    },
+  })
 }
 
-onMounted(() => loadData())
+// 监听 userId 变化
+watch(userId, (newUserId) => {
+  if (newUserId) loadData()
+})
+
+// 页面加载时检查登录状态
+onMounted(async () => {
+  if (!authStore.userInfo) {
+    await authStore.checkLoginStatus()
+  }
+  if (userId.value) loadData()
+})
 </script>

@@ -68,8 +68,9 @@ public class AuthController {
     @GetMapping("/info")
     @SaCheckLogin
     @Operation(summary = "获取当前用户信息", description = "获取当前登录用户的详细信息")
-    public Result<Object> getUserInfo() {
+    public Result<String> getUserInfo() {
         Object loginId = StpUtil.getLoginId();
-        return Result.ok(loginId);
+        // 将loginId转为String，避免前端精度丢失
+        return Result.ok(String.valueOf(loginId));
     }
 }

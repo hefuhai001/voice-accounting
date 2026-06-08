@@ -140,6 +140,35 @@
             </a-input>
           </a-form-item>
 
+          <a-form-item name="code" class="!mb-4">
+            <label
+              class="block text-xs font-semibold text-[#8e8e93] mb-1.5 ml-0.5 uppercase tracking-wider"
+              >验证码</label
+            >
+            <div class="flex gap-2">
+              <a-input
+                v-model:value="registerForm.code"
+                placeholder="6位验证码"
+                size="large"
+                :maxlength="6"
+                class="!rounded-xl !h-11 !bg-[#f9fafb] !border-transparent focus:!border-[#ff6b35]/30 focus:!shadow-none !px-4 !text-[15px] flex-1"
+              >
+                <template #prefix><SafetyOutlined class="text-[#c7c7cc]" /></template>
+              </a-input>
+              <button
+                type="button"
+                :disabled="codeSending || countdown > 0 || !registerForm.email"
+                @click="handleSendCode"
+                class="flex-shrink-0 h-11 px-4 rounded-xl text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                :class="countdown > 0
+                  ? 'bg-[#f2f2f7] text-[#8e8e93]'
+                  : 'bg-gradient-to-r from-[#ff6b35] to-[#f7931e] text-white shadow-sm hover:shadow-orange-500/30'"
+              >
+                {{ codeSending ? '发送中' : countdown > 0 ? `${countdown}s` : '获取验证码' }}
+              </button>
+            </div>
+          </a-form-item>
+
           <a-form-item name="password" class="!mb-4">
             <label
               class="block text-xs font-semibold text-[#8e8e93] mb-1.5 ml-0.5 uppercase tracking-wider"
@@ -185,6 +214,12 @@
       <!-- 底部提示 -->
       <p class="text-center text-xs text-[#c7c7cc] mt-6">安全登录 · 数据加密传输</p>
     </div>
+
+    <!-- 滑块验证弹窗 -->
+    <SliderCaptcha
+      v-model:visible="sliderVisible"
+      @success="onSliderSuccess"
+    />
   </div>
 </template>
 
@@ -192,8 +227,10 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
-import { UserOutlined, LockOutlined, MailOutlined, SmileOutlined } from '@ant-design/icons-vue'
+import { UserOutlined, LockOutlined, MailOutlined, SmileOutlined, SafetyOutlined } from '@ant-design/icons-vue'
 import { useAuthStore } from '@/stores/auth'
+import { captchaApi } from '@/api/user/auth'
+import SliderCaptcha from '@/components/SliderCaptcha.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -218,9 +255,16 @@ const loginForm = reactive({
 const registerForm = reactive({
   username: '',
   email: '',
+  code: '',
   password: '',
   nickname: '',
 })
+
+// 验证码相关
+const sliderVisible = ref(false)
+const codeSending = ref(false)
+const countdown = ref(0)
+let countdownTimer = null
 
 // 验证规则
 const loginRules = {
@@ -237,10 +281,52 @@ const registerRules = {
     { required: true, message: '请输入邮箱', trigger: 'blur' },
     { type: 'email', message: '邮箱格式不正确', trigger: 'blur' },
   ],
+  code: [
+    { required: true, message: '请输入验证码', trigger: 'blur' },
+    { len: 6, message: '验证码为6位', trigger: 'blur' },
+  ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
     { min: 6, max: 20, message: '密码长度在6-20个字符之间', trigger: 'blur' },
   ],
+}
+
+// 点击获取验证码 -> 弹出滑块验证
+const handleSendCode = () => {
+  if (!registerForm.email) {
+    message.warning('请先输入邮箱')
+    return
+  }
+  sliderVisible.value = true
+}
+
+// 滑块验证成功 -> 发送邮箱验证码
+const onSliderSuccess = async (captchaToken) => {
+  codeSending.value = true
+  try {
+    await captchaApi.sendEmailCode({
+      email: registerForm.email,
+      captchaToken,
+    })
+    message.success('验证码已发送')
+    startCountdown()
+  } catch (error) {
+    console.error('发送验证码失败:', error)
+  } finally {
+    codeSending.value = false
+  }
+}
+
+// 倒计时
+const startCountdown = () => {
+  countdown.value = 60
+  countdownTimer = setInterval(() => {
+    countdown.value--
+    if (countdown.value <= 0) {
+      clearInterval(countdownTimer)
+      countdownTimer = null
+    }
+  }, 1000)
 }
 
 // 处理登录
@@ -272,6 +358,7 @@ const handleRegister = async () => {
     Object.assign(registerForm, {
       username: '',
       email: '',
+      code: '',
       password: '',
       nickname: '',
     })

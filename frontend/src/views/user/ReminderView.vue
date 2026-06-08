@@ -202,10 +202,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import { BellOutlined } from '@ant-design/icons-vue'
 import { reminderApi } from '@/api'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
+const userId = computed(() => authStore.userInfo?.id)
 
 const loading = ref(false)
 const reminders = ref([])
@@ -245,9 +249,10 @@ function setStatusFilter(value) {
 }
 
 async function loadData() {
+  if (!userId.value) return
   loading.value = true
   try {
-    const params = { userId: 1, current: 1, size: 50 }
+    const params = { userId: userId.value, current: 1, size: 50 }
     if (statusFilter.value !== '') params.status = Number(statusFilter.value)
     const res = await reminderApi.getPage(params)
     reminders.value = res.data.records
@@ -269,7 +274,7 @@ async function handleSubmit() {
     await reminderApi.save({
       ...formState,
       remindDate: formState.remindDate?.format('YYYY-MM-DD'),
-      userId: 1,
+      userId: userId.value,
     })
     message.success('创建成功')
     modalVisible.value = false
@@ -311,7 +316,18 @@ async function confirmDelete(id) {
   }
 }
 
-onMounted(() => loadData())
+// 监听 userId 变化
+watch(userId, (newUserId) => {
+  if (newUserId) loadData()
+})
+
+// 页面加载时检查登录状态
+onMounted(async () => {
+  if (!authStore.userInfo) {
+    await authStore.checkLoginStatus()
+  }
+  if (userId.value) loadData()
+})
 </script>
 
 <style scoped>

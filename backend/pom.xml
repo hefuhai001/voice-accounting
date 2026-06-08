@@ -41,6 +41,12 @@
             <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
 
+        <!-- 邮件发送 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
         <!-- MyBatis-Plus（Spring Boot 4.x 专用 starter） -->
         <dependency>
             <groupId>com.baomidou</groupId>

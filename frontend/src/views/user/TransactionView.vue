@@ -140,11 +140,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import { transactionApi } from '@/api'
 import { categoryApi } from '@/api'
 import { bookApi } from '@/api'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
+const userId = computed(() => authStore.userInfo?.id)
 
 const submitting = ref(false)
 const isRecording = ref(false)
@@ -169,10 +173,11 @@ const categories = ref([])
 const books = ref([])
 
 async function loadOptions() {
+  if (!userId.value) return
   try {
     const [catRes, bookRes] = await Promise.all([
-      categoryApi.getList(1),
-      bookApi.getPage({ userId: 1, current: 1, size: 100 }),
+      categoryApi.getList(userId.value),
+      bookApi.getPage({ userId: userId.value, current: 1, size: 100 }),
     ])
     categories.value = catRes.data
     books.value = bookRes.data.records
@@ -194,12 +199,19 @@ async function handleSubmit() {
     message.warning('请选择分类')
     return
   }
+  if (!formState.bookId) {
+    message.warning('请选择账本')
+    return
+  }
 
   submitting.value = true
   try {
     await transactionApi.save({
-      ...formState,
-      userId: 1,
+      bookId: formState.bookId,
+      categoryId: formState.categoryId,
+      type: formState.type,
+      amount: formState.amount,
+      remark: formState.remark,
       transactionDate: formState.transactionDate?.format('YYYY-MM-DD'),
     })
     message.success('记账成功')
@@ -226,5 +238,16 @@ function toggleRecording() {
   // TODO: 实现录音逻辑
 }
 
-onMounted(() => loadOptions())
+// 监听 userId 变化
+watch(userId, (newUserId) => {
+  if (newUserId) loadOptions()
+})
+
+// 页面加载时检查登录状态
+onMounted(async () => {
+  if (!authStore.userInfo) {
+    await authStore.checkLoginStatus()
+  }
+  if (userId.value) loadOptions()
+})
 </script>

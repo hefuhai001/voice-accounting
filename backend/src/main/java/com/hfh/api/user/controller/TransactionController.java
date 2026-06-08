@@ -4,14 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hfh.api.common.Result;
 import com.hfh.api.entity.TransactionEntity;
+import com.hfh.api.mapper.AccountBookMapper;
 import com.hfh.api.service.ITransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户端-记账记录控制器（含语音记账）
@@ -24,24 +25,34 @@ public class TransactionController {
     @Autowired
     private ITransactionService transactionService;
 
+    @Autowired
+    private AccountBookMapper accountBookMapper;
+
     @Operation(summary = "分页查询记账记录")
     @GetMapping("/page")
     public Result<Page<TransactionEntity>> page(
             @RequestParam(defaultValue = "1") Integer current,
             @RequestParam(defaultValue = "10") Integer size,
             @RequestParam Long userId,
-            @RequestParam(required = false) Long bookId,
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) Integer type,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+            @RequestParam(required = false) Integer type) {
+        
+        // 获取用户的所有账本ID
+        List<Long> bookIds = accountBookMapper.selectList(
+                new QueryWrapper<com.hfh.api.entity.AccountBookEntity>()
+                        .eq("user_id", userId)
+                        .eq("deleted", 0)
+        ).stream().map(com.hfh.api.entity.AccountBookEntity::getId).collect(Collectors.toList());
+        
+        if (bookIds.isEmpty()) {
+            // 用户没有账本，返回空结果
+            return Result.ok(new Page<>(current, size));
+        }
+        
         QueryWrapper<TransactionEntity> wrapper = new QueryWrapper<TransactionEntity>()
-                .eq("book_id", bookId != null ? bookId : 0)
-                .eq(categoryId != null, "category_id", categoryId)
+                .in("book_id", bookIds)
                 .eq(type != null, "type", type)
-                .ge(startDate != null, "transaction_date", startDate)
-                .le(endDate != null, "transaction_date", endDate)
                 .orderByDesc("transaction_date");
+        
         Page<TransactionEntity> page = transactionService.page(new Page<>(current, size), wrapper);
         return Result.ok(page);
     }

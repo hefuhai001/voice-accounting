@@ -53,42 +53,26 @@
           :key="record.id"
           class="bg-white rounded-2xl p-4 shadow-sm flex items-center justify-between active:bg-black/[0.02] transition-colors cursor-pointer"
         >
-          <div class="flex items-center gap-3 min-w-0">
+          <div class="flex items-center gap-3 min-w-0 flex-1">
             <div
-              class="w-11 h-11 rounded-xl flex items-center justify-center text-lg shrink-0"
-              :class="record.type === 1 ? 'bg-orange-50' : 'bg-emerald-50'"
+              class="w-11 h-11 rounded-xl flex items-center justify-center text-sm font-bold shrink-0"
+              :class="record.type === 1 ? 'bg-red-50 text-red-500' : 'bg-emerald-50 text-emerald-500'"
             >
-              {{ getCategoryIcon(record.categoryName) }}
+              {{ record.type === 1 ? '支' : '收' }}
             </div>
-            <div class="min-w-0">
-              <div class="flex items-center gap-2">
-                <p class="text-[15px] font-semibold text-[#1c1c1e] truncate">
-                  {{ record.categoryName }}
-                </p>
-                <a-tag
-                  v-if="record.type === 1"
-                  color="red"
-                  class="!text-[10px] !px-1 !py-0 !rounded-md !m-0 !leading-none !h-4 !flex !items-center"
-                  >支</a-tag
-                >
-                <a-tag
-                  v-else
-                  color="green"
-                  class="!text-[10px] !px-1 !py-0 !rounded-md !m-0 !leading-none !h-4 !flex !items-center"
-                  >收</a-tag
-                >
-              </div>
-              <p v-if="record.remark" class="text-xs text-[#aeaeb2] mt-0.5 truncate">
-                {{ record.remark }}
-              </p>
+            <div class="min-w-0 flex items-center gap-2">
+              <span
+                class="text-[17px] font-bold tabular-nums"
+                :class="record.type === 1 ? 'text-red-500' : 'text-emerald-500'"
+              >
+                {{ record.type === 1 ? '-' : '+' }}¥{{ Number(record.amount).toFixed(2) }}
+              </span>
+              <span v-if="record.remark" class="text-xs text-[#8e8e93] truncate">{{ record.remark }}</span>
             </div>
           </div>
-          <span
-            class="text-[17px] font-bold shrink-0 ml-3 tabular-nums"
-            :class="record.type === 1 ? 'text-red-500' : 'text-emerald-500'"
-          >
-            {{ record.type === 1 ? '-' : '+' }}¥{{ Number(record.amount).toFixed(2) }}
-          </span>
+          <div class="shrink-0 mt-4">
+            <p class="text-xs text-[#aeaeb2]">{{ formatDateShort(record.transactionDate || record.date) }}</p>
+          </div>
         </div>
       </template>
 
@@ -120,12 +104,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { UnorderedListOutlined } from '@ant-design/icons-vue'
 import { transactionApi } from '@/api'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const authStore = useAuthStore()
+const userId = computed(() => authStore.userInfo?.id)
 
 const loading = ref(false)
 const loadingMore = ref(false)
@@ -165,10 +152,13 @@ function formatDate(dateStr) {
   return `${d.getMonth() + 1}月${d.getDate()}日`
 }
 
-function getCategoryIcon(name) {
-  if (!name) return ''
-  // 返回 emoji 图标
-  return ''
+function formatDateShort(dateStr) {
+  if (!dateStr) return ''
+  const d = new Date(dateStr)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
 // 切换筛选条件
@@ -183,6 +173,12 @@ function goToTransaction() {
 }
 
 async function loadData(reset = true) {
+  // 确保 userId 有值
+  if (!userId.value) {
+    console.warn('userId 未加载，等待用户信息...')
+    return
+  }
+
   if (reset) {
     records.value = []
     pagination.current = 1
@@ -190,7 +186,7 @@ async function loadData(reset = true) {
   loading.value = true
   try {
     const params = {
-      userId: 1,
+      userId: userId.value,
       current: pagination.current,
       size: pagination.pageSize,
     }
@@ -223,8 +219,24 @@ function loadMore() {
   loadData(false)
 }
 
-// 初始加载
-loadData()
+// 监听 userId 变化，当用户信息加载完成后自动加载数据
+watch(userId, (newUserId) => {
+  if (newUserId) {
+    loadData()
+  }
+})
+
+// 页面加载时检查登录状态
+onMounted(async () => {
+  // 如果还没有用户信息，先检查登录状态
+  if (!authStore.userInfo) {
+    await authStore.checkLoginStatus()
+  }
+  // 如果已有用户信息，直接加载数据
+  if (userId.value) {
+    loadData()
+  }
+})
 </script>
 
 <style scoped>

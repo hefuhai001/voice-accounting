@@ -9,7 +9,7 @@ export const reminderApi = {
    * @param {Object} params - 查询参数
    * @param {number} params.current - 当前页码，默认1
    * @param {number} params.size - 每页大小，默认10
-   * @param {number} params.userId - 用户ID（必填）
+   * @param {string} params.userId - 用户ID（必填，字符串类型的雪花ID）
    * @param {number} [params.status] - 状态：0-待提醒 1-已提醒 2-已关闭
    */
   getPage(params) {
@@ -18,7 +18,7 @@ export const reminderApi = {
 
   /**
    * 根据ID查询提醒详情
-   * @param {number} id - 提醒ID
+   * @param {string} id - 提醒ID（字符串类型的雪花ID）
    */
   getById(id) {
     return request.get(`/api/reminder/${id}`)
@@ -27,7 +27,7 @@ export const reminderApi = {
   /**
    * 新增提醒
    * @param {Object} data - 提醒数据
-   * @param {number} data.userId - 用户ID
+   * @param {string} data.userId - 用户ID（字符串类型的雪花ID）
    * @param {string} data.title - 提醒标题
    * @param {number} data.amount - 提醒金额
    * @param {string} data.remindDate - 首次提醒日期（yyyy-MM-dd）
@@ -40,7 +40,7 @@ export const reminderApi = {
 
   /**
    * 修改提醒
-   * @param {number} id - 提醒ID
+   * @param {string} id - 提醒ID（字符串类型的雪花ID）
    * @param {Object} data - 提醒数据
    */
   update(id, data) {
@@ -49,7 +49,7 @@ export const reminderApi = {
 
   /**
    * 标记提醒已读
-   * @param {number} id - 提醒ID
+   * @param {string} id - 提醒ID（字符串类型的雪花ID）
    */
   markRead(id) {
     return request.put(`/api/reminder/${id}/read`)
@@ -57,7 +57,7 @@ export const reminderApi = {
 
   /**
    * 关闭提醒
-   * @param {number} id - 提醒ID
+   * @param {string} id - 提醒ID（字符串类型的雪花ID）
    */
   close(id) {
     return request.put(`/api/reminder/${id}/close`)
@@ -65,7 +65,7 @@ export const reminderApi = {
 
   /**
    * 删除提醒
-   * @param {number} id - 提醒ID
+   * @param {string} id - 提醒ID（字符串类型的雪花ID）
    */
   delete(id) {
     return request.delete(`/api/reminder/${id}`)

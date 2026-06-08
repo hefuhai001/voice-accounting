@@ -1,6 +1,8 @@
 package com.hfh.api.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import java.math.BigDecimal;
@@ -15,15 +17,18 @@ import java.time.LocalDateTime;
 @Schema(description = "记账记录表实体")
 public class TransactionEntity {
 
+    @JsonSerialize(using = ToStringSerializer.class)
     @TableId(type = IdType.ASSIGN_ID)
     @Schema(description = "主键ID（雪花算法）", example = "1234567890123456789")
     private Long id;
 
     /** 账本ID */
+    @JsonSerialize(using = ToStringSerializer.class)
     @Schema(description = "账本ID", example = "1")
     private Long bookId;
 
     /** 分类ID */
+    @JsonSerialize(using = ToStringSerializer.class)
     @Schema(description = "分类ID", example = "1")
     private Long categoryId;
 

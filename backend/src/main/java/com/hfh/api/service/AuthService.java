@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final SysUserMapper sysUserMapper;
+    private final CaptchaService captchaService;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     /**
@@ -62,6 +63,11 @@ public class AuthService {
      * 用户注册（默认为普通用户角色）
      */
     public Result<Void> register(RegisterDTO registerDTO) {
+        // 0. 校验邮箱验证码
+        if (!captchaService.verifyEmailCode(registerDTO.getEmail(), registerDTO.getCode())) {
+            return Result.fail(400, "验证码错误或已过期");
+        }
+
         // 1. 检查用户名是否已存在
         Long count = sysUserMapper.selectCount(
                 new LambdaQueryWrapper<SysUserEntity>()

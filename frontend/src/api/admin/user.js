@@ -20,7 +20,7 @@ export const adminUserApi = {
 
   /**
    * 根据ID查询用户详情
-   * @param {number} id - 用户ID
+   * @param {string} id - 用户ID（字符串类型的雪花ID）
    */
   getById(id) {
     return request.get(`/admin/user/${id}`)
@@ -36,7 +36,7 @@ export const adminUserApi = {
 
   /**
    * 修改用户信息
-   * @param {number} id - 用户ID
+   * @param {string} id - 用户ID（字符串类型的雪花ID）
    * @param {Object} data - 用户数据
    */
   update(id, data) {
@@ -45,7 +45,7 @@ export const adminUserApi = {
 
   /**
    * 分配角色
-   * @param {number} id - 用户ID
+   * @param {string} id - 用户ID（字符串类型的雪花ID）
    * @param {number} role - 角色：0-普通用户 1-管理员
    */
   assignRole(id, role) {
@@ -54,7 +54,7 @@ export const adminUserApi = {
 
   /**
    * 禁用/启用用户
-   * @param {number} id - 用户ID
+   * @param {string} id - 用户ID（字符串类型的雪花ID）
    * @param {number} status - 状态：0-禁用 1-正常
    */
   updateStatus(id, status) {
@@ -63,7 +63,7 @@ export const adminUserApi = {
 
   /**
    * 删除用户
-   * @param {number} id - 用户ID
+   * @param {string} id - 用户ID（字符串类型的雪花ID）
    */
   delete(id) {
     return request.delete(`/admin/user/${id}`)

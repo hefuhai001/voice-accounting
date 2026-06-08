@@ -31,7 +31,7 @@
             <p class="text-sm font-semibold text-[#1c1c1e]">
               {{ authStore.userInfo?.nickname || '用户' }}
             </p>
-            <p class="text-xs text-[#8e8e93] mt-0.5">个人中心</p>
+            <p class="text-xs text-[#8e8e93] mt-0.5">{{ authStore.userInfo?.email || '未设置邮箱' }}</p>
           </div>
           <nav class="py-1">
             <button
@@ -40,7 +40,7 @@
             >
               <BellOutlined class="text-[#8e8e93]" />
               我的提醒
-              <span class="ml-auto text-xs text-[#8e8e93]">3条待处理</span>
+              <span class="ml-auto text-xs text-[#8e8e93]">无待处理</span>
             </button>
             <button
               @click="handleLogoutAndClose"

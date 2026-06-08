@@ -37,37 +37,43 @@
     </div>
 
     <!-- 分类网格 -->
-    <div class="grid grid-cols-4 gap-3">
+    <div class="grid grid-cols-4 gap-2.5">
       <div
         v-for="cat in categories"
         :key="cat.id"
-        class="bg-white rounded-2xl p-3 shadow-sm flex flex-col items-center gap-2 relative active:scale-95 transition-transform duration-150"
-        :class="{ 'cursor-pointer': cat.userId }"
+        class="rounded-2xl p-2.5 pb-2 flex flex-col items-center gap-1.5 relative active:scale-95 transition-transform duration-150"
+        :class="[
+          cat.userId ? 'cursor-pointer' : '',
+          activeTab === 'expense' ? 'bg-gradient-to-br from-orange-100 to-orange-50/80' : 'bg-gradient-to-br from-emerald-100 to-green-50/80'
+        ]"
         @click="cat.userId && handleEdit(cat)"
       >
         <!-- 图标 -->
         <div
-          class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-          :style="{ backgroundColor: cat.userId ? '#fff5eb' : '#f9fafb' }"
+          class="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl shadow-sm"
+          :class="activeTab === 'expense' ? 'bg-white/80' : 'bg-white/80'"
         >
-          {{ cat.icon || '?' }}
+          <span class="leading-none">{{ getIconDisplay(cat.icon) }}</span>
         </div>
         <!-- 名称 -->
         <span
-          class="text-[11px] font-medium text-[#1c1c1e] text-center leading-tight line-clamp-1 w-full"
+          class="text-[12px] font-semibold text-[#1c1c1e] text-center leading-tight line-clamp-1 w-full"
           >{{ cat.name }}</span
         >
-        <!-- 标签 -->
+        <!-- 类型小字 -->
+        <span class="text-[10px] text-[#aeaeb2] -mt-0.5">{{ activeTab === 'expense' ? '支出' : '收入' }}</span>
+        <!-- 系统标签 -->
         <span
           v-if="!cat.userId"
-          class="absolute -top-1 -right-1 text-[9px] text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-full"
+          class="absolute top-1 right-1 text-[8px] text-blue-400 bg-blue-50/80 px-1 py-px rounded"
           >系统</span
         >
-        <!-- 自定义删除按钮 -->
+        <!-- 删除按钮 -->
         <button
           v-if="cat.userId"
           @click.stop="handleDelete(cat)"
-          class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-100 text-red-500 flex items-center justify-center text-[10px] hover:bg-red-200 active:bg-red-300 transition-colors"
+          class="absolute top-0.5 right-0.5 w-4.5 h-4.5 rounded-full bg-red-400/80 text-white flex items-center justify-center text-[9px] hover:bg-red-500 active:bg-red-600 transition-colors"
+          style="width:18px;height:18px"
         >
           x
         </button>
@@ -120,10 +126,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
-import { message } from 'ant-design-vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { message, Modal } from 'ant-design-vue'
 import { AppstoreOutlined } from '@ant-design/icons-vue'
 import { categoryApi } from '@/api'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
+const userId = computed(() => authStore.userInfo?.id)
 
 const loading = ref(false)
 const categories = ref([])
@@ -139,6 +149,15 @@ const formState = reactive({
   sortOrder: 0,
 })
 
+// 图标显示：emoji直接显示，英文单词只取首字母大写
+function getIconDisplay(icon) {
+  if (!icon) return '?'
+  // 如果是emoji（非ASCII字符），直接返回
+  if (/[\u0080-\uffff]/.test(icon)) return icon
+  // 英文单词取首字母大写
+  return icon.charAt(0).toUpperCase()
+}
+
 // 切换分类类型 Tab
 function switchTab(key) {
   activeTab.value = key
@@ -146,13 +165,14 @@ function switchTab(key) {
 }
 
 async function loadData() {
+  if (!userId.value) return
   loading.value = true
   try {
     let res
     if (activeTab.value === 'expense') {
-      res = await categoryApi.getExpenseList(1)
+      res = await categoryApi.getExpenseList(userId.value)
     } else {
-      res = await categoryApi.getIncomeList(1)
+      res = await categoryApi.getIncomeList(userId.value)
     }
     categories.value = res.data
   } catch (error) {
@@ -185,7 +205,7 @@ async function handleSubmit() {
       await categoryApi.save({
         ...formState,
         type: activeTab.value === 'expense' ? 1 : 2,
-        userId: 1,
+        userId: userId.value,
       })
       message.success('添加成功')
     }
@@ -198,15 +218,35 @@ async function handleSubmit() {
   }
 }
 
-async function handleDelete(cat) {
-  try {
-    await categoryApi.delete(cat.id)
-    message.success('删除成功')
-    loadData()
-  } catch (error) {
-    console.error('删除失败:', error)
-  }
+function handleDelete(cat) {
+  Modal.confirm({
+    title: '确认删除',
+    content: `确定要删除分类「${cat.name}」吗？`,
+    okText: '删除',
+    okType: 'danger',
+    cancelText: '取消',
+    onOk: async () => {
+      try {
+        await categoryApi.delete(cat.id)
+        message.success('删除成功')
+        loadData()
+      } catch (error) {
+        console.error('删除失败:', error)
+      }
+    },
+  })
 }
 
-onMounted(() => loadData())
+// 监听 userId 变化
+watch(userId, (newUserId) => {
+  if (newUserId) loadData()
+})
+
+// 页面加载时检查登录状态
+onMounted(async () => {
+  if (!authStore.userInfo) {
+    await authStore.checkLoginStatus()
+  }
+  if (userId.value) loadData()
+})
 </script>

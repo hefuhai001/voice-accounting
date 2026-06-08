@@ -30,4 +30,8 @@ public class RegisterDTO {
 
     @Schema(description = "昵称（可选）", example = "小明")
     private String nickname;
+
+    @NotBlank(message = "验证码不能为空")
+    @Schema(description = "邮箱验证码", example = "123456", requiredMode = Schema.RequiredMode.REQUIRED)
+    private String code;
 }

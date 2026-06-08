@@ -8,7 +8,7 @@ import App from './App.vue'
 import router from './router'
 
 // 导入 Ant Design Vue
-import { Antd, zhCN } from './plugins/antd'
+import { Antd } from './plugins/antd'
 // 导入 Access 高级组件
 import './plugins/access'
 // 导入自定义组件
@@ -22,8 +22,5 @@ app.use(Antd)
 
 // 注册自定义组件
 registerComponents(app)
-
-// 全局配置中文
-app.provide('locale', zhCN)
 
 app.mount('#app')
