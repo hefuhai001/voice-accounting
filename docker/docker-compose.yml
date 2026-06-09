@@ -1,0 +1,101 @@
+services:
+  mysql:
+    image: mysql:8.0.45
+    container_name: va-mysql
+    ports:
+      - "${MYSQL_PORT}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      TZ: ${TZ}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ${PWD}/mysql/my.cnf:/etc/my.cnf
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    networks:
+      - va-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    container_name: va-redis
+    ports:
+      - "${REDIS_PORT}:6379"
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - redis_data:/data
+      - ${PWD}/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+    networks:
+      - va-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: eclipse-temurin:25-jre
+    container_name: va-backend
+    ports:
+      - "${SERVER_PORT}:8080"
+    environment:
+      TZ: ${TZ}
+      SERVER_PORT: 8080
+      SPRING_APPLICATION_NAME: ${APP_NAME}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${DB_NAME}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD}
+      SPRING_DATA_REDIS_DATABASE: ${REDIS_DATABASE}
+      SPRING_MAIL_HOST: ${MAIL_HOST}
+      SPRING_MAIL_PORT: ${MAIL_PORT}
+      SPRING_MAIL_USERNAME: ${MAIL_USERNAME}
+      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD}
+      SA_TOKEN_TIMEOUT: ${SA_TOKEN_TIMEOUT}
+    volumes:
+      - ${PWD}/backend/backend-0.0.1-SNAPSHOT.jar:/app/app.jar
+      - ${PWD}/backend/application-prod.yml:/app/application-prod.yml
+    working_dir: /app
+    command: ["java", "-jar", "app.jar", "--spring.config.additional-location=application-prod.yml"]
+    restart: unless-stopped
+    networks:
+      - va-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    image: nginx:1.30-alpine
+    container_name: va-frontend
+    ports:
+      - "${NGINX_PORT}:80"
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - ${PWD}/frontend/dist:/usr/share/nginx/html
+      - ${PWD}/frontend/nginx.conf:/etc/nginx/conf.d/default.conf
+    restart: unless-stopped
+    networks:
+      - va-network
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  va-network:
+    driver: bridge
