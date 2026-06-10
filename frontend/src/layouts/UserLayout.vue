@@ -7,10 +7,7 @@
       class="flex-shrink-0 bg-white/80 backdrop-blur-xl sticky top-0 z-30 border-b border-black/5"
     >
       <div class="flex items-center justify-between px-5 h-12">
-        <!-- 左侧：页面标题 -->
         <h1 class="text-[17px] font-semibold text-[#1c1c1e] tracking-tight">{{ pageTitle }}</h1>
-
-        <!-- 右侧：用户头像 -->
         <button @click="showUserMenu = !showUserMenu" class="relative">
           <div
             class="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white text-sm font-semibold shadow-sm"
@@ -35,15 +32,14 @@
           </div>
           <nav class="py-1">
             <button
-              @click="goToReminder"
+              @click="navigate('/reminder')"
               class="w-full text-left px-4 py-2.5 text-[15px] text-[#1c1c1e] hover:bg-black/5 active:bg-black/10 transition-colors flex items-center gap-3"
             >
               <BellOutlined class="text-[#8e8e93]" />
               我的提醒
-              <span class="ml-auto text-xs text-[#8e8e93]">无待处理</span>
             </button>
             <button
-              @click="handleLogoutAndClose"
+              @click="handleLogout"
               class="w-full text-left px-4 py-2.5 text-[15px] text-[#ff3b30] hover:bg-red-50 active:bg-red-100 transition-colors flex items-center gap-3"
             >
               <span
@@ -73,12 +69,12 @@
       <div
         class="flex items-center justify-between h-[calc(56px+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] px-3"
       >
-        <!-- 左侧：前两个标签 -->
+        <!-- 左侧标签 -->
         <div class="flex items-center gap-1">
           <button
             v-for="tab in leftTabs"
             :key="tab.path"
-            @click="navigateTo(tab.path)"
+            @click="navigate(tab.path)"
             class="flex flex-col items-center justify-center gap-0.5 w-16 py-1 transition-all duration-200 relative"
             :class="isActive(tab.path) ? 'text-[#ff6b35]' : 'text-[#8e8e93] active:scale-90'"
           >
@@ -93,7 +89,7 @@
 
         <!-- 中央记账按钮 -->
         <button
-          @click="goToTransaction"
+          @click="navigate('/transaction')"
           class="relative -mt-5 flex flex-col items-center group shrink-0"
         >
           <div
@@ -116,12 +112,12 @@
           <span class="text-[10px] font-medium text-[#ff6b35] mt-1">记一笔</span>
         </button>
 
-        <!-- 右侧：后两个标签 -->
+        <!-- 右侧标签 -->
         <div class="flex items-center gap-1">
           <button
             v-for="tab in rightTabs"
             :key="tab.path"
-            @click="navigateTo(tab.path)"
+            @click="navigate(tab.path)"
             class="flex flex-col items-center justify-center gap-0.5 w-16 py-1 transition-all duration-200 relative"
             :class="isActive(tab.path) ? 'text-[#ff6b35]' : 'text-[#8e8e93] active:scale-90'"
           >
@@ -153,24 +149,21 @@ import { useAuthStore } from '@/stores/auth'
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
-
 const showUserMenu = ref(false)
 
-// 底部标签配置（左2 + 右2）
+// 底部标签
 const allTabs = [
   { path: '/dashboard', label: '首页', icon: HomeOutlined },
   { path: '/books', label: '账本', icon: BookOutlined },
-  // 中央是"记一笔"FAB按钮
   { path: '/records', label: '记录', icon: UnorderedListOutlined },
   { path: '/category', label: '分类', icon: AppstoreOutlined },
 ]
-
 const leftTabs = allTabs.slice(0, 2)
 const rightTabs = allTabs.slice(2)
 
-// 当前页面标题
+// 页面标题
 const pageTitle = computed(() => {
-  const titleMap = {
+  const map = {
     '/dashboard': '语音记账',
     '/books': '我的账本',
     '/transaction': '记一笔',
@@ -178,51 +171,44 @@ const pageTitle = computed(() => {
     '/category': '分类管理',
     '/reminder': '我的提醒',
   }
-  return titleMap[route.path] || '语音记账'
+  return map[route.path] || '语音记账'
 })
 
-// 判断是否为当前激活 tab
+// 判断 Tab 激活
 function isActive(path) {
   if (path === '/dashboard') return route.path === '/dashboard' || route.path === '/'
   return route.path.startsWith(path)
 }
 
-// 导航（避免重复导航）
-function navigateTo(path) {
-  if (route.path !== path) {
+// Tab 路径集合
+const tabPaths = new Set(['/dashboard', '/books', '/records', '/category'])
+
+// 统一导航：Tab 页用 replace（不产生历史记录），其他页用 push
+function navigate(path) {
+  if (route.path === path) return
+  if (tabPaths.has(path)) {
+    router.replace(path)
+  } else {
     router.push(path)
   }
-}
-
-// 监听路由变化关闭菜单
-watch(
-  () => route.path,
-  () => {
-    showUserMenu.value = false
-  },
-)
-
-// 跳转到记账页面
-function goToTransaction() {
-  router.push('/transaction')
-}
-
-// 跳转到提醒并关闭菜单
-function goToReminder() {
-  router.push('/reminder')
   showUserMenu.value = false
 }
 
-// 退出登录并关闭菜单
-function handleLogoutAndClose() {
+// 退出登录
+function handleLogout() {
   authStore.logout()
   router.push('/login')
   showUserMenu.value = false
 }
+
+// 路由变化关闭菜单
+watch(() => route.path, () => {
+  showUserMenu.value = false
+})
 </script>
 
 <style scoped>
-/* iOS 页面切换动画 */
+/* 页面切换动画 */
 .page-enter-active,
 .page-leave-active {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -251,7 +237,7 @@ function handleLogoutAndClose() {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* 隐藏滚动条但保持滚动 */
+/* 隐藏滚动条 */
 main::-webkit-scrollbar {
   display: none;
 }

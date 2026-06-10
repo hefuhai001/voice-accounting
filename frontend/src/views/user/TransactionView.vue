@@ -142,6 +142,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { message } from 'ant-design-vue'
+import dayjs from 'dayjs'
 import { transactionApi } from '@/api'
 import { categoryApi } from '@/api'
 import { bookApi } from '@/api'
@@ -156,7 +157,7 @@ const isRecording = ref(false)
 const formState = reactive({
   type: 1,
   amount: null,
-  transactionDate: null,
+  transactionDate: dayjs(),
   categoryId: undefined,
   bookId: undefined,
   remark: '',
@@ -227,7 +228,7 @@ function handleReset() {
   Object.assign(formState, {
     type: 1,
     amount: null,
-    transactionDate: null,
+    transactionDate: dayjs(),
     categoryId: undefined,
     remark: '',
   })

@@ -87,7 +87,7 @@
       <button
         v-for="action in quickActions"
         :key="action.label"
-        @click="$router.push(action.path)"
+        @click="navigateTo(action.path)"
         class="flex flex-col items-center gap-2 py-4 bg-white rounded-2xl shadow-sm active:scale-95 transition-transform duration-150"
       >
         <div class="w-11 h-11 rounded-xl flex items-center justify-center" :class="action.bgClass">
@@ -102,7 +102,7 @@
       <div class="flex items-center justify-between px-5 py-4 border-b border-black/5">
         <h2 class="text-base font-semibold text-[#1c1c1e]">最近记账</h2>
         <button
-          @click="$router.push('/records')"
+          @click="navigateTo('/records')"
           class="text-xs text-[#ff6b35] font-medium active:opacity-60 transition-opacity"
         >
           查看全部 →
@@ -137,7 +137,7 @@
       <div v-if="recentRecords.length === 0" class="py-12 text-center">
         <p class="text-sm text-[#8e8e93]">暂无记账记录</p>
         <button
-          @click="$router.push('/transaction')"
+          @click="router.push('/transaction')"
           class="mt-3 text-sm text-[#ff6b35] font-medium"
         >
           去记一笔
@@ -149,6 +149,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   UnorderedListOutlined,
   BellOutlined,
@@ -161,6 +162,17 @@ import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
 const userId = computed(() => authStore.userInfo?.id)
+const router = useRouter()
+
+// Tab 页用 replace 不产生历史记录，其他页用 push
+const tabPaths = new Set(['/dashboard', '/books', '/records', '/category'])
+function navigateTo(path) {
+  if (tabPaths.has(path)) {
+    router.replace(path)
+  } else {
+    router.push(path)
+  }
+}
 
 // 当前日期
 const currentDate = computed(() => {

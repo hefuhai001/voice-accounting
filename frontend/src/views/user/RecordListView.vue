@@ -51,27 +51,36 @@
         <div
           v-for="record in group"
           :key="record.id"
-          class="bg-white rounded-2xl p-4 shadow-sm flex items-center justify-between active:bg-black/[0.02] transition-colors cursor-pointer"
+          class="bg-white rounded-2xl shadow-sm overflow-hidden transition-colors"
         >
-          <div class="flex items-center gap-3 min-w-0 flex-1">
-            <div
-              class="w-11 h-11 rounded-xl flex items-center justify-center text-sm font-bold shrink-0"
-              :class="record.type === 1 ? 'bg-red-50 text-red-500' : 'bg-emerald-50 text-emerald-500'"
-            >
-              {{ record.type === 1 ? '支' : '收' }}
-            </div>
-            <div class="min-w-0 flex items-center gap-2">
-              <span
-                class="text-[17px] font-bold tabular-nums"
-                :class="record.type === 1 ? 'text-red-500' : 'text-emerald-500'"
+          <!-- 主内容行 -->
+          <div
+            class="p-4 flex items-center justify-between cursor-pointer active:bg-black/[0.02]"
+            @click="showActions(record)"
+          >
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+              <div
+                class="w-11 h-11 rounded-xl flex items-center justify-center text-sm font-bold shrink-0"
+                :class="record.type === 1 ? 'bg-red-50 text-red-500' : 'bg-emerald-50 text-emerald-500'"
               >
-                {{ record.type === 1 ? '-' : '+' }}¥{{ Number(record.amount).toFixed(2) }}
-              </span>
-              <span v-if="record.remark" class="text-xs text-[#8e8e93] truncate">{{ record.remark }}</span>
+                {{ record.type === 1 ? '支' : '收' }}
+              </div>
+              <div class="min-w-0 flex items-center gap-2">
+                <span
+                  class="text-[17px] font-bold tabular-nums"
+                  :class="record.type === 1 ? 'text-red-500' : 'text-emerald-500'"
+                >
+                  {{ record.type === 1 ? '-' : '+' }}¥{{ Number(record.amount).toFixed(2) }}
+                </span>
+                <span v-if="record.remark" class="text-xs text-[#8e8e93] truncate">{{ record.remark }}</span>
+              </div>
             </div>
-          </div>
-          <div class="shrink-0 mt-4">
-            <p class="text-xs text-[#aeaeb2]">{{ formatDateShort(record.transactionDate || record.date) }}</p>
+            <div class="shrink-0 flex items-center gap-2">
+              <span class="text-xs text-[#aeaeb2]">{{ formatDateShort(record.transactionDate || record.date) }}</span>
+              <svg class="w-4 h-4 text-[#c7c7cc]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
           </div>
         </div>
       </template>
@@ -100,14 +109,109 @@
         </button>
       </div>
     </div>
+
+    <!-- 操作菜单 ActionSheet -->
+    <Transition name="fade">
+      <div v-if="actionSheetVisible" class="fixed inset-0 z-50" @click="actionSheetVisible = false">
+        <div class="absolute inset-0 bg-black/30" />
+        <div class="absolute bottom-0 left-0 right-0 pb-[env(safe-area-inset-bottom)]">
+          <div class="mx-3 mb-2 bg-white/95 backdrop-blur-xl rounded-2xl overflow-hidden">
+            <button
+              @click.stop="handleEdit"
+              class="w-full py-3.5 text-[17px] text-[#007aff] font-normal border-b border-black/5 active:bg-black/5"
+            >
+              编辑记录
+            </button>
+            <button
+              @click.stop="handleDelete"
+              class="w-full py-3.5 text-[17px] text-[#ff3b30] font-normal active:bg-black/5"
+            >
+              删除记录
+            </button>
+          </div>
+          <div class="mx-3 bg-white/95 backdrop-blur-xl rounded-2xl overflow-hidden">
+            <button
+              @click="actionSheetVisible = false"
+              class="w-full py-3.5 text-[17px] text-[#007aff] font-semibold active:bg-black/5"
+            >
+              取消
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- 编辑弹窗 -->
+    <a-modal
+      :open="editModalVisible"
+      title="编辑记录"
+      :footer="null"
+      :width="380"
+      centered
+      @cancel="editModalVisible = false"
+    >
+      <a-form :model="editForm" layout="vertical" class="mt-3" @finish="handleEditSubmit">
+        <!-- 类型切换 -->
+        <div class="flex bg-[#f2f2f7] rounded-xl p-1 mb-4">
+          <button
+            v-for="t in [{ value: 1, label: '支出' }, { value: 2, label: '收入' }]"
+            :key="t.value"
+            type="button"
+            @click="editForm.type = t.value"
+            class="flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-200"
+            :class="editForm.type === t.value ? 'bg-white text-[#1c1c1e] shadow-sm' : 'text-[#8e8e93]'"
+          >
+            {{ t.label }}
+          </button>
+        </div>
+
+        <a-form-item label="金额" name="amount" :rules="[{ required: true, message: '请输入金额' }]">
+          <a-input-number
+            v-model:value="editForm.amount"
+            :min="0.01"
+            :precision="2"
+            style="width: 100%"
+            size="large"
+            placeholder="请输入金额"
+          />
+        </a-form-item>
+
+        <a-form-item label="分类" name="categoryId" :rules="[{ required: true, message: '请选择分类' }]">
+          <a-select v-model:value="editForm.categoryId" placeholder="选择分类" size="large">
+            <a-select-option v-for="item in editCategories" :key="item.id" :value="item.id">
+              {{ item.icon }} {{ item.name }}
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+
+        <a-form-item label="日期" name="transactionDate" :rules="[{ required: true, message: '请选择日期' }]">
+          <a-date-picker
+            v-model:value="editForm.transactionDate"
+            style="width: 100%"
+            size="large"
+            value-format="YYYY-MM-DD"
+          />
+        </a-form-item>
+
+        <a-form-item label="备注">
+          <a-textarea v-model:value="editForm.remark" placeholder="添加备注..." :rows="2" size="large" />
+        </a-form-item>
+
+        <div class="flex gap-3 mt-2">
+          <a-button block size="large" @click="editModalVisible = false">取消</a-button>
+          <a-button type="primary" block size="large" html-type="submit" :loading="editSubmitting">保存</a-button>
+        </div>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { message, Modal } from 'ant-design-vue'
 import { UnorderedListOutlined } from '@ant-design/icons-vue'
-import { transactionApi } from '@/api'
+import { transactionApi, categoryApi } from '@/api'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
@@ -120,6 +224,23 @@ const records = ref([])
 const searchText = ref('')
 const activeFilter = ref('all')
 const pagination = reactive({ current: 1, pageSize: 20, total: 0 })
+
+// ActionSheet
+const actionSheetVisible = ref(false)
+const activeRecord = ref(null)
+
+// 编辑弹窗
+const editModalVisible = ref(false)
+const editSubmitting = ref(false)
+const editCategories = ref([])
+const editForm = reactive({
+  id: null,
+  type: 1,
+  amount: null,
+  categoryId: undefined,
+  transactionDate: new Date().toISOString().slice(0, 10),
+  remark: '',
+})
 
 const filters = [
   { label: '全部', value: 'all' },
@@ -161,6 +282,82 @@ function formatDateShort(dateStr) {
   return `${y}-${m}-${day}`
 }
 
+// 显示操作菜单
+function showActions(record) {
+  activeRecord.value = record
+  actionSheetVisible.value = true
+}
+
+// 编辑
+async function handleEdit() {
+  actionSheetVisible.value = false
+  const record = activeRecord.value
+  if (!record) return
+
+  // 加载分类列表
+  try {
+    const catRes = await categoryApi.getList(userId.value)
+    editCategories.value = catRes.data || []
+  } catch (e) {
+    console.error('加载分类失败:', e)
+  }
+
+  Object.assign(editForm, {
+    id: record.id,
+    type: record.type,
+    amount: Number(record.amount),
+    categoryId: record.categoryId,
+    transactionDate: record.transactionDate || record.date,
+    remark: record.remark || '',
+  })
+  editModalVisible.value = true
+}
+
+// 提交编辑
+async function handleEditSubmit() {
+  editSubmitting.value = true
+  try {
+    await transactionApi.update(editForm.id, {
+      type: editForm.type,
+      amount: editForm.amount,
+      categoryId: editForm.categoryId,
+      transactionDate: editForm.transactionDate,
+      remark: editForm.remark,
+    })
+    message.success('修改成功')
+    editModalVisible.value = false
+    loadData()
+  } catch (error) {
+    console.error('修改失败:', error)
+  } finally {
+    editSubmitting.value = false
+  }
+}
+
+// 删除
+function handleDelete() {
+  actionSheetVisible.value = false
+  const record = activeRecord.value
+  if (!record) return
+
+  Modal.confirm({
+    title: '确认删除',
+    content: `确定要删除这条${record.type === 1 ? '支出' : '收入'}记录（¥${Number(record.amount).toFixed(2)}）吗？`,
+    okText: '删除',
+    okType: 'danger',
+    cancelText: '取消',
+    onOk: async () => {
+      try {
+        await transactionApi.delete(record.id)
+        message.success('删除成功')
+        loadData()
+      } catch (error) {
+        console.error('删除失败:', error)
+      }
+    },
+  })
+}
+
 // 切换筛选条件
 function setFilter(value) {
   activeFilter.value = value
@@ -173,7 +370,6 @@ function goToTransaction() {
 }
 
 async function loadData(reset = true) {
-  // 确保 userId 有值
   if (!userId.value) {
     console.warn('userId 未加载，等待用户信息...')
     return
@@ -219,23 +415,17 @@ function loadMore() {
   loadData(false)
 }
 
-// 监听 userId 变化，当用户信息加载完成后自动加载数据
+// 监听 userId 变化
 watch(userId, (newUserId) => {
-  if (newUserId) {
-    loadData()
-  }
+  if (newUserId) loadData()
 })
 
 // 页面加载时检查登录状态
 onMounted(async () => {
-  // 如果还没有用户信息，先检查登录状态
   if (!authStore.userInfo) {
     await authStore.checkLoginStatus()
   }
-  // 如果已有用户信息，直接加载数据
-  if (userId.value) {
-    loadData()
-  }
+  if (userId.value) loadData()
 })
 </script>
 
@@ -249,5 +439,15 @@ onMounted(async () => {
 }
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/* ActionSheet 动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
