@@ -3,8 +3,10 @@ package com.hfh.api.user.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hfh.api.common.Result;
+import com.hfh.api.entity.CategoryEntity;
 import com.hfh.api.entity.TransactionEntity;
 import com.hfh.api.mapper.AccountBookMapper;
+import com.hfh.api.mapper.CategoryMapper;
 import com.hfh.api.service.ITransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -27,6 +30,9 @@ public class TransactionController {
 
     @Autowired
     private AccountBookMapper accountBookMapper;
+
+    @Autowired
+    private CategoryMapper categoryMapper;
 
     @Operation(summary = "分页查询记账记录")
     @GetMapping("/page")
@@ -54,6 +60,27 @@ public class TransactionController {
                 .orderByDesc("transaction_date");
         
         Page<TransactionEntity> page = transactionService.page(new Page<>(current, size), wrapper);
+
+        // 填充分类名称和图标
+        List<Long> categoryIds = page.getRecords().stream()
+                .map(TransactionEntity::getCategoryId)
+                .filter(id -> id != null)
+                .distinct()
+                .collect(Collectors.toList());
+        if (!categoryIds.isEmpty()) {
+            Map<Long, CategoryEntity> categoryMap = categoryMapper.selectBatchIds(categoryIds)
+                    .stream().collect(Collectors.toMap(CategoryEntity::getId, c -> c));
+            for (TransactionEntity t : page.getRecords()) {
+                if (t.getCategoryId() != null) {
+                    CategoryEntity cat = categoryMap.get(t.getCategoryId());
+                    if (cat != null) {
+                        t.setCategoryName(cat.getName());
+                        t.setCategoryIcon(cat.getIcon());
+                    }
+                }
+            }
+        }
+
         return Result.ok(page);
     }
 

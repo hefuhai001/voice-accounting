@@ -60,10 +60,10 @@
           >
             <div class="flex items-center gap-3 min-w-0 flex-1">
               <div
-                class="w-11 h-11 rounded-xl flex items-center justify-center text-sm font-bold shrink-0"
-                :class="record.type === 1 ? 'bg-red-50 text-red-500' : 'bg-emerald-50 text-emerald-500'"
+                class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0"
+                :class="record.type === 1 ? 'bg-red-50' : 'bg-emerald-50'"
               >
-                {{ record.type === 1 ? '支' : '收' }}
+                {{ record.categoryIcon || (record.type === 1 ? '💸' : '💰') }}
               </div>
               <div class="min-w-0 flex items-center gap-2">
                 <span

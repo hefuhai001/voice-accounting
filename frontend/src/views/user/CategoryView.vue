@@ -104,7 +104,11 @@
           <a-input v-model:value="formState.name" placeholder="如：餐饮、交通等" size="large" />
         </a-form-item>
         <a-form-item label="图标（emoji）">
-          <a-input v-model:value="formState.icon" placeholder="输入emoji表情" size="large" />
+          <a-select v-model:value="formState.icon" placeholder="选择图标" size="large">
+            <a-select-option v-for="e in emojiOptions" :key="e" :value="e">
+              <span class="text-xl">{{ e }}</span>
+            </a-select-option>
+          </a-select>
         </a-form-item>
         <a-form-item label="排序序号">
           <a-input-number
@@ -133,6 +137,19 @@ import { categoryApi } from '@/api'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
+
+// 预设 emoji 图标
+const emojiOptions = [
+  '🍔', '🍜', '🍕', '🍣', '🍰', '☕', '🍺', '🧃',
+  '🚗', '🚌', '🚇', '✈️', '🚲', '⛽', '🅿️', '🚕',
+  '🛒', '👕', '👗', '👟', '💄', '💍', '🎒', '🧥',
+  '🏠', '💡', '🛏️', '🚿', '🔧', '🧹', '🔑', '📺',
+  '💊', '🏥', '🏃', '🧘', '💊', '🩺', '💪', '🦷',
+  '📚', '✏️', '🎓', '💻', '📱', '🎮', '🎵', '🎨',
+  '💰', '💳', '🏦', '📈', '💵', '🪙', '💎', '🎁',
+  '🎬', '🎭', '🎪', '🏖️', '🎡', '🎯', '🎲', '🎳',
+  '👶', '🐱', '🐶', '💐', '🎂', '🎆', '🧧', '❤️',
+]
 const userId = computed(() => authStore.userInfo?.id)
 
 const loading = ref(false)

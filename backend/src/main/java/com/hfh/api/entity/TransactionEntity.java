@@ -67,4 +67,14 @@ public class TransactionEntity {
     @TableField(fill = FieldFill.INSERT_UPDATE)
     @Schema(description = "更新时间", example = "2026-06-03T21:00:00")
     private LocalDateTime updatedAt;
+
+    /** 分类名称（非数据库字段） */
+    @TableField(exist = false)
+    @Schema(description = "分类名称")
+    private String categoryName;
+
+    /** 分类图标（非数据库字段） */
+    @TableField(exist = false)
+    @Schema(description = "分类图标")
+    private String categoryIcon;
 }

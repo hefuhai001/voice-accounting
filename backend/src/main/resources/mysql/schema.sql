@@ -111,18 +111,18 @@ CREATE TABLE IF NOT EXISTS `reminder` (
 -- ----------------------------
 INSERT INTO `category` (`id`, `name`, `icon`, `type`, `user_id`, `sort_order`) VALUES
 -- 支出分类 (type=1)
-(1,  '餐饮',   'food',     1, NULL, 1),
-(2,  '交通',   'car',      1, NULL, 2),
-(3,  '购物',   'shopping', 1, NULL, 3),
-(4,  '娱乐',   'game',     1, NULL, 4),
-(5,  '居住',   'home',     1, NULL, 5),
-(6,  '医疗',   'medical',  1, NULL, 6),
-(7,  '教育',   'education',1, NULL, 7),
-(8,  '通讯',   'phone',    1, NULL, 8),
-(9,  '其他',   'more',     1, NULL, 99),
+(1,  '餐饮',   '🍔',     1, NULL, 1),
+(2,  '交通',   '🚗',      1, NULL, 2),
+(3,  '购物',   '🛒', 1, NULL, 3),
+(4,  '娱乐',   '🎮',     1, NULL, 4),
+(5,  '居住',   '🏠',   1, NULL, 5),
+(6,  '医疗',   '💊',  1, NULL, 6),
+(7,  '教育',   '📚',1, NULL, 7),
+(8,  '通讯',   '📱',    1, NULL, 8),
+(9,  '其他',   '📌',     1, NULL, 99),
 -- 收入分类 (type=2)
-(10, '工资',   'salary',   2, NULL, 1),
-(11, '奖金',   'bonus',    2, NULL, 2),
-(12, '理财',   'finance',  2, NULL, 3),
-(13, '兼职',   'parttime', 2, NULL, 4),
-(14, '其他',   'more',     2, NULL, 99);
+(10, '工资',   '💰',   2, NULL, 1),
+(11, '奖金',   '🎁',    2, NULL, 2),
+(12, '理财',   '📈',  2, NULL, 3),
+(13, '兼职',   '💼', 2, NULL, 4),
+(14, '其他',   '📌',     2, NULL, 99);
