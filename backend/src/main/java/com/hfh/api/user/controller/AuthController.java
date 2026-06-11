@@ -38,8 +38,8 @@ public class AuthController {
      * 用户注册（默认为普通用户角色）
      */
     @PostMapping("/register")
-    @Operation(summary = "用户注册", description = "新用户注册，默认为普通用户角色")
-    public Result<Void> register(@Valid @RequestBody RegisterDTO registerDTO) {
+    @Operation(summary = "用户注册", description = "新用户注册，默认为普通用户角色，注册成功后自动登录")
+    public Result<TokenVO> register(@Valid @RequestBody RegisterDTO registerDTO) {
         return authService.register(registerDTO);
     }
 

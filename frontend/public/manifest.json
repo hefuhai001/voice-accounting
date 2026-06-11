@@ -1,0 +1,16 @@
+{
+  "name": "语音记账",
+  "short_name": "记账",
+  "description": "语音记账应用",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -62,6 +62,41 @@
       </router-view>
     </main>
 
+    <!-- PWA 安装引导弹窗（iOS） -->
+    <Transition name="fade">
+      <div v-if="showInstallModal" class="fixed inset-0 z-[60] flex items-end justify-center" @click.self="dismissInstall">
+        <div class="absolute inset-0 bg-black/40" @click="dismissInstall" />
+        <div
+          class="relative w-full max-w-md bg-white rounded-t-3xl p-6 pb-10 shadow-xl"
+          @click.stop
+        >
+          <div class="w-10 h-1 rounded-full bg-[#c7c7cc] mx-auto mb-5" />
+          <h3 class="text-lg font-semibold text-[#1c1c1e] text-center mb-2">添加到主屏幕</h3>
+          <p class="text-sm text-[#8e8e93] text-center mb-5">将应用添加到主屏幕，获得全屏体验</p>
+          <div class="bg-[#f2f2f7] rounded-2xl p-4 space-y-3 text-sm text-[#1c1c1e]">
+            <div class="flex items-start gap-3">
+              <span class="shrink-0 w-6 h-6 rounded-full bg-[#ff6b35] text-white flex items-center justify-center text-xs font-bold">1</span>
+              <span>点击浏览器底部的 <strong>分享按钮</strong> <span class="inline-block">⬆️</span></span>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="shrink-0 w-6 h-6 rounded-full bg-[#ff6b35] text-white flex items-center justify-center text-xs font-bold">2</span>
+              <span>在弹出的菜单中选择 <strong>"添加到主屏幕"</strong></span>
+            </div>
+            <div class="flex items-start gap-3">
+              <span class="shrink-0 w-6 h-6 rounded-full bg-[#ff6b35] text-white flex items-center justify-center text-xs font-bold">3</span>
+              <span>点击 <strong>"添加"</strong> 即可</span>
+            </div>
+          </div>
+          <button
+            @click="dismissInstall"
+            class="w-full mt-5 h-12 rounded-2xl bg-[#f2f2f7] text-[#1c1c1e] text-base font-semibold active:bg-[#e5e5ea] transition-colors"
+          >
+            知道了
+          </button>
+        </div>
+      </div>
+    </Transition>
+
     <!-- 底部标签栏 -->
     <nav
       class="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-black/5 safe-area-bottom"
@@ -135,7 +170,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import {
   HomeOutlined,
@@ -145,11 +180,25 @@ import {
   BellOutlined,
 } from '@ant-design/icons-vue'
 import { useAuthStore } from '@/stores/auth'
+import { usePwaInstall } from '@/composables/usePwaInstall'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 const showUserMenu = ref(false)
+
+// PWA 安装提示
+const { showInstallModal, promptInstall, dismissInstall, shouldShowPrompt } = usePwaInstall()
+
+onMounted(() => {
+  // 注册后首次进入，弹出安装提示
+  if (sessionStorage.getItem('just_registered') && shouldShowPrompt()) {
+    sessionStorage.removeItem('just_registered')
+    setTimeout(() => {
+      promptInstall()
+    }, 800)
+  }
+})
 
 // 底部标签
 const allTabs = [

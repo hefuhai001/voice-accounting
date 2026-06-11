@@ -35,10 +35,15 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   /**
-   * 用户注册
+   * 用户注册（注册成功后自动登录）
    */
   async function register(registerForm) {
     const res = await request.post('/api/auth/register', registerForm)
+    // 注册成功后后端已自动登录，保存token和登录状态
+    if (res.data?.token) {
+      localStorage.setItem('token', res.data.token)
+    }
+    localStorage.setItem('isLoggedIn', 'true')
     return res
   }
 

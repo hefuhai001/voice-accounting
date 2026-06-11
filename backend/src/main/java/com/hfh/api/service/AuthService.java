@@ -62,7 +62,7 @@ public class AuthService {
     /**
      * 用户注册（默认为普通用户角色）
      */
-    public Result<Void> register(RegisterDTO registerDTO) {
+    public Result<TokenVO> register(RegisterDTO registerDTO) {
         // 0. 校验邮箱验证码
         if (!captchaService.verifyEmailCode(registerDTO.getEmail(), registerDTO.getCode())) {
             return Result.fail(400, "验证码错误或已过期");
@@ -97,7 +97,11 @@ public class AuthService {
 
         int rows = sysUserMapper.insert(user);
         if (rows > 0) {
-            return Result.ok(null);
+            // 注册成功后自动登录
+            StpUtil.login(user.getId());
+            SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+            TokenVO tokenVO = new TokenVO(tokenInfo.getTokenValue(), tokenInfo.getTokenTimeout());
+            return Result.ok(tokenVO);
         }
         return Result.fail(500, "注册失败，请稍后重试");
     }

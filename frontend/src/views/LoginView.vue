@@ -353,15 +353,16 @@ const handleRegister = async () => {
   loading.value = true
   try {
     await authStore.register(registerForm)
-    message.success('注册成功，请登录')
-    activeTab.value = 'login'
-    Object.assign(registerForm, {
-      username: '',
-      email: '',
-      code: '',
-      password: '',
-      nickname: '',
-    })
+    message.success('注册成功')
+    // 标记刚注册，用于在首页弹出 PWA 安装提示
+    sessionStorage.setItem('just_registered', 'true')
+    // 注册成功后自动获取用户信息并跳转
+    await authStore.getUserInfo()
+    if (authStore.isAdmin) {
+      router.push('/manage')
+    } else {
+      router.push('/dashboard')
+    }
   } catch (error) {
     console.error('注册失败:', error)
   } finally {
