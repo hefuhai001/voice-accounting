@@ -1,16 +1,16 @@
 spring:
   application:
-    name: backend-prod
+    name: voice-accounting
   datasource:
-    url: jdbc:mysql://${SPRING_DATASOURCE_HOST:mysql}:${SPRING_DATASOURCE_PORT:3306}/${SPRING_DATASOURCE_DB:db_voice_accounting}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:root@XH2001!}
+    url: jdbc:mysql://mysql:3306/db_voice_accounting?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false
+    username: root
+    password: root@XH2001!
   data:
     redis:
-      host: ${SPRING_DATA_REDIS_HOST:redis}
-      port: ${SPRING_DATA_REDIS_PORT:6379}
-      password: ${SPRING_DATA_REDIS_PASSWORD:root@XH2001!}
-      database: ${SPRING_DATA_REDIS_DATABASE:0}
+      host: redis
+      port: 6379
+      password: root@XH2001!
+      database: 0
       timeout: 10000ms
       lettuce:
         pool:
@@ -18,10 +18,10 @@ spring:
           max-idle: 8
           min-idle: 0
   mail:
-    host: ${SPRING_MAIL_HOST:smtp.163.com}
-    port: ${SPRING_MAIL_PORT:994}
-    username: ${SPRING_MAIL_USERNAME:18365404517@163.com}
-    password: ${SPRING_MAIL_PASSWORD:NPRDDKVXCLILSNQP}
+    host: smtp.163.com
+    port: 994
+    username: 18365404517@163.com
+    password: NPRDDKVXCLILSNQP
     protocol: smtps
     default-encoding: UTF-8
     properties:
@@ -46,7 +46,7 @@ mybatis-plus:
       logic-not-delete-value: 0
 
 server:
-  port: ${SERVER_PORT:8080}
+  port: 8080
 
 springdoc:
   swagger-ui:
@@ -73,7 +73,7 @@ knife4j:
 
 sa-token:
   token-name: Authorization
-  timeout: ${SA_TOKEN_TIMEOUT:7200}
+  timeout: 7200
   active-timeout: -1
   is-concurrent: true
   is-share: false
