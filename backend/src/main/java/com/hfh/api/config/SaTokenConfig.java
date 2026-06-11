@@ -18,6 +18,8 @@ public class SaTokenConfig implements WebMvcConfigurer {
         registry.addInterceptor(new SaInterceptor(handle -> StpUtil.checkLogin()))
                 .addPathPatterns("/**")
                 .excludePathPatterns(
+                        // Spring Boot 404 转发路径（必须排除，否则上下文被清除后再次进入拦截器会报 SaTokenContext 未初始化）
+                        "/error",
                         // 认证相关接口
                         "/api/auth/login",
                         "/api/auth/register",
