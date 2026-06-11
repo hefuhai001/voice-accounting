@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.Hidden;
  */
 @Hidden
 @Slf4j
-@RestControllerAdvice(basePackages = "com.hfh.api")
+@RestControllerAdvice(basePackages = {"com.hfh.api", "cn.dev33.satoken"})
 public class SaTokenExceptionHandler {
 
     /**

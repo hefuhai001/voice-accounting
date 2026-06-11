@@ -71,4 +71,4 @@ build/
 
 ### VS Code ###
 .vscode/
-
+*.zip
