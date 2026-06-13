@@ -108,7 +108,7 @@
         </div>
         <span class="text-sm font-semibold text-[#1c1c1e]">语音记账</span>
       </div>
-      <p class="text-xs text-[#8e8e93] mb-4">点击开始录音，说出消费内容，系统自动识别填入表单</p>
+      <p class="text-xs text-[#8e8e93] mb-4">点击开始录音，说出消费内容，AI自动识别并完成记账</p>
       <button
         @click="toggleRecording"
         :disabled="isRecognizing"
@@ -122,8 +122,12 @@
         "
       >
         <div class="w-3 h-3 rounded-full" :class="isRecording ? 'bg-white' : isRecognizing ? 'bg-violet-500 animate-pulse' : 'bg-red-500'" />
-        {{ isRecording ? '点击停止' : isRecognizing ? '识别中...' : '开始录音' }}
+        {{ isRecording ? '点击停止，AI自动记账' : isRecognizing ? 'AI分析记账中...' : '开始录音' }}
       </button>
+      <!-- AI记账结果 -->
+      <div v-if="aiResult" class="mt-3 p-3 bg-violet-50 rounded-xl text-xs text-violet-700 whitespace-pre-wrap">
+        {{ aiResult }}
+      </div>
     </section>
 
     <!-- 保存按钮 -->
@@ -149,6 +153,7 @@ import dayjs from 'dayjs'
 import { transactionApi } from '@/api'
 import { categoryApi } from '@/api'
 import { bookApi } from '@/api'
+import { voiceApi } from '@/api'
 import { useAuthStore } from '@/stores/auth'
 import { useVoiceRecorder } from '@/composables/useVoiceRecorder'
 
@@ -156,7 +161,8 @@ const authStore = useAuthStore()
 const userId = computed(() => authStore.userInfo?.id)
 
 const submitting = ref(false)
-const { isRecording, isRecognizing, startRecording, stopAndRecognize } = useVoiceRecorder()
+const aiResult = ref('')
+const { isRecording, isRecognizing, startRecording, stopRecording } = useVoiceRecorder()
 
 const formState = reactive({
   type: 1,
@@ -240,14 +246,29 @@ function handleReset() {
 
 async function toggleRecording() {
   if (isRecording.value) {
-    // 停止录音并识别
-    const text = await stopAndRecognize()
-    if (text) {
-      formState.remark = text
-      message.success('语音识别成功')
+    // 停止录音，获取WAV数据，调用语音智能记账接口
+    const wavBlob = await stopRecording()
+    if (!wavBlob) {
+      message.warning('未录制到音频')
+      return
+    }
+
+    isRecognizing.value = true
+    aiResult.value = ''
+    try {
+      const res = await voiceApi.bookkeep(wavBlob)
+      const { text, result } = res.data
+      aiResult.value = `识别: ${text}\n${result}`
+      message.success('AI记账完成')
+    } catch (error) {
+      console.error('语音记账失败:', error)
+      message.error('语音记账失败')
+    } finally {
+      isRecognizing.value = false
     }
   } else {
     // 开始录音
+    aiResult.value = ''
     await startRecording()
   }
 }

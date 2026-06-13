@@ -1,6 +1,15 @@
 spring:
   application:
     name: backend
+  # Spring AI - DeepSeek
+  ai:
+    openai:
+      api-key: sk-f3a41495700249cc8f17a1bacb4f8f3a
+      base-url: https://api.deepseek.com
+      chat:
+        options:
+          model: deepseek-chat
+          temperature: 0.7
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/db_voice_accounting?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false
