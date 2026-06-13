@@ -47,6 +47,13 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
 
+# 阿里云智能语音交互配置
+aliyun:
+  nls:
+    app-key: nUZFPlJcV0JTuLXY
+    access-key-id: LTAI5t99pCFWCwYgy4YJZs9d
+    access-key-secret: hFQkHai2pacVrNr7kVYkJhIuLfDDbx
+
 server:
   port: 8080
 

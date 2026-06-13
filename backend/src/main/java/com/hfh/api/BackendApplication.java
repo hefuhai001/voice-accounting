@@ -25,23 +25,23 @@ public class BackendApplication {
             DataSource dataSource = event.getApplicationContext().getBean(DataSource.class);
             JdbcTemplate jdbc = new JdbcTemplate(dataSource);
             jdbc.queryForObject("SELECT 1", Integer.class);
-            System.out.println("[连通性检查] MySQL  yes 连接正常");
+            System.out.println("[connect test] MySQL connect normal");
         } catch (Exception e) {
-            System.err.println("[连通性检查] MySQL  no 连接失败: " + e.getMessage());
+            System.err.println("[connect test] MySQL connect error: " + e.getMessage());
         }
 
         // Redis 连通性检查
         try {
             RedisConnectionFactory factory = event.getApplicationContext().getBean(RedisConnectionFactory.class);
             factory.getConnection().ping();
-            System.out.println("[连通性检查] Redis  yes 连接正常");
+            System.out.println("[connect test] Redis connect normal");
         } catch (Exception e) {
-            System.err.println("[连通性检查] Redis  no 连接失败: " + e.getMessage());
+            System.err.println("[connect test] Redis connect error: " + e.getMessage());
         }
 
         System.out.println("============================================");
-        System.out.println("  应用启动成功！");
-        System.out.println("  Knife4j 文档地址: http://localhost:8080/doc.html");
+        System.out.println("  app run success！");
+        System.out.println("  Knife4j doc url: http://localhost:8080/doc.html");
         System.out.println("============================================");
     }
 }

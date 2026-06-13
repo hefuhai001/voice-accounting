@@ -111,15 +111,18 @@
       <p class="text-xs text-[#8e8e93] mb-4">点击开始录音，说出消费内容，系统自动识别填入表单</p>
       <button
         @click="toggleRecording"
+        :disabled="isRecognizing"
         class="w-full py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2"
         :class="
           isRecording
             ? 'bg-red-500 text-white animate-pulse'
-            : 'bg-[#f2f2f7] text-[#1c1c1e] active:bg-[#e5e5ea]'
+            : isRecognizing
+              ? 'bg-violet-100 text-violet-500'
+              : 'bg-[#f2f2f7] text-[#1c1c1e] active:bg-[#e5e5ea]'
         "
       >
-        <div class="w-3 h-3 rounded-full" :class="isRecording ? 'bg-white' : 'bg-red-500'" />
-        {{ isRecording ? '停止录音' : '开始录音' }}
+        <div class="w-3 h-3 rounded-full" :class="isRecording ? 'bg-white' : isRecognizing ? 'bg-violet-500 animate-pulse' : 'bg-red-500'" />
+        {{ isRecording ? '点击停止' : isRecognizing ? '识别中...' : '开始录音' }}
       </button>
     </section>
 
@@ -147,12 +150,13 @@ import { transactionApi } from '@/api'
 import { categoryApi } from '@/api'
 import { bookApi } from '@/api'
 import { useAuthStore } from '@/stores/auth'
+import { useVoiceRecorder } from '@/composables/useVoiceRecorder'
 
 const authStore = useAuthStore()
 const userId = computed(() => authStore.userInfo?.id)
 
 const submitting = ref(false)
-const isRecording = ref(false)
+const { isRecording, isRecognizing, startRecording, stopAndRecognize } = useVoiceRecorder()
 
 const formState = reactive({
   type: 1,
@@ -234,9 +238,18 @@ function handleReset() {
   })
 }
 
-function toggleRecording() {
-  isRecording.value = !isRecording.value
-  // TODO: 实现录音逻辑
+async function toggleRecording() {
+  if (isRecording.value) {
+    // 停止录音并识别
+    const text = await stopAndRecognize()
+    if (text) {
+      formState.remark = text
+      message.success('语音识别成功')
+    }
+  } else {
+    // 开始录音
+    await startRecording()
+  }
 }
 
 // 监听 userId 变化

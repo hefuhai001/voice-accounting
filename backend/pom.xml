@@ -108,6 +108,24 @@
             <artifactId>spring-security-crypto</artifactId>
         </dependency>
 
+        <!-- 阿里云智能语音交互 - 一句话识别SDK（含Token获取） -->
+        <dependency>
+            <groupId>com.alibaba.nls</groupId>
+            <artifactId>nls-sdk-recognizer</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+        <!-- JAXB（Java 11+移除了javax.xml.bind，NLS SDK需要） -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.9</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-session-data-redis-test</artifactId>
