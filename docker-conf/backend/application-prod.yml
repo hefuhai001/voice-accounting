@@ -1,6 +1,15 @@
 spring:
   application:
     name: voice-accounting
+  # Spring AI - DeepSeek
+  ai:
+    openai:
+      api-key: sk-a13d527015e54ad9bb76ab7b0ceb1e30
+      base-url: https://api.deepseek.com
+      chat:
+        options:
+          model: deepseek-chat
+          temperature: 0.7
   datasource:
     url: jdbc:mysql://mysql:3306/db_voice_accounting?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false
     username: root
@@ -44,6 +53,13 @@ mybatis-plus:
       logic-delete-field: deleted
       logic-delete-value: 1
       logic-not-delete-value: 0
+
+# 阿里云智能语音交互配置
+aliyun:
+  nls:
+    app-key: nUZFPlJcV0JTuLXY
+    access-key-id: LTAI5t99pCFWCwYgy4YJZs9d
+    access-key-secret: hFQkHai2pacVrNr7kVYkJhIuLfDDbx
 
 server:
   port: 8080
