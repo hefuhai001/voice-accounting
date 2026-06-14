@@ -3,12 +3,12 @@ import { createPinia } from 'pinia'
 
 // 导入 Tailwind CSS
 import './style.css'
+// 导入 Ant Design 基础样式
+import 'ant-design-vue/dist/reset.css'
 
 import App from './App.vue'
 import router from './router'
 
-// 导入 Ant Design Vue
-import { Antd } from './plugins/antd'
 // 导入 Access 高级组件
 import './plugins/access'
 // 导入自定义组件
@@ -18,7 +18,6 @@ const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
-app.use(Antd)
 
 // 注册自定义组件
 registerComponents(app)

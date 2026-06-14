@@ -1,15 +1,5 @@
 /**
  * Access 高级组件库封装
- * 包含 ProTable、ProForm、ProLayout 等高级组件
+ * 已移除 @ant-design/pro-components 全量引入
+ * 如需使用 Pro 系列组件，请按需单独引入
  */
-export * from '@ant-design/pro-components'
-
-// Access 组件按需导出
-export {
-  ProTable,
-  ProForm,
-  ProLayout,
-  ProCard,
-  ProDescriptions,
-  ProList,
-} from '@ant-design/pro-components'
