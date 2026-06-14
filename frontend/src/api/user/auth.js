@@ -9,7 +9,7 @@ export const authApi = {
    * @param {Object} data - 登录数据
    * @param {string} data.username - 用户名
    * @param {string} data.password - 密码
-   * @returns {Promise<{token: string, expiresIn: number}>}
+   * @returns {Promise<{token: string, expiresIn: number, refreshToken: string, refreshExpiresIn: number}>}
    */
   login(data) {
     return request.post('/api/auth/login', data)
@@ -26,14 +26,6 @@ export const authApi = {
    */
   register(data) {
     return request.post('/api/auth/register', data)
-  },
-
-  /**
-   * 无感刷新Token（延长有效期）
-   * @returns {Promise<{token: string, expiresIn: number}>}
-   */
-  refreshToken() {
-    return request.post('/api/auth/refresh-token')
   },
 
   /**
@@ -58,7 +50,6 @@ export const authApi = {
 export const captchaApi = {
   /**
    * 获取滑块验证码
-   * @returns {Promise<{token: string, backgroundImage: string, sliderImage: string, sliderY: number}>}
    */
   getSliderCaptcha() {
     return request.get('/api/captcha/slider')
@@ -66,10 +57,6 @@ export const captchaApi = {
 
   /**
    * 校验滑块位置
-   * @param {Object} data
-   * @param {string} data.token - 滑块验证token
-   * @param {number} data.position - 滑块位置
-   * @returns {Promise<string>} 返回验证通过的captchaToken
    */
   verifySlider(data) {
     return request.post('/api/captcha/slider/verify', data)
@@ -77,9 +64,6 @@ export const captchaApi = {
 
   /**
    * 发送邮箱验证码（需先通过滑块验证）
-   * @param {Object} data
-   * @param {string} data.email - 邮箱
-   * @param {string} data.captchaToken - 滑块验证通过后的token
    */
   sendEmailCode(data) {
     return request.post('/api/captcha/email/send', data)

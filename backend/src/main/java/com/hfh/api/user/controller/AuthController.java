@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 认证控制器（用户端）
  * 提供登录、注册、刷新Token等功能
+ * 双Token机制：Access Token通过Authorization头传递，Refresh Token通过Refresh-Token头传递
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -29,7 +30,7 @@ public class AuthController {
      * 用户登录（管理员和普通用户都可以使用）
      */
     @PostMapping("/login")
-    @Operation(summary = "用户登录", description = "支持管理员和普通用户登录")
+    @Operation(summary = "用户登录", description = "支持管理员和普通用户登录，返回双Token")
     public Result<TokenVO> login(@Valid @RequestBody LoginDTO loginDTO) {
         return authService.login(loginDTO);
     }
@@ -38,18 +39,19 @@ public class AuthController {
      * 用户注册（默认为普通用户角色）
      */
     @PostMapping("/register")
-    @Operation(summary = "用户注册", description = "新用户注册，默认为普通用户角色，注册成功后自动登录")
+    @Operation(summary = "用户注册", description = "新用户注册，默认为普通用户角色，注册成功后自动登录并返回双Token")
     public Result<TokenVO> register(@Valid @RequestBody RegisterDTO registerDTO) {
         return authService.register(registerDTO);
     }
 
     /**
-     * 无感刷新Token
+     * 刷新Access Token
+     * 前端通过Refresh-Token请求头传递Refresh Token
      */
     @PostMapping("/refresh-token")
-    @Operation(summary = "刷新Token", description = "无感刷新访问令牌，延长有效期")
-    public Result<TokenVO> refreshToken() {
-        return authService.refreshToken();
+    @Operation(summary = "刷新Token", description = "使用Refresh Token获取新的双Token，Refresh Token一次性使用")
+    public Result<TokenVO> refreshToken(@RequestHeader("Refresh-Token") String refreshToken) {
+        return authService.refreshToken(refreshToken);
     }
 
     /**
@@ -57,9 +59,9 @@ public class AuthController {
      */
     @PostMapping("/logout")
     @SaCheckLogin
-    @Operation(summary = "用户登出", description = "退出当前登录状态")
-    public Result<Void> logout() {
-        return authService.logout();
+    @Operation(summary = "用户登出", description = "退出当前登录状态，同时失效双Token")
+    public Result<Void> logout(@RequestHeader(value = "Refresh-Token", required = false) String refreshToken) {
+        return authService.logout(refreshToken);
     }
 
     /**

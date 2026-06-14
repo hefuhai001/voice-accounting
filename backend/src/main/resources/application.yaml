@@ -92,12 +92,10 @@ knife4j:
 
 # Sa-Token 配置
 sa-token:
-  # token名称（同时也是cookie名称）
+  # token名称（同时也是Header名称）
   token-name: Authorization
-  # token有效期（单位：秒），绝对最大有效期30天
-  timeout: 2592000
-  # token临时有效期（指定时间内无操作则过期），30分钟无操作则过期，可通过refresh接口续期
-  active-timeout: 1800
+  # Access Token有效期（单位：秒），2小时
+  timeout: 10
   # 是否允许同一账号多地同时登录（为true时允许，为false时新登录挤掉旧登录）
   is-concurrent: true
   # 在多人登录同一账号时，是否共用一个token
@@ -106,3 +104,7 @@ sa-token:
   token-style: uuid
   # 是否输出操作日志
   is-log: false
+  # 关闭Cookie模式，使用Header传递Token
+  is-read-cookie: false
+  # 开启Header模式，前端通过Authorization头传递Token
+  is-read-header: true

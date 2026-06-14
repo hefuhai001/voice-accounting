@@ -158,8 +158,8 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  // 如果有登录标记但还没有获取用户信息（如刷新页面后），先获取用户信息
-  if (!authStore.userInfo && localStorage.getItem('isLoggedIn')) {
+  // 如果有Token但还没有获取用户信息（如刷新页面后），先获取用户信息
+  if (!authStore.userInfo && authStore.isLoggedIn) {
     try {
       await authStore.getUserInfo()
     } catch (error) {

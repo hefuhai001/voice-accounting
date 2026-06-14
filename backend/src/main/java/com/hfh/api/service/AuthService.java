@@ -10,11 +10,18 @@ import com.hfh.api.dto.TokenVO;
 import com.hfh.api.entity.SysUserEntity;
 import com.hfh.api.mapper.SysUserMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.util.UUID;
+
 /**
  * 认证服务
+ * 双Token机制：
+ * - Access Token: Sa-Token管理，短期有效（2小时），用于接口认证
+ * - Refresh Token: Redis管理，长期有效（30天），用于静默刷新Access Token
  */
 @Service
 @RequiredArgsConstructor
@@ -22,7 +29,11 @@ public class AuthService {
 
     private final SysUserMapper sysUserMapper;
     private final CaptchaService captchaService;
+    private final StringRedisTemplate redisTemplate;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    private static final String REFRESH_TOKEN_PREFIX = "auth:refresh:";
+    private static final long REFRESH_TOKEN_TTL = 2592000L; // 30天（秒）
 
     /**
      * 用户登录
@@ -49,12 +60,12 @@ public class AuthService {
             return Result.fail(403, "账号已被禁用，请联系管理员");
         }
 
-        // 5. 执行登录（Sa-Token会自动将登录状态存入Redis）
+        // 5. 执行登录，生成Access Token
         StpUtil.login(user.getId());
-
-        // 6. 获取Token信息
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-        TokenVO tokenVO = new TokenVO(tokenInfo.getTokenValue(), tokenInfo.getTokenTimeout());
+
+        // 6. 生成Refresh Token
+        TokenVO tokenVO = buildTokenVO(tokenInfo, user.getId());
 
         return Result.ok(tokenVO);
     }
@@ -100,43 +111,38 @@ public class AuthService {
             // 注册成功后自动登录
             StpUtil.login(user.getId());
             SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-            TokenVO tokenVO = new TokenVO(tokenInfo.getTokenValue(), tokenInfo.getTokenTimeout());
+            TokenVO tokenVO = buildTokenVO(tokenInfo, user.getId());
             return Result.ok(tokenVO);
         }
         return Result.fail(500, "注册失败，请稍后重试");
     }
 
     /**
-     * 无感刷新Token
-     * 该接口已排除Sa-Token拦截器，需要自行通过tokenValue恢复会话
-     * 支持两种场景：
-     * 1. 主动刷新：用户仍在activity-timeout内，续期保持活跃
-     * 2. 被动恢复：activity-timeout已过期但绝对timeout未过期，恢复会话
+     * 使用Refresh Token刷新Access Token
+     * 前端通过Refresh-Token请求头传递Refresh Token
      */
-    public Result<TokenVO> refreshToken() {
-        // 1. 从请求中获取tokenValue
-        String tokenValue = StpUtil.getTokenValue();
-        if (tokenValue == null || tokenValue.isEmpty()) {
-            return Result.fail(401, "未登录或Token已过期，请重新登录");
+    public Result<TokenVO> refreshToken(String refreshTokenValue) {
+        // 1. 校验Refresh Token
+        if (refreshTokenValue == null || refreshTokenValue.isEmpty()) {
+            return Result.fail(401, "缺少Refresh Token，请重新登录");
         }
 
-        // 2. 通过tokenValue获取对应的loginId，验证token是否仍有效
-        //    activity-timeout过期时token仍在Redis中，getLoginIdByToken可返回loginId
-        //    绝对timeout过期时token已从Redis删除，返回null
-        Object loginId = StpUtil.getLoginIdByToken(tokenValue);
-        if (loginId == null) {
-            return Result.fail(401, "Token已失效，请重新登录");
+        String redisKey = REFRESH_TOKEN_PREFIX + refreshTokenValue;
+        String userIdStr = redisTemplate.opsForValue().get(redisKey);
+        if (userIdStr == null) {
+            return Result.fail(401, "Refresh Token已失效，请重新登录");
         }
 
-        // 3. 更新最后活跃时间，恢复/续期activity-timeout
-        StpUtil.updateLastActiveToNow();
+        // 2. 删除旧的Refresh Token（一次性使用，防止重放攻击）
+        redisTemplate.delete(redisKey);
 
-        // 4. 续期绝对有效期，每次刷新重置为配置的timeout
-        StpUtil.renewTimeout(2592000);
-
-        // 5. 获取Token信息
+        // 3. 重新登录，生成新的Access Token
+        Long userId = Long.valueOf(userIdStr);
+        StpUtil.login(userId);
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-        TokenVO tokenVO = new TokenVO(tokenInfo.getTokenValue(), tokenInfo.getTokenTimeout());
+
+        // 4. 生成新的Refresh Token
+        TokenVO tokenVO = buildTokenVO(tokenInfo, userId);
 
         return Result.ok(tokenVO);
     }
@@ -144,10 +150,31 @@ public class AuthService {
     /**
      * 用户登出
      */
-    public Result<Void> logout() {
+    public Result<Void> logout(String refreshTokenValue) {
         if (StpUtil.isLogin()) {
             StpUtil.logout();
         }
+        // 删除Refresh Token
+        if (refreshTokenValue != null && !refreshTokenValue.isEmpty()) {
+            redisTemplate.delete(REFRESH_TOKEN_PREFIX + refreshTokenValue);
+        }
         return Result.ok(null);
+    }
+
+    /**
+     * 构建双Token响应
+     */
+    private TokenVO buildTokenVO(SaTokenInfo tokenInfo, Long userId) {
+        // 生成Refresh Token（UUID，存入Redis，30天有效）
+        String refreshToken = UUID.randomUUID().toString().replace("-", "");
+        String redisKey = REFRESH_TOKEN_PREFIX + refreshToken;
+        redisTemplate.opsForValue().set(redisKey, String.valueOf(userId), Duration.ofSeconds(REFRESH_TOKEN_TTL));
+
+        TokenVO tokenVO = new TokenVO();
+        tokenVO.setToken(tokenInfo.getTokenValue());
+        tokenVO.setExpiresIn(tokenInfo.getTokenTimeout());
+        tokenVO.setRefreshToken(refreshToken);
+        tokenVO.setRefreshExpiresIn(REFRESH_TOKEN_TTL);
+        return tokenVO;
     }
 }
