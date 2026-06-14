@@ -17,19 +17,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAdmin = computed(() => userInfo.value?.role === 1)
 
-  const token = computed(() => localStorage.getItem('token') || '')
-
   /**
    * 用户登录
    * Sa-Token会在响应中自动设置Cookie，无需手动存储token
    */
   async function login(loginForm) {
     const res = await request.post('/api/auth/login', loginForm)
-    // 登录成功，保存返回的token值到localStorage（用于判断登录状态）
-    if (res.data?.token) {
-      localStorage.setItem('token', res.data.token)
-    }
-    // 标记已登录
+    // Sa-Token通过Cookie自动维持会话，无需手动存储token
     localStorage.setItem('isLoggedIn', 'true')
     return res
   }
@@ -39,25 +33,19 @@ export const useAuthStore = defineStore('auth', () => {
    */
   async function register(registerForm) {
     const res = await request.post('/api/auth/register', registerForm)
-    // 注册成功后后端已自动登录，保存token和登录状态
-    if (res.data?.token) {
-      localStorage.setItem('token', res.data.token)
-    }
+    // Sa-Token通过Cookie自动维持会话，无需手动存储token
     localStorage.setItem('isLoggedIn', 'true')
     return res
   }
 
   /**
    * 刷新Token
-   * Sa-Token会自动更新Cookie中的token
+   * Sa-Token会自动更新Cookie中的token，无需前端处理
    */
   async function refreshToken() {
     try {
-      const res = await request.post('/api/auth/refresh-token')
-      if (res.data?.token) {
-        localStorage.setItem('token', res.data.token)
-      }
-      return res
+      await request.post('/api/auth/refresh-token')
+      return
     } catch (error) {
       logout()
       throw error
@@ -118,13 +106,11 @@ export const useAuthStore = defineStore('auth', () => {
    */
   function clearAuthState() {
     userInfo.value = null
-    localStorage.removeItem('token')
     localStorage.removeItem('isLoggedIn')
     isLoginChecked.value = false
   }
 
   return {
-    token,
     userInfo,
     isLoggedIn,
     isAdmin,

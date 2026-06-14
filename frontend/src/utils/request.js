@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
-import { useAuthStore } from '@/stores/auth'
 
 // 创建axios实例
 const request = axios.create({
@@ -16,12 +15,7 @@ const request = axios.create({
 // 请求拦截器
 request.interceptors.request.use(
   (config) => {
-    // Sa-Token使用Cookie模式，不需要手动添加Authorization头
-    // 如果需要支持Header模式作为备用，可以保留以下代码
-    const authStore = useAuthStore()
-    if (authStore.token) {
-      config.headers.Authorization = authStore.token
-    }
+    // Sa-Token使用Cookie模式，由浏览器自动携带Cookie，无需手动添加Authorization头
     return config
   },
   (error) => {
@@ -36,10 +30,9 @@ request.interceptors.response.use(
     // 根据业务code判断请求是否成功
     if (res.code !== 200) {
       message.error(res.message || '请求失败')
-      // 401: 未登录或Token过期
+      // 401: 未登录或Cookie过期
       if (res.code === 401) {
-        const authStore = useAuthStore()
-        authStore.logout()
+        localStorage.removeItem('isLoggedIn')
         window.location.href = '/login'
       }
       return Promise.reject(new Error(res.message || '请求失败'))
@@ -49,8 +42,7 @@ request.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       message.error('登录已过期，请重新登录')
-      const authStore = useAuthStore()
-      authStore.logout()
+      localStorage.removeItem('isLoggedIn')
       window.location.href = '/login'
     } else {
       message.error(error.message || '网络错误')
