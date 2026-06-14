@@ -40,16 +40,10 @@ export const useAuthStore = defineStore('auth', () => {
 
   /**
    * 刷新Token
-   * Sa-Token会自动更新Cookie中的token，无需前端处理
+   * 无感刷新已在request拦截器中自动处理，此方法用于手动触发
    */
   async function refreshToken() {
-    try {
-      await request.post('/api/auth/refresh-token')
-      return
-    } catch (error) {
-      logout()
-      throw error
-    }
+    await request.post('/api/auth/refresh-token')
   }
 
   /**
