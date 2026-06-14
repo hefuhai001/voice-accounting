@@ -38,6 +38,10 @@ public class SaTokenExceptionHandler {
                 case "TokenTimeout":
                     message = "登录已过期，请重新登录";
                     break;
+                case "ActiveTimeout":
+                    // activity-timeout过期，但绝对timeout可能未过期，前端可尝试刷新
+                    message = "会话过期，请刷新";
+                    break;
                 case "BeReplaced":
                     message = "账号在别处登录";
                     break;

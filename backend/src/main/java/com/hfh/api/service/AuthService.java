@@ -108,17 +108,33 @@ public class AuthService {
 
     /**
      * 无感刷新Token
+     * 该接口已排除Sa-Token拦截器，需要自行通过tokenValue恢复会话
+     * 支持两种场景：
+     * 1. 主动刷新：用户仍在activity-timeout内，续期保持活跃
+     * 2. 被动恢复：activity-timeout已过期但绝对timeout未过期，恢复会话
      */
     public Result<TokenVO> refreshToken() {
-        // 1. 检查当前是否已登录
-        if (!StpUtil.isLogin()) {
+        // 1. 从请求中获取tokenValue
+        String tokenValue = StpUtil.getTokenValue();
+        if (tokenValue == null || tokenValue.isEmpty()) {
             return Result.fail(401, "未登录或Token已过期，请重新登录");
         }
 
-        // 2. 续期Token（延长有效期，不会改变token值）
+        // 2. 通过tokenValue获取对应的loginId，验证token是否仍有效
+        //    activity-timeout过期时token仍在Redis中，getLoginIdByToken可返回loginId
+        //    绝对timeout过期时token已从Redis删除，返回null
+        Object loginId = StpUtil.getLoginIdByToken(tokenValue);
+        if (loginId == null) {
+            return Result.fail(401, "Token已失效，请重新登录");
+        }
+
+        // 3. 更新最后活跃时间，恢复/续期activity-timeout
         StpUtil.updateLastActiveToNow();
 
-        // 3. 获取新的Token信息
+        // 4. 续期绝对有效期，每次刷新重置为配置的timeout
+        StpUtil.renewTimeout(2592000);
+
+        // 5. 获取Token信息
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
         TokenVO tokenVO = new TokenVO(tokenInfo.getTokenValue(), tokenInfo.getTokenTimeout());
 

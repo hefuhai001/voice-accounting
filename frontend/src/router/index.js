@@ -163,9 +163,8 @@ router.beforeEach(async (to, from, next) => {
     try {
       await authStore.getUserInfo()
     } catch (error) {
-      console.error('获取用户信息失败:', error)
-      // 获取失败，说明Cookie已过期，需要重新登录
-      next({ path: '/login', query: { redirect: to.fullPath } })
+      // 拦截器已经处理了token刷新和登录跳转，这里不再重复处理
+      // 直接阻止导航即可
       return
     }
   }

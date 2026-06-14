@@ -1,17 +1,20 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import request from '@/utils/request'
+import request, { resetRefreshState } from '@/utils/request'
+
+// 定时刷新间隔：25分钟（active-timeout为30分钟，提前5分钟刷新）
+const REFRESH_INTERVAL = 25 * 60 * 1000
 
 export const useAuthStore = defineStore('auth', () => {
   // 状态
-  // Sa-Token使用Cookie模式，token由后端通过Set-Cookie自动设置
-  // 前端只记录用户信息和登录状态
   const userInfo = ref(null)
   const isLoginChecked = ref(false)
 
+  // 定时刷新定时器
+  let refreshTimer = null
+
   // 计算属性
   const isLoggedIn = computed(() => {
-    // 如果有userInfo说明已登录并获取过信息
     return !!userInfo.value || !!localStorage.getItem('isLoggedIn')
   })
 
@@ -20,17 +23,46 @@ export const useAuthStore = defineStore('auth', () => {
   const token = computed(() => localStorage.getItem('token') || '')
 
   /**
+   * 启动定时刷新Token
+   * 每隔25分钟主动刷新一次，避免activity-timeout过期触发401
+   */
+  function startRefreshTimer() {
+    stopRefreshTimer()
+    refreshTimer = setInterval(() => {
+      if (localStorage.getItem('isLoggedIn')) {
+        request.post('/api/auth/refresh-token').then((res) => {
+          if (res.data?.token) {
+            localStorage.setItem('token', res.data.token)
+          }
+        }).catch(() => {
+          // 静默失败，后续请求会触发401走正常刷新流程
+        })
+      }
+    }, REFRESH_INTERVAL)
+  }
+
+  /**
+   * 停止定时刷新Token
+   */
+  function stopRefreshTimer() {
+    if (refreshTimer) {
+      clearInterval(refreshTimer)
+      refreshTimer = null
+    }
+  }
+
+  /**
    * 用户登录
-   * Sa-Token会在响应中自动设置Cookie，无需手动存储token
    */
   async function login(loginForm) {
     const res = await request.post('/api/auth/login', loginForm)
-    // 登录成功，保存返回的token值到localStorage（用于判断登录状态）
+    // 保存token到localStorage，用于请求头鉴权
     if (res.data?.token) {
       localStorage.setItem('token', res.data.token)
     }
-    // 标记已登录
     localStorage.setItem('isLoggedIn', 'true')
+    resetRefreshState()
+    startRefreshTimer()
     return res
   }
 
@@ -39,17 +71,17 @@ export const useAuthStore = defineStore('auth', () => {
    */
   async function register(registerForm) {
     const res = await request.post('/api/auth/register', registerForm)
-    // 注册成功后后端已自动登录，保存token和登录状态
     if (res.data?.token) {
       localStorage.setItem('token', res.data.token)
     }
     localStorage.setItem('isLoggedIn', 'true')
+    resetRefreshState()
+    startRefreshTimer()
     return res
   }
 
   /**
    * 刷新Token
-   * Sa-Token会自动更新Cookie中的token
    */
   async function refreshToken() {
     try {
@@ -70,10 +102,8 @@ export const useAuthStore = defineStore('auth', () => {
   async function getUserInfo() {
     try {
       const res = await request.get('/api/auth/info')
-      // Sa-Token返回的是loginId（用户ID），需要再获取完整用户信息
       const userId = res.data
       if (userId) {
-        // 调用用户详情接口获取完整信息
         const userRes = await request.get(`/admin/user/${userId}`)
         userInfo.value = userRes.data
       }
@@ -92,12 +122,10 @@ export const useAuthStore = defineStore('auth', () => {
     if (isLoginChecked.value) return
 
     try {
-      // 尝试获取用户信息，如果成功说明已登录（Cookie有效）
       await getUserInfo()
       isLoginChecked.value = true
+      startRefreshTimer()
     } catch (error) {
-      console.error('检查登录状态失败:', error)
-      // 获取失败，清除登录状态
       clearAuthState()
       isLoginChecked.value = true
     }
@@ -105,12 +133,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   /**
    * 登出
-   * 通知后端清除登录状态，同时清理本地状态
    */
   function logout() {
-    // 通知后端登出（清除Redis中的session）
     request.post('/api/auth/logout').catch(() => {})
-    // 清理本地状态
     clearAuthState()
   }
 
@@ -122,6 +147,7 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('token')
     localStorage.removeItem('isLoggedIn')
     isLoginChecked.value = false
+    stopRefreshTimer()
   }
 
   return {
