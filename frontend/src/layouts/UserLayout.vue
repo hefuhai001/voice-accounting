@@ -161,7 +161,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import {
   HomeOutlined,
@@ -202,17 +202,17 @@ const leftTabs = allTabs.slice(0, 2)
 const rightTabs = allTabs.slice(2)
 
 // 页面标题
-const pageTitle = computed(() => {
-  const map = {
-    '/dashboard': '语音记账',
-    '/books': '我的账本',
-    '/transaction': '记一笔',
-    '/records': '记账记录',
-    '/category': '分类管理',
-    '/reminder': '我的提醒',
-  }
-  return map[route.path] || '语音记账'
-})
+// const pageTitle = computed(() => {
+//   const map = {
+//     '/dashboard': '语音记账',
+//     '/books': '我的账本',
+//     '/transaction': '记一笔',
+//     '/records': '记账记录',
+//     '/category': '分类管理',
+//     '/reminder': '我的提醒',
+//   }
+//   return map[route.path] || '语音记账'
+// })
 
 // 判断 Tab 激活
 function isActive(path) {
