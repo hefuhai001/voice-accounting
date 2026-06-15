@@ -1,27 +1,21 @@
 <template>
-  <div class="px-4 pt-4 pb-6 space-y-4">
-    <!-- 标题栏 -->
-    <div class="flex items-center justify-between px-1">
-      <h2 class="text-[22px] font-bold text-[#1c1c1e]">分类管理</h2>
+  <div class="px-margin-mobile pt-base pb-8 relative">
+    <!-- Section Header -->
+    <div class="flex justify-between items-center py-stack-lg">
+      <h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">全部分类</h2>
       <button
         @click="showAddModal"
-        class="flex items-center gap-1 px-3 py-1.5 bg-[#ff6b35] text-white text-xs font-semibold rounded-full active:scale-95 transition-transform shadow-sm shadow-orange-500/20"
+        class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm"
       >
-        <svg
-          class="w-3.5 h-3.5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2.5"
-        >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
         </svg>
-        新建
+        <span class="font-label-md text-label-md">新建</span>
       </button>
     </div>
 
-    <!-- 类型切换 Tab -->
-    <div class="flex bg-[#f2f2f7] rounded-xl p-1">
+    <!-- Tab Switcher -->
+    <div class="bg-surface-container-low p-1 rounded-xl flex mb-stack-lg">
       <button
         v-for="t in [
           { key: 'expense', label: '支出分类' },
@@ -29,61 +23,67 @@
         ]"
         :key="t.key"
         @click="switchTab(t.key)"
-        class="flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-200"
-        :class="activeTab === t.key ? 'bg-white text-[#1c1c1e] shadow-sm' : 'text-[#8e8e93]'"
+        class="flex-1 py-3 text-center rounded-lg font-label-md text-label-md transition-all duration-300"
+        :class="
+          activeTab === t.key
+            ? 'bg-white text-primary shadow-[0px_4px_12px_rgba(0,0,0,0.05)]'
+            : 'text-on-surface-variant hover:bg-surface-container-high'
+        "
       >
         {{ t.label }}
       </button>
     </div>
 
-    <!-- 分类网格 -->
-    <div class="grid grid-cols-4 gap-2.5">
+    <!-- Category Grid (Bento Style) -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-gutter-md">
       <div
         v-for="cat in categories"
         :key="cat.id"
-        class="rounded-2xl p-2.5 pb-2 flex flex-col items-center gap-1.5 relative active:scale-95 transition-transform duration-150"
-        :class="[
-          cat.userId ? 'cursor-pointer' : '',
-          activeTab === 'expense' ? 'bg-gradient-to-br from-orange-100 to-orange-50/80' : 'bg-gradient-to-br from-emerald-100 to-green-50/80'
-        ]"
+        class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center gap-3 group hover:shadow-xl transition-all duration-300 relative"
+        :class="cat.userId ? 'cursor-pointer' : ''"
         @click="cat.userId && handleEdit(cat)"
       >
-        <!-- 图标 -->
+        <!-- Icon -->
         <div
-          class="w-11 h-11 rounded-2xl flex items-center justify-center text-2xl shadow-sm"
-          :class="activeTab === 'expense' ? 'bg-white/80' : 'bg-white/80'"
+          class="w-16 h-16 rounded-full flex items-center justify-center text-[32px]"
+          :class="activeTab === 'expense' ? 'bg-orange-100 text-orange-600' : 'bg-emerald-100 text-emerald-600'"
         >
           <span class="leading-none">{{ getIconDisplay(cat.icon) }}</span>
         </div>
-        <!-- 名称 -->
-        <span
-          class="text-[12px] font-semibold text-[#1c1c1e] text-center leading-tight line-clamp-1 w-full"
-          >{{ cat.name }}</span
-        >
-        <!-- 类型小字 -->
-        <span class="text-[10px] text-[#aeaeb2] -mt-0.5">{{ activeTab === 'expense' ? '支出' : '收入' }}</span>
-        <!-- 系统标签 -->
+        <!-- Name -->
+        <div class="text-center">
+          <p class="font-headline-md text-[18px] text-on-surface">{{ cat.name }}</p>
+          <p class="font-label-sm text-label-sm text-on-surface-variant opacity-60">
+            {{ activeTab === 'expense' ? '支出' : '收入' }}
+          </p>
+        </div>
+        <!-- System Badge -->
         <span
           v-if="!cat.userId"
-          class="absolute top-1 right-1 text-[8px] text-blue-400 bg-blue-50/80 px-1 py-px rounded"
+          class="absolute top-2 right-2 px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded-full text-[10px] font-bold"
           >系统</span
         >
-        <!-- 删除按钮 -->
+        <!-- Delete Button -->
         <button
           v-if="cat.userId"
           @click.stop="handleDelete(cat)"
-          class="absolute top-0.5 right-0.5 w-4.5 h-4.5 rounded-full bg-red-400/80 text-white flex items-center justify-center text-[9px] hover:bg-red-500 active:bg-red-600 transition-colors"
-          style="width:18px;height:18px"
+          class="absolute top-1 right-1 w-5 h-5 rounded-full bg-danger-red/80 text-white flex items-center justify-center text-[10px] hover:bg-danger-red active:bg-danger-red transition-colors"
         >
           x
         </button>
       </div>
     </div>
 
-    <!-- 空状态 -->
+    <!-- Empty State -->
     <div v-if="categories.length === 0 && !loading" class="py-16 text-center">
-      <AppstoreOutlined class="text-4xl text-[#c7c7cc]" />
-      <p class="text-sm text-[#8e8e93] mt-3">暂无分类</p>
+      <AppstoreOutlined class="text-4xl text-outline" />
+      <p class="font-body-md text-body-md text-on-surface-variant mt-3">暂无分类</p>
+    </div>
+
+    <!-- Background Decoration -->
+    <div class="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden">
+      <div class="absolute top-[10%] -right-20 w-64 h-64 bg-primary-fixed-dim/20 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-[20%] -left-20 w-80 h-80 bg-tertiary-fixed-dim/10 rounded-full blur-3xl"></div>
     </div>
 
     <!-- 新建/编辑弹窗 -->

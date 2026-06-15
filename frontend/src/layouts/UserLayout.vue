@@ -1,20 +1,22 @@
 <template>
   <div
-    class="ios-app h-screen flex flex-col overflow-hidden bg-[#F2F2F7] font-[system-ui,_-apple-system,_sans-serif]"
+    class="ios-app h-screen flex flex-col overflow-hidden bg-surface font-body-md text-on-surface antialiased"
   >
     <!-- 顶部导航栏 -->
     <header
-      class="flex-shrink-0 bg-white/80 backdrop-blur-xl sticky top-0 z-30 border-b border-black/5"
+      class="flex-shrink-0 bg-surface/80 backdrop-blur-md sticky top-0 z-30"
     >
-      <div class="flex items-center justify-between px-5 h-12">
-        <h1 class="text-[17px] font-semibold text-[#1c1c1e] tracking-tight">{{ pageTitle }}</h1>
-        <button @click="showUserMenu = !showUserMenu" class="relative">
-          <div
-            class="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white text-sm font-semibold shadow-sm"
-          >
-            {{ authStore.userInfo?.nickname?.charAt(0) || 'U' }}
-          </div>
-        </button>
+      <div class="flex items-center justify-between px-margin-mobile h-16">
+        <h1 class="font-headline-md text-headline-md text-on-surface">{{ pageTitle }}</h1>
+        <div class="flex items-center gap-4">
+          <button @click="showUserMenu = !showUserMenu" class="relative">
+            <div
+              class="w-8 h-8 rounded-full bg-primary-container text-white flex items-center justify-center font-bold text-sm"
+            >
+              {{ authStore.userInfo?.nickname?.charAt(0) || 'U' }}
+            </div>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -22,28 +24,28 @@
     <Transition name="fade">
       <div v-if="showUserMenu" class="fixed inset-0 z-40" @click="showUserMenu = false">
         <div
-          class="absolute right-3 top-14 w-52 bg-white/95 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/10 overflow-hidden border border-black/5"
+          class="absolute right-3 top-[72px] w-52 glass-card rounded-2xl shadow-lg shadow-black/10 overflow-hidden border border-white/40"
         >
-          <div class="px-4 py-3 border-b border-black/5">
-            <p class="text-sm font-semibold text-[#1c1c1e]">
+          <div class="px-4 py-3 border-b border-surface-variant/50">
+            <p class="font-label-md text-on-surface">
               {{ authStore.userInfo?.nickname || '用户' }}
             </p>
-            <p class="text-xs text-[#8e8e93] mt-0.5">{{ authStore.userInfo?.email || '未设置邮箱' }}</p>
+            <p class="font-label-sm text-on-surface-variant mt-0.5">{{ authStore.userInfo?.email || '未设置邮箱' }}</p>
           </div>
           <nav class="py-1">
             <button
               @click="navigate('/reminder')"
-              class="w-full text-left px-4 py-2.5 text-[15px] text-[#1c1c1e] hover:bg-black/5 active:bg-black/10 transition-colors flex items-center gap-3"
+              class="w-full text-left px-4 py-2.5 font-body-md text-on-surface hover:bg-surface-variant/30 active:bg-surface-variant/50 transition-colors flex items-center gap-3"
             >
-              <BellOutlined class="text-[#8e8e93]" />
+              <BellOutlined class="text-on-surface-variant" />
               我的提醒
             </button>
             <button
               @click="handleLogout"
-              class="w-full text-left px-4 py-2.5 text-[15px] text-[#ff3b30] hover:bg-red-50 active:bg-red-100 transition-colors flex items-center gap-3"
+              class="w-full text-left px-4 py-2.5 font-body-md text-danger-red hover:bg-error-container/30 active:bg-error-container/50 transition-colors flex items-center gap-3"
             >
               <span
-                class="inline-block w-4 h-4 rounded-full bg-[#ff3b30]/10 flex items-center justify-center text-xs"
+                class="inline-block w-4 h-4 rounded-full bg-danger-red/10 flex items-center justify-center text-xs"
                 >←</span
               >
               退出登录
@@ -67,29 +69,29 @@
       <div v-if="showInstallModal" class="fixed inset-0 z-[60] flex items-end justify-center" @click.self="dismissInstall">
         <div class="absolute inset-0 bg-black/40" @click="dismissInstall" />
         <div
-          class="relative w-full max-w-md bg-white rounded-t-3xl p-6 pb-10 shadow-xl"
+          class="relative w-full max-w-md glass-card rounded-t-3xl p-6 pb-10 shadow-xl"
           @click.stop
         >
-          <div class="w-10 h-1 rounded-full bg-[#c7c7cc] mx-auto mb-5" />
-          <h3 class="text-lg font-semibold text-[#1c1c1e] text-center mb-2">添加到主屏幕</h3>
-          <p class="text-sm text-[#8e8e93] text-center mb-5">将应用添加到主屏幕，获得全屏体验</p>
-          <div class="bg-[#f2f2f7] rounded-2xl p-4 space-y-3 text-sm text-[#1c1c1e]">
+          <div class="w-10 h-1 rounded-full bg-on-surface-variant/20 mx-auto mb-5" />
+          <h3 class="font-headline-md text-headline-md text-on-surface text-center mb-2">添加到主屏幕</h3>
+          <p class="font-body-md text-on-surface-variant text-center mb-5">将应用添加到主屏幕，获得全屏体验</p>
+          <div class="bg-surface-gray rounded-2xl p-4 space-y-3 font-body-md text-on-surface">
             <div class="flex items-start gap-3">
-              <span class="shrink-0 w-6 h-6 rounded-full bg-[#ff6b35] text-white flex items-center justify-center text-xs font-bold">1</span>
-              <span>点击浏览器底部的 <strong>分享按钮</strong> <span class="inline-block">⬆️</span></span>
+              <span class="shrink-0 w-6 h-6 rounded-full sunset-gradient text-white flex items-center justify-center text-xs font-bold">1</span>
+              <span>点击浏览器底部的 <strong>分享按钮</strong></span>
             </div>
             <div class="flex items-start gap-3">
-              <span class="shrink-0 w-6 h-6 rounded-full bg-[#ff6b35] text-white flex items-center justify-center text-xs font-bold">2</span>
+              <span class="shrink-0 w-6 h-6 rounded-full sunset-gradient text-white flex items-center justify-center text-xs font-bold">2</span>
               <span>在弹出的菜单中选择 <strong>"添加到主屏幕"</strong></span>
             </div>
             <div class="flex items-start gap-3">
-              <span class="shrink-0 w-6 h-6 rounded-full bg-[#ff6b35] text-white flex items-center justify-center text-xs font-bold">3</span>
+              <span class="shrink-0 w-6 h-6 rounded-full sunset-gradient text-white flex items-center justify-center text-xs font-bold">3</span>
               <span>点击 <strong>"添加"</strong> 即可</span>
             </div>
           </div>
           <button
             @click="dismissInstall"
-            class="w-full mt-5 h-12 rounded-2xl bg-[#f2f2f7] text-[#1c1c1e] text-base font-semibold active:bg-[#e5e5ea] transition-colors"
+            class="w-full mt-5 h-12 rounded-2xl bg-surface-gray text-on-surface font-label-md active:bg-surface-container-high transition-colors"
           >
             知道了
           </button>
@@ -97,38 +99,30 @@
       </div>
     </Transition>
 
-    <!-- 底部标签栏 -->
+    <!-- 底部导航栏 -->
     <nav
-      class="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-black/5 safe-area-bottom"
+      class="fixed bottom-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xl border-t border-outline-variant rounded-t-3xl shadow-lg safe-area-bottom"
     >
       <div
-        class="flex items-center justify-between h-[calc(56px+env(safe-area-inset-bottom))] pb-[env(safe-area-inset-bottom)] px-3"
+        class="flex justify-around items-end px-4 py-2 pb-safe h-20"
       >
         <!-- 左侧标签 -->
-        <div class="flex items-center gap-1">
-          <button
-            v-for="tab in leftTabs"
-            :key="tab.path"
-            @click="navigate(tab.path)"
-            class="flex flex-col items-center justify-center gap-0.5 w-16 py-1 transition-all duration-200 relative"
-            :class="isActive(tab.path) ? 'text-[#ff6b35]' : 'text-[#8e8e93] active:scale-90'"
-          >
-            <div
-              v-if="isActive(tab.path)"
-              class="absolute -top-0 w-8 h-0.5 rounded-full bg-[#ff6b35]"
-            />
-            <component :is="tab.icon" class="text-[22px]" />
-            <span class="text-[10px] font-medium leading-none mt-0.5">{{ tab.label }}</span>
-          </button>
-        </div>
+        <button
+          v-for="tab in leftTabs"
+          :key="tab.path"
+          @click="navigate(tab.path)"
+          class="flex flex-col items-center justify-center pb-2 transition-all duration-200"
+          :class="isActive(tab.path) ? 'text-primary' : 'text-on-surface-variant'"
+        >
+          <component :is="tab.icon" class="text-[22px]" />
+          <span class="font-label-sm text-label-sm mt-1">{{ tab.label }}</span>
+        </button>
 
         <!-- 中央记账按钮 -->
-        <button
-          @click="navigate('/transaction')"
-          class="relative -mt-5 flex flex-col items-center group shrink-0"
-        >
-          <div
-            class="w-12 h-12 rounded-full bg-gradient-to-br from-[#ff6b35] to-[#f7931e] shadow-lg shadow-orange-500/30 flex items-center justify-center transition-transform duration-200 group-active:scale-90 group-hover:shadow-xl group-hover:shadow-orange-500/40"
+        <div class="relative -top-6 flex flex-col items-center">
+          <button
+            @click="navigate('/transaction')"
+            class="w-16 h-16 sunset-gradient rounded-full flex items-center justify-center shadow-lg shadow-primary/40 active:scale-95 transition-transform duration-150 ring-4 ring-white"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -138,32 +132,26 @@
               stroke-width="2.5"
               stroke-linecap="round"
               stroke-linejoin="round"
-              class="w-6 h-6 text-white"
+              class="w-7 h-7 text-white"
             >
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
-          </div>
-          <span class="text-[10px] font-medium text-[#ff6b35] mt-1">记一笔</span>
-        </button>
+          </button>
+          <span class="font-label-sm text-label-sm mt-1 text-primary-container font-bold">记一笔</span>
+        </div>
 
         <!-- 右侧标签 -->
-        <div class="flex items-center gap-1">
-          <button
-            v-for="tab in rightTabs"
-            :key="tab.path"
-            @click="navigate(tab.path)"
-            class="flex flex-col items-center justify-center gap-0.5 w-16 py-1 transition-all duration-200 relative"
-            :class="isActive(tab.path) ? 'text-[#ff6b35]' : 'text-[#8e8e93] active:scale-90'"
-          >
-            <div
-              v-if="isActive(tab.path)"
-              class="absolute -top-0 w-8 h-0.5 rounded-full bg-[#ff6b35]"
-            />
-            <component :is="tab.icon" class="text-[22px]" />
-            <span class="text-[10px] font-medium leading-none mt-0.5">{{ tab.label }}</span>
-          </button>
-        </div>
+        <button
+          v-for="tab in rightTabs"
+          :key="tab.path"
+          @click="navigate(tab.path)"
+          class="flex flex-col items-center justify-center pb-2 transition-all duration-200"
+          :class="isActive(tab.path) ? 'text-primary' : 'text-on-surface-variant'"
+        >
+          <component :is="tab.icon" class="text-[22px]" />
+          <span class="font-label-sm text-label-sm mt-1">{{ tab.label }}</span>
+        </button>
       </div>
     </nav>
   </div>
@@ -257,6 +245,15 @@ watch(() => route.path, () => {
 </script>
 
 <style scoped>
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.sunset-gradient {
+  background: linear-gradient(135deg, #ab3500 0%, #fe9824 100%);
+}
+
 /* 页面切换动画 */
 .page-enter-active,
 .page-leave-active {

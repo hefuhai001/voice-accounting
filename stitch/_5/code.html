@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#001f28",
+                        "on-tertiary-container": "#003744",
+                        "secondary-fixed-dim": "#ffb875",
+                        "tertiary-fixed": "#b5ebff",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#594139",
+                        "inverse-on-surface": "#f3f0f2",
+                        "surface-container-high": "#eae7ea",
+                        "secondary": "#8d4f00",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#1b1b1d",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#ffb59d",
+                        "glass-white": "rgba(255, 255, 255, 0.7)",
+                        "tertiary-container": "#00a7cb",
+                        "surface-container-low": "#f6f3f5",
+                        "secondary-fixed": "#ffdcc0",
+                        "inverse-surface": "#303032",
+                        "outline": "#8d7168",
+                        "error": "#ba1a1a",
+                        "background": "#fcf8fb",
+                        "on-error-container": "#93000a",
+                        "surface-gray": "#F2F2F7",
+                        "inverse-primary": "#ffb59d",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#390c00",
+                        "on-secondary-fixed": "#2d1600",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#ffdbd0",
+                        "surface-tint": "#ab3500",
+                        "on-primary-container": "#5f1900",
+                        "surface-variant": "#e4e2e4",
+                        "on-secondary-container": "#663800",
+                        "secondary-container": "#fe9824",
+                        "on-tertiary-fixed-variant": "#004e60",
+                        "success-green": "#34C759",
+                        "on-background": "#1b1b1d",
+                        "on-primary-fixed-variant": "#832600",
+                        "outline-variant": "#e1bfb5",
+                        "tertiary-fixed-dim": "#59d5fb",
+                        "surface-container": "#f0edef",
+                        "tertiary": "#00677e",
+                        "danger-red": "#FF3B30",
+                        "surface": "#fcf8fb",
+                        "surface-container-highest": "#e4e2e4",
+                        "surface-bright": "#fcf8fb",
+                        "on-secondary-fixed-variant": "#6b3b00",
+                        "primary": "#ab3500",
+                        "surface-dim": "#dcd9dc",
+                        "primary-container": "#ff6b35"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "20px",
+                        "stack-md": "12px",
+                        "stack-sm": "4px",
+                        "stack-lg": "24px",
+                        "gutter-md": "16px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "label-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "30px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "600"}],
+                        "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #fcf8fb;
+            color: #1b1b1d;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .card-shadow {
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04);
+        }
+        .active-pill {
+            position: relative;
+        }
+        .active-pill::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            width: 4px;
+            height: 4px;
+            background-color: #ab3500;
+            border-radius: 50%;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md antialiased pb-24">
+<!-- Top App Bar -->
+<header class="bg-surface sticky top-0 z-50 flex justify-between items-center px-margin-mobile h-16 w-full transition-colors duration-200">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center border-2 border-white shadow-sm overflow-hidden">
+<img alt="User" class="w-full h-full object-cover" data-alt="A clean, minimalist vector avatar of a person with a friendly expression, styled for a modern financial application. The avatar features soft peach skin tones and a simple circular background, reflecting a professional and approachable user interface character design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-hOuFHm_3sYFXUzKwg_65PCByaJoLYJ-oIfZU1e5OLPAPyIOqhQ7o3UPr4Wxd32ePgQuGUbiRrCBR6cA8XYy_Gzmysg-_yAEb58E50W4bjhWfEUrb3dokLCpytZuI_Pehdx9YxKgNsPXQ5QjtqCXabAXNCaOCqS1YrTAN6oqxF8SZaQEc8kj8G5wlbNEGSM2jukhCzY6E57Ab1N66RS3a7rF2zIkJsQx5ra4vype3BfzfvMyGfvHf2Wol_qpy39K1Lb_F479sM-8P"/>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface">语音记账</h1>
+</div>
+<button class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-on-surface">more_vert</span>
+</button>
+</header>
+<main class="px-margin-mobile pt-stack-lg flex flex-col gap-stack-lg">
+<!-- Dashboard Header -->
+<div class="flex justify-between items-end">
+<div class="flex flex-col gap-1">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile font-bold tracking-tight text-on-surface">我的账本</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant/60">共 3 个账本</p>
+</div>
+<button class="bg-primary-container text-on-primary-container h-10 px-5 rounded-full flex items-center gap-2 font-label-md text-label-md active:scale-95 transition-transform duration-150 shadow-sm">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'wght' 600;">add</span>
+                新建
+            </button>
+</div>
+<!-- Ledger Cards List -->
+<section class="flex flex-col gap-stack-md">
+<!-- Default Ledger -->
+<div class="bg-white p-5 rounded-xl card-shadow flex gap-4 items-center group relative overflow-hidden active:bg-surface-container-low transition-colors duration-200 border border-transparent hover:border-outline-variant/30">
+<div class="w-14 h-14 rounded-xl bg-primary-fixed flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+</div>
+<div class="flex flex-col flex-grow gap-0.5">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md text-on-surface">日常账本</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-[10px] uppercase tracking-wider">默认</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant">日常账本</span>
+<span class="font-label-sm text-label-sm text-outline">默认账本</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-2 text-outline hover:text-danger-red transition-all duration-200">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+<!-- Business Ledger -->
+<div class="bg-white p-5 rounded-xl card-shadow flex gap-4 items-center group relative overflow-hidden active:bg-surface-container-low transition-colors duration-200 border border-transparent hover:border-outline-variant/30">
+<div class="w-14 h-14 rounded-xl bg-surface-gray flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant text-[28px]">payments</span>
+</div>
+<div class="flex flex-col flex-grow gap-0.5">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md text-on-surface">商务差旅</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant">出差费用及报销</span>
+<span class="font-label-sm text-label-sm text-outline">2024 年度计划</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-2 text-outline hover:text-danger-red transition-all duration-200">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+<!-- Family Ledger -->
+<div class="bg-white p-5 rounded-xl card-shadow flex gap-4 items-center group relative overflow-hidden active:bg-surface-container-low transition-colors duration-200 border border-transparent hover:border-outline-variant/30">
+<div class="w-14 h-14 rounded-xl bg-surface-gray flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant text-[28px]">home_app_logo</span>
+</div>
+<div class="flex flex-col flex-grow gap-0.5">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md text-on-surface">家庭支出</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface-variant">共同开销记账</span>
+<span class="font-label-sm text-label-sm text-outline">5 位成员参与</span>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-2 text-outline hover:text-danger-red transition-all duration-200">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</section>
+<!-- Decorative Illustration Section -->
+<section class="mt-8 rounded-2xl overflow-hidden relative h-48 bg-surface-container">
+<img class="w-full h-full object-cover mix-blend-overlay opacity-30" data-alt="A sophisticated macro photograph of textured high-quality paper with subtle debossed patterns and elegant minimalist typography. The lighting is soft and cinematic, highlighting a calm and organized professional atmosphere. The color palette consists of warm whites, charcoal grays, and soft terracotta orange accents, maintaining a modern minimalist aesthetic consistent with a premium financial management app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDknyhvOuM-WQxRSgdoQqdzFX3Z8oSJiKOcp_acPTbouovndWxWby60K6U_kVrfEwDnzoqIzrV_HFwt3nsnnx21GhaI7FpCboZJwEyw8Rdr0xEbvi3zde7mnMmyVMOz1TTe26z4clc8Fq-0WLcPX2Hw_i354lCJKHlrYEF9CeS5nuz-fxzHJVm-n1D4YA_sUy_u90R-xAH0sHyopCpfUCrS6QhXeZfuOmP6C6pBRgB_ZKiYu9q9oowqIdr0cuNs7QDXPB5ooL3X2B5Y"/>
+<div class="absolute inset-0 p-6 flex flex-col justify-end gap-2 bg-gradient-to-t from-background via-transparent to-transparent">
+<p class="font-headline-md text-headline-md font-bold text-on-surface">掌握您的财务未来</p>
+<p class="font-body-md text-body-md text-on-surface-variant">通过语音轻松分类每一笔支出</p>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe bg-white/70 backdrop-blur-xl border-t border-outline-variant shadow-lg rounded-t-xl h-20">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm mt-1">首页</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary active-pill hover:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+<span class="font-label-sm text-label-sm mt-1">账本</span>
+</a>
+<!-- Center Voice Action -->
+<div class="relative -top-6">
+<button class="w-16 h-16 rounded-full bg-primary-container text-white shadow-xl shadow-primary/20 flex items-center justify-center active:scale-95 transition-all duration-150 border-4 border-white">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</button>
+<div class="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-bold">记一笔</span>
+</div>
+</div>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined">list_alt</span>
+<span class="font-label-sm text-label-sm mt-1">记录</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-opacity" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-label-sm text-label-sm mt-1">分类</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for cards
+        document.querySelectorAll('section > div').forEach(card => {
+            card.addEventListener('mousedown', () => {
+                card.style.transform = 'scale(0.98)';
+            });
+            card.addEventListener('mouseup', () => {
+                card.style.transform = 'scale(1)';
+            });
+            card.style.transition = 'transform 0.15s cubic-bezier(0.4, 0, 0.2, 1)';
+        });
+    </script>
+</body></html>

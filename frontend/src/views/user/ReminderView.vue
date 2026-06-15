@@ -1,11 +1,11 @@
 <template>
-  <div class="px-4 pt-4 pb-6 space-y-4">
+  <div class="px-margin-mobile pt-stack-lg pb-8 flex flex-col gap-stack-lg">
     <!-- 标题栏 -->
-    <div class="flex items-center justify-between px-1">
-      <h2 class="text-[22px] font-bold text-[#1c1c1e]">我的提醒</h2>
+    <div class="flex items-center justify-between mt-4">
+      <h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">我的提醒</h1>
       <button
         @click="showAddModal"
-        class="flex items-center gap-1 px-3 py-1.5 bg-[#ff6b35] text-white text-xs font-semibold rounded-full active:scale-95 transition-transform shadow-sm shadow-orange-500/20"
+        class="flex items-center gap-1 px-4 py-2 sunset-gradient text-white font-label-md rounded-full active:scale-95 transition-transform shadow-sm shadow-primary/20"
       >
         <svg
           class="w-3.5 h-3.5"
@@ -26,11 +26,11 @@
         v-for="s in statusFilters"
         :key="s.value"
         @click="setStatusFilter(s.value)"
-        class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200"
+        class="shrink-0 px-4 py-1.5 rounded-full font-label-sm whitespace-nowrap transition-all duration-200"
         :class="
           statusFilter === s.value
-            ? 'bg-[#ff6b35] text-white shadow-sm'
-            : 'bg-white text-[#8e8e93] active:bg-[#f2f2f7]'
+            ? 'sunset-gradient text-white shadow-sm shadow-primary/20'
+            : 'bg-surface-gray text-on-surface-variant active:bg-surface-container-high'
         "
       >
         {{ s.label }}
@@ -38,21 +38,21 @@
     </div>
 
     <!-- 提醒列表 -->
-    <div class="space-y-3">
+    <div class="flex flex-col gap-3">
       <div
         v-for="item in reminders"
         :key="item.id"
-        class="bg-white rounded-2xl p-4 shadow-sm border-l-4"
+        class="glass-card rounded-2xl p-5 shadow-sm border border-white/40 border-l-4"
         :class="{
-          'border-l-orange-400': item.status === 0,
-          'border-l-blue-400': item.status === 1,
-          'border-l-gray-300': item.status === 2,
+          'border-l-primary-container': item.status === 0,
+          'border-l-tertiary': item.status === 1,
+          'border-l-outline-variant': item.status === 2,
         }"
       >
         <div class="flex items-start justify-between">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2">
-              <p class="text-[15px] font-semibold text-[#1c1c1e] truncate">{{ item.title }}</p>
+              <p class="font-headline-md text-[18px] text-on-surface truncate">{{ item.title }}</p>
               <a-badge
                 :status="getStatusBadge(item.status)"
                 :text="getStatusText(item.status)"
@@ -60,7 +60,7 @@
               />
             </div>
             <div class="flex items-center gap-3 mt-2 flex-wrap">
-              <span class="inline-flex items-center gap-1 text-xs text-[#8e8e93]">
+              <span class="inline-flex items-center gap-1 font-label-sm text-on-surface-variant">
                 <svg
                   class="w-3.5 h-3.5"
                   fill="none"
@@ -75,7 +75,7 @@
                 </svg>
                 {{ item.remindDate }}
               </span>
-              <span class="inline-flex items-center gap-1 text-xs text-[#8e8e93]">
+              <span class="inline-flex items-center gap-1 font-label-sm text-on-surface-variant">
                 <svg
                   class="w-3.5 h-3.5"
                   fill="none"
@@ -89,37 +89,37 @@
                 {{ getFrequencyName(item.frequency) }}
               </span>
               <span
-                class="font-bold text-sm"
-                :class="item.status === 2 ? 'text-[#c7c7cc]' : 'text-[#007AFF]'"
+                class="font-headline-md text-[16px]"
+                :class="item.status === 2 ? 'text-on-surface-variant/40' : 'text-tertiary'"
               >
                 ¥{{ item.amount }}
               </span>
             </div>
-            <p v-if="item.remark" class="text-xs text-[#aeaeb2] mt-1.5 line-clamp-2">
+            <p v-if="item.remark" class="font-body-md text-on-surface-variant/60 text-sm mt-1.5 line-clamp-2">
               {{ item.remark }}
             </p>
           </div>
         </div>
 
         <!-- 操作按钮 -->
-        <div class="flex gap-2 mt-3 pt-3 border-t border-black/[0.05]">
+        <div class="flex gap-2 mt-3 pt-3 border-t border-surface-variant/50">
           <button
             v-if="item.status === 0"
             @click="handleMarkRead(item.id)"
-            class="flex-1 py-2 text-xs font-medium rounded-lg bg-blue-50 text-blue-600 active:bg-blue-100 transition-colors"
+            class="flex-1 py-2 font-label-sm rounded-xl bg-tertiary-container/15 text-tertiary active:bg-tertiary-container/30 transition-colors"
           >
             标记已提醒
           </button>
           <button
             v-if="item.status !== 2"
             @click="handleClose(item.id)"
-            class="flex-1 py-2 text-xs font-medium rounded-lg bg-[#f2f2f7] text-[#8e8e93] active:bg-[#e5e5ea] transition-colors"
+            class="flex-1 py-2 font-label-sm rounded-xl bg-surface-gray text-on-surface-variant active:bg-surface-container-high transition-colors"
           >
             关闭提醒
           </button>
           <button
             @click="confirmDelete(item.id)"
-            class="flex-1 py-2 text-xs font-medium rounded-lg bg-red-50 text-red-500 active:bg-red-100 transition-colors"
+            class="flex-1 py-2 font-label-sm rounded-xl bg-error-container/50 text-danger-red active:bg-error-container transition-colors"
           >
             删除
           </button>
@@ -128,9 +128,9 @@
 
       <!-- 空状态 -->
       <div v-if="reminders.length === 0 && !loading" class="py-16 text-center">
-        <BellOutlined class="text-4xl text-[#c7c7cc]" />
-        <p class="text-sm text-[#8e8e93] mt-3">暂无提醒</p>
-        <button @click="showAddModal" class="mt-3 text-sm text-[#ff6b35] font-medium">
+        <BellOutlined class="text-4xl text-on-surface-variant/30" />
+        <p class="font-body-md text-on-surface-variant mt-3">暂无提醒</p>
+        <button @click="showAddModal" class="mt-3 font-label-md text-primary">
           创建第一个提醒
         </button>
       </div>
@@ -331,6 +331,14 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.sunset-gradient {
+  background: linear-gradient(135deg, #ab3500 0%, #fe9824 100%);
+}
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }

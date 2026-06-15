@@ -1,88 +1,92 @@
 <template>
-  <div class="px-4 pt-4 pb-6 space-y-4">
-    <!-- 搜索栏 -->
-    <div class="relative">
-      <svg
-        class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#c7c7cc]"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        stroke-width="2"
-      >
-        <circle cx="11" cy="11" r="8" />
-        <path d="M21 21l-4.35-4.35" />
-      </svg>
-      <input
-        v-model="searchText"
-        type="text"
-        placeholder="搜索备注..."
-        class="w-full pl-10 pr-4 py-2.5 bg-white rounded-xl text-[15px] outline-none border border-transparent focus:border-[#ff6b35]/30 focus:shadow-sm transition-all placeholder:text-[#c7c7cc]"
-        @keyup.enter="handleSearch"
-      />
-    </div>
+  <div class="px-margin-mobile pt-stack-lg pb-8">
+    <!-- Search & Filter Section -->
+    <section class="space-y-stack-md">
+      <!-- Search Bar -->
+      <div class="relative group">
+        <svg
+          class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface-variant group-focus-within:text-primary transition-colors"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="M21 21l-4.35-4.35" />
+        </svg>
+        <input
+          v-model="searchText"
+          type="text"
+          placeholder="搜索备注..."
+          class="w-full h-12 pl-12 pr-4 bg-surface-gray border-none rounded-xl focus:ring-2 focus:ring-primary-container text-body-md placeholder-on-surface-variant/60"
+          @keyup.enter="handleSearch"
+        />
+      </div>
+      <!-- Filter Chips -->
+      <div class="flex gap-stack-sm overflow-x-auto pb-2 scrollbar-hide">
+        <button
+          v-for="f in filters"
+          :key="f.value"
+          @click="setFilter(f.value)"
+          class="px-6 py-2 rounded-full font-label-md transition-transform active:scale-95"
+          :class="
+            activeFilter === f.value
+              ? 'bg-primary-container text-on-secondary'
+              : 'bg-white text-on-surface-variant border border-outline-variant hover:bg-surface-container-low transition-all'
+          "
+        >
+          {{ f.label }}
+        </button>
+      </div>
+    </section>
 
-    <!-- 筛选标签 -->
-    <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-      <button
-        v-for="f in filters"
-        :key="f.value"
-        @click="setFilter(f.value)"
-        class="shrink-0 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200"
-        :class="
-          activeFilter === f.value
-            ? 'bg-[#ff6b35] text-white shadow-sm'
-            : 'bg-white text-[#8e8e93] active:bg-[#f2f2f7]'
-        "
-      >
-        {{ f.label }}
-      </button>
-    </div>
-
-    <!-- 记录列表 -->
-    <div class="space-y-3">
+    <!-- Transaction History List -->
+    <div class="transaction-list space-y-stack-lg mt-stack-md">
       <!-- 按日期分组 -->
       <template v-for="(group, date) in groupedRecords" :key="date">
-        <!-- 日期标题 -->
-        <p class="text-xs font-semibold text-[#8e8e93] px-1 sticky top-0 bg-[#F2F2F7] py-1 z-10">
-          {{ formatDate(date) }}
-        </p>
-
-        <!-- 记录卡片 -->
-        <div
-          v-for="record in group"
-          :key="record.id"
-          class="bg-white rounded-2xl shadow-sm overflow-hidden transition-colors"
-        >
-          <!-- 主内容行 -->
-          <div
-            class="p-4 flex items-center justify-between cursor-pointer active:bg-black/[0.02]"
-            @click="showActions(record)"
-          >
-            <div class="flex items-center gap-3 min-w-0 flex-1">
+        <section>
+          <!-- 日期标题 -->
+          <h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-stack-md">
+            {{ formatDate(date) }}
+          </h3>
+          <div class="space-y-stack-md">
+            <!-- 记录卡片 -->
+            <div
+              v-for="record in group"
+              :key="record.id"
+              class="group bg-white p-4 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex items-center gap-4 hover:bg-surface-container-low transition-colors cursor-pointer"
+              @click="showActions(record)"
+            >
+              <!-- 图标 -->
               <div
-                class="w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0"
-                :class="record.type === 1 ? 'bg-red-50' : 'bg-emerald-50'"
+                class="w-12 h-12 rounded-full flex items-center justify-center text-xl shrink-0"
+                :class="record.type === 1 ? 'bg-orange-100' : 'bg-blue-50'"
               >
                 {{ record.categoryIcon || (record.type === 1 ? '💸' : '💰') }}
               </div>
-              <div class="min-w-0 flex items-center gap-2">
-                <span
-                  class="text-[17px] font-bold tabular-nums"
-                  :class="record.type === 1 ? 'text-red-500' : 'text-emerald-500'"
-                >
-                  {{ record.type === 1 ? '-' : '+' }}¥{{ Number(record.amount).toFixed(2) }}
-                </span>
-                <span v-if="record.remark" class="text-xs text-[#8e8e93] truncate">{{ record.remark }}</span>
+              <!-- 内容 -->
+              <div class="flex-1">
+                <div class="flex justify-between items-center">
+                  <span
+                    class="font-headline-md tabular-nums"
+                    :class="record.type === 1 ? 'text-danger-red' : 'text-success-green'"
+                  >
+                    {{ record.type === 1 ? '-' : '+' }}¥{{ Number(record.amount).toFixed(2) }}
+                  </span>
+                  <span class="font-label-sm text-label-sm text-on-surface-variant">
+                    {{ formatDateShort(record.transactionDate || record.date) }}
+                  </span>
+                </div>
+                <div class="flex justify-between items-center mt-1">
+                  <span class="font-body-md text-on-surface-variant">{{ record.remark || '' }}</span>
+                  <svg class="w-4 h-4 text-outline-variant" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
               </div>
             </div>
-            <div class="shrink-0 flex items-center gap-2">
-              <span class="text-xs text-[#aeaeb2]">{{ formatDateShort(record.transactionDate || record.date) }}</span>
-              <svg class="w-4 h-4 text-[#c7c7cc]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
           </div>
-        </div>
+        </section>
       </template>
 
       <!-- 加载更多 -->
@@ -90,7 +94,7 @@
         <button
           @click="loadMore"
           :disabled="loadingMore"
-          class="text-sm text-[#ff6b35] font-medium disabled:opacity-50"
+          class="font-label-md text-primary disabled:opacity-50"
         >
           {{ loadingMore ? '加载中...' : '加载更多' }}
         </button>
@@ -98,13 +102,9 @@
 
       <!-- 空状态 -->
       <div v-if="records.length === 0 && !loading" class="py-16 text-center">
-        <div
-          class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-[#f2f2f7] flex items-center justify-center"
-        >
-          <UnorderedListOutlined class="text-2xl text-[#c7c7cc]" />
-        </div>
-        <p class="text-sm text-[#8e8e93]">暂无记录</p>
-        <button @click="goToTransaction" class="mt-3 text-sm text-[#ff6b35] font-medium">
+        <UnorderedListOutlined class="text-4xl text-outline" />
+        <p class="font-body-md text-body-md text-on-surface-variant mt-3">暂无记录</p>
+        <button @click="goToTransaction" class="mt-3 font-label-md text-primary">
           去记一笔
         </button>
       </div>
@@ -118,13 +118,13 @@
           <div class="mx-3 mb-2 bg-white/95 backdrop-blur-xl rounded-2xl overflow-hidden">
             <button
               @click.stop="handleEdit"
-              class="w-full py-3.5 text-[17px] text-[#007aff] font-normal border-b border-black/5 active:bg-black/5"
+              class="w-full py-3.5 text-[17px] text-tertiary font-normal border-b border-outline-variant/30 active:bg-surface-container-low"
             >
               编辑记录
             </button>
             <button
               @click.stop="handleDelete"
-              class="w-full py-3.5 text-[17px] text-[#ff3b30] font-normal active:bg-black/5"
+              class="w-full py-3.5 text-[17px] text-danger-red font-normal active:bg-surface-container-low"
             >
               删除记录
             </button>
@@ -132,7 +132,7 @@
           <div class="mx-3 bg-white/95 backdrop-blur-xl rounded-2xl overflow-hidden">
             <button
               @click="actionSheetVisible = false"
-              class="w-full py-3.5 text-[17px] text-[#007aff] font-semibold active:bg-black/5"
+              class="w-full py-3.5 text-[17px] text-tertiary font-semibold active:bg-surface-container-low"
             >
               取消
             </button>
@@ -152,14 +152,18 @@
     >
       <a-form :model="editForm" layout="vertical" class="mt-3" @finish="handleEditSubmit">
         <!-- 类型切换 -->
-        <div class="flex bg-[#f2f2f7] rounded-xl p-1 mb-4">
+        <div class="bg-surface-container-low p-1 rounded-xl flex mb-4">
           <button
             v-for="t in [{ value: 1, label: '支出' }, { value: 2, label: '收入' }]"
             :key="t.value"
             type="button"
             @click="editForm.type = t.value"
-            class="flex-1 py-2 text-sm font-semibold rounded-lg transition-all duration-200"
-            :class="editForm.type === t.value ? 'bg-white text-[#1c1c1e] shadow-sm' : 'text-[#8e8e93]'"
+            class="flex-1 py-3 text-center rounded-lg font-label-md text-label-md transition-all duration-300"
+            :class="
+              editForm.type === t.value
+                ? 'bg-white text-primary shadow-[0px_4px_12px_rgba(0,0,0,0.05)]'
+                : 'text-on-surface-variant hover:bg-surface-container-high'
+            "
           >
             {{ t.label }}
           </button>
@@ -434,6 +438,13 @@ onMounted(async () => {
   display: none;
 }
 .scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.transaction-list::-webkit-scrollbar {
+  display: none;
+}
+.transaction-list {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }

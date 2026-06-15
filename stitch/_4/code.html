@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>语音记账 - 分类管理</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Hanken+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#001f28",
+                    "on-tertiary-container": "#003744",
+                    "secondary-fixed-dim": "#ffb875",
+                    "tertiary-fixed": "#b5ebff",
+                    "on-tertiary": "#ffffff",
+                    "on-surface-variant": "#594139",
+                    "inverse-on-surface": "#f3f0f2",
+                    "surface-container-high": "#eae7ea",
+                    "secondary": "#8d4f00",
+                    "on-secondary": "#ffffff",
+                    "on-surface": "#1b1b1d",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed-dim": "#ffb59d",
+                    "glass-white": "rgba(255, 255, 255, 0.7)",
+                    "tertiary-container": "#00a7cb",
+                    "surface-container-low": "#f6f3f5",
+                    "secondary-fixed": "#ffdcc0",
+                    "inverse-surface": "#303032",
+                    "outline": "#8d7168",
+                    "error": "#ba1a1a",
+                    "background": "#fcf8fb",
+                    "on-error-container": "#93000a",
+                    "surface-gray": "#F2F2F7",
+                    "inverse-primary": "#ffb59d",
+                    "on-error": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#390c00",
+                    "on-secondary-fixed": "#2d1600",
+                    "on-primary": "#ffffff",
+                    "primary-fixed": "#ffdbd0",
+                    "surface-tint": "#ab3500",
+                    "on-primary-container": "#5f1900",
+                    "surface-variant": "#e4e2e4",
+                    "on-secondary-container": "#663800",
+                    "secondary-container": "#fe9824",
+                    "on-tertiary-fixed-variant": "#004e60",
+                    "success-green": "#34C759",
+                    "on-background": "#1b1b1d",
+                    "on-primary-fixed-variant": "#832600",
+                    "outline-variant": "#e1bfb5",
+                    "tertiary-fixed-dim": "#59d5fb",
+                    "surface-container": "#f0edef",
+                    "tertiary": "#00677e",
+                    "danger-red": "#FF3B30",
+                    "surface": "#fcf8fb",
+                    "surface-container-highest": "#e4e2e4",
+                    "surface-bright": "#fcf8fb",
+                    "on-secondary-fixed-variant": "#6b3b00",
+                    "primary": "#ab3500",
+                    "surface-dim": "#dcd9dc",
+                    "primary-container": "#ff6b35"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "20px",
+                    "stack-md": "12px",
+                    "stack-sm": "4px",
+                    "stack-lg": "24px",
+                    "gutter-md": "16px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "headline-lg-mobile": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "label-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "30px", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "600"}],
+                    "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-tab {
+            background-color: white;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-md min-h-screen pb-32">
+<!-- Top AppBar -->
+<header class="bg-surface sticky top-0 flex justify-between items-center px-margin-mobile h-16 w-full z-50 transition-colors duration-200">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-headline-md">H</div>
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface">分类管理</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors duration-200">
+<span class="material-symbols-outlined text-on-surface">more_vert</span>
+</button>
+</header>
+<main class="px-margin-mobile pt-base">
+<!-- Section Header -->
+<div class="flex justify-between items-center py-stack-lg">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile">全部分类</h2>
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+<span class="font-label-md text-label-md">新建</span>
+</button>
+</div>
+<!-- Tab Switcher -->
+<div class="bg-surface-container-low p-1 rounded-xl flex mb-stack-lg">
+<button class="flex-1 py-3 text-center rounded-lg font-label-md text-label-md active-tab text-primary transition-all duration-300">支出分类</button>
+<button class="flex-1 py-3 text-center rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all duration-300">收入分类</button>
+</div>
+<!-- Category Grid (Bento Style) -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-gutter-md">
+<!-- Category Card: Catering -->
+<div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center gap-3 group hover:shadow-xl transition-all duration-300 cursor-pointer">
+<div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center text-orange-600">
+<span class="material-symbols-outlined text-[32px]">restaurant</span>
+</div>
+<div class="text-center">
+<p class="font-headline-md text-[18px]">餐饮</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-60">支出</p>
+</div>
+<div class="absolute top-2 right-2 px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded-full text-[10px] font-bold">系统</div>
+</div>
+<!-- Category Card: Transport -->
+<div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center gap-3 group hover:shadow-xl transition-all duration-300 cursor-pointer">
+<div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+<span class="material-symbols-outlined text-[32px]">commute</span>
+</div>
+<div class="text-center">
+<p class="font-headline-md text-[18px]">交通</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-60">支出</p>
+</div>
+<div class="absolute top-2 right-2 px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded-full text-[10px] font-bold">系统</div>
+</div>
+<!-- Category Card: Shopping -->
+<div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center gap-3 group hover:shadow-xl transition-all duration-300 cursor-pointer">
+<div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center text-purple-600">
+<span class="material-symbols-outlined text-[32px]">shopping_cart</span>
+</div>
+<div class="text-center">
+<p class="font-headline-md text-[18px]">购物</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-60">支出</p>
+</div>
+<div class="absolute top-2 right-2 px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded-full text-[10px] font-bold">系统</div>
+</div>
+<!-- Category Card: Entertainment -->
+<div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center gap-3 group hover:shadow-xl transition-all duration-300 cursor-pointer">
+<div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center text-pink-600">
+<span class="material-symbols-outlined text-[32px]">sports_esports</span>
+</div>
+<div class="text-center">
+<p class="font-headline-md text-[18px]">娱乐</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-60">支出</p>
+</div>
+<div class="absolute top-2 right-2 px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded-full text-[10px] font-bold">系统</div>
+</div>
+<!-- Category Card: Housing -->
+<div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center gap-3 group hover:shadow-xl transition-all duration-300 cursor-pointer">
+<div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+<span class="material-symbols-outlined text-[32px]">home_work</span>
+</div>
+<div class="text-center">
+<p class="font-headline-md text-[18px]">居住</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-60">支出</p>
+</div>
+<div class="absolute top-2 right-2 px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded-full text-[10px] font-bold">系统</div>
+</div>
+<!-- Category Card: Medical -->
+<div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center gap-3 group hover:shadow-xl transition-all duration-300 cursor-pointer">
+<div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center text-red-600">
+<span class="material-symbols-outlined text-[32px]">medical_services</span>
+</div>
+<div class="text-center">
+<p class="font-headline-md text-[18px]">医疗</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-60">支出</p>
+</div>
+<div class="absolute top-2 right-2 px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded-full text-[10px] font-bold">系统</div>
+</div>
+<!-- Category Card: Education -->
+<div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center gap-3 group hover:shadow-xl transition-all duration-300 cursor-pointer">
+<div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
+<span class="material-symbols-outlined text-[32px]">school</span>
+</div>
+<div class="text-center">
+<p class="font-headline-md text-[18px]">教育</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-60">支出</p>
+</div>
+<div class="absolute top-2 right-2 px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded-full text-[10px] font-bold">系统</div>
+</div>
+<!-- Category Card: Comm -->
+<div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center gap-3 group hover:shadow-xl transition-all duration-300 cursor-pointer">
+<div class="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center text-cyan-600">
+<span class="material-symbols-outlined text-[32px]">phone_iphone</span>
+</div>
+<div class="text-center">
+<p class="font-headline-md text-[18px]">通讯</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-60">支出</p>
+</div>
+<div class="absolute top-2 right-2 px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded-full text-[10px] font-bold">系统</div>
+</div>
+<!-- Category Card: Other -->
+<div class="bg-white p-5 rounded-2xl flex flex-col items-center justify-center gap-3 group hover:shadow-xl transition-all duration-300 cursor-pointer">
+<div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-600">
+<span class="material-symbols-outlined text-[32px]">more_horiz</span>
+</div>
+<div class="text-center">
+<p class="font-headline-md text-[18px]">其他</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-60">支出</p>
+</div>
+<div class="absolute top-2 right-2 px-2 py-0.5 bg-tertiary-container text-on-tertiary-container rounded-full text-[10px] font-bold">系统</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 pb-safe glass-nav rounded-t-xl shadow-lg border-t border-outline-variant">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">首页</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label-sm text-label-sm">账本</span>
+</a>
+<!-- Voice/Add FAB Integration -->
+<div class="relative -top-6">
+<button class="w-16 h-16 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center shadow-xl active:scale-95 transition-all duration-150">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+<span class="absolute -bottom-8 left-1/2 -translate-x-1/2 font-label-sm text-label-sm text-secondary-container">记一笔</span>
+</div>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:opacity-80 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">list_alt</span>
+<span class="font-label-sm text-label-sm">记录</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary font-bold hover:opacity-80 transition-all duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+<span class="font-label-sm text-label-sm">分类</span>
+</a>
+</nav>
+<!-- Background Decoration for Sophistication -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 overflow-hidden">
+<div class="absolute top-[10%] -right-20 w-64 h-64 bg-primary-fixed-dim/20 rounded-full blur-3xl"></div>
+<div class="absolute bottom-[20%] -left-20 w-80 h-80 bg-tertiary-fixed-dim/10 rounded-full blur-3xl"></div>
+</div>
+<script>
+        // Simple Interaction Logic for Tabs
+        const tabs = document.querySelectorAll('.bg-surface-container-low button');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => {
+                    t.classList.remove('active-tab', 'text-primary');
+                    t.classList.add('text-on-surface-variant');
+                });
+                tab.classList.add('active-tab', 'text-primary');
+                tab.classList.remove('text-on-surface-variant');
+            });
+        });
+
+        // Hover Effect Animation logic
+        const cards = document.querySelectorAll('.bg-white');
+        cards.forEach(card => {
+            card.addEventListener('mousedown', () => card.style.transform = 'scale(0.96)');
+            card.addEventListener('mouseup', () => card.style.transform = 'scale(1)');
+            card.addEventListener('mouseleave', () => card.style.transform = 'scale(1)');
+        });
+    </script>
+</body></html>

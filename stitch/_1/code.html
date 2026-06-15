@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>语音记账 - 首页</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+        .glass-blur {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .sunset-gradient {
+            background: linear-gradient(135deg, #ff6b35 0%, #ab3500 100%);
+        }
+        .card-shadow {
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04);
+        }
+        body {
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Inter', sans-serif;
+        }
+        .font-headline { font-family: 'Hanken Grotesk', sans-serif; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ab3500",
+                        "primary-container": "#ff6b35",
+                        "on-primary": "#ffffff",
+                        "secondary": "#8d4f00",
+                        "secondary-container": "#fe9824",
+                        "surface": "#fcf8fb",
+                        "surface-dim": "#dcd9dc",
+                        "surface-gray": "#F2F2F7",
+                        "surface-container-low": "#f6f3f5",
+                        "surface-container": "#f0edef",
+                        "on-surface": "#1b1b1d",
+                        "on-surface-variant": "#594139",
+                        "outline": "#8d7168",
+                        "outline-variant": "#e1bfb5",
+                        "glass-white": "rgba(255, 255, 255, 0.7)",
+                        "success-green": "#34C759",
+                        "danger-red": "#FF3B30",
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "margin-mobile": "20px",
+                        "stack-md": "12px",
+                        "stack-sm": "4px",
+                        "stack-lg": "24px",
+                        "gutter-md": "16px",
+                        "base": "8px"
+                    },
+                    fontFamily: {
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "label-sm": ["Inter"]
+                    },
+                    fontSize: {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "30px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "600"}],
+                        "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface min-h-screen text-on-surface">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center px-margin-mobile h-16 w-full fixed top-0 bg-surface/80 glass-blur z-50">
+<div class="font-headline-md text-headline-md font-bold text-on-surface">语音记账</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full flex items-center justify-center sunset-gradient text-white font-bold border-2 border-white/20">
+                H
+            </div>
+<button class="material-symbols-outlined text-on-surface-variant">more_vert</button>
+</div>
+</header>
+<main class="pt-20 pb-32 px-margin-mobile flex flex-col gap-stack-lg">
+<!-- Greeting Section -->
+<section class="mt-4">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Hi, hfh</h1>
+<p class="font-body-md text-on-surface-variant opacity-70">2026年6月15日 周一</p>
+</section>
+<!-- Monthly Overview (Bento Style) -->
+<section class="bg-white rounded-3xl p-6 card-shadow flex flex-col gap-6">
+<div class="flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md">本月概览</h2>
+<span class="bg-surface-gray px-3 py-1 rounded-full font-label-sm text-on-surface-variant">6月</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<!-- Expenditure -->
+<div class="bg-[#FFF5F2] p-5 rounded-2xl flex flex-col gap-2">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-[20px]">remove_circle</span>
+<span class="font-label-md">支出</span>
+</div>
+<div class="font-headline-md text-headline-md text-primary">¥249.9</div>
+</div>
+<!-- Income -->
+<div class="bg-[#F2FAF5] p-5 rounded-2xl flex flex-col gap-2">
+<div class="flex items-center gap-2 text-success-green">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+<span class="font-label-md">收入</span>
+</div>
+<div class="font-headline-md text-headline-md text-success-green">¥0</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-gray/50 p-4 rounded-2xl flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant">list_alt</span>
+<div>
+<p class="text-[10px] uppercase text-on-surface-variant tracking-wider">记账笔数</p>
+<p class="font-headline-md text-[18px]">4 笔</p>
+</div>
+</div>
+<div class="bg-surface-gray/50 p-4 rounded-2xl flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">notifications</span>
+<div>
+<p class="text-[10px] uppercase text-on-surface-variant tracking-wider">待处理</p>
+<p class="font-headline-md text-[18px] text-secondary">0 <span class="material-symbols-outlined text-sm align-middle">north</span></p>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Actions Grid -->
+<section class="grid grid-cols-4 gap-4">
+<button class="flex flex-col items-center gap-2">
+<div class="w-16 h-16 rounded-2xl bg-[#FFEFEA] flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[32px]">edit</span>
+</div>
+<span class="font-label-sm text-on-surface">记一笔</span>
+</button>
+<button class="flex flex-col items-center gap-2">
+<div class="w-16 h-16 rounded-2xl bg-[#EEF2FF] flex items-center justify-center text-blue-500">
+<span class="material-symbols-outlined text-[32px]">menu_book</span>
+</div>
+<span class="font-label-sm text-on-surface">账本</span>
+</button>
+<button class="flex flex-col items-center gap-2">
+<div class="w-16 h-16 rounded-2xl bg-[#F5F3FF] flex items-center justify-center text-purple-500">
+<span class="material-symbols-outlined text-[32px]">grid_view</span>
+</div>
+<span class="font-label-sm text-on-surface">分类</span>
+</button>
+<button class="flex flex-col items-center gap-2">
+<div class="w-16 h-16 rounded-2xl bg-[#FFFBEB] flex items-center justify-center text-amber-500">
+<span class="material-symbols-outlined text-[32px]">notifications_active</span>
+</div>
+<span class="font-label-sm text-on-surface">提醒</span>
+</button>
+</section>
+<!-- Recent Records -->
+<section class="flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md">最近记账</h2>
+<button class="text-primary font-label-md flex items-center gap-1">查看全部 <span class="material-symbols-outlined text-sm">arrow_forward</span></button>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Transaction Item 1 -->
+<div class="bg-white p-4 rounded-2xl flex items-center justify-between card-shadow">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-[#FFF5F2] flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">restaurant</span>
+</div>
+<div>
+<p class="font-headline-md text-[18px]">餐饮</p>
+<p class="font-body-md text-on-surface-variant text-sm">今晚吃炸鸡</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-[18px] text-danger-red">-¥20.00</p>
+</div>
+</div>
+<!-- Transaction Item 2 -->
+<div class="bg-white p-4 rounded-2xl flex items-center justify-between card-shadow">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-[#FFF5F2] flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">lunch_dining</span>
+</div>
+<div>
+<p class="font-headline-md text-[18px]">餐饮</p>
+<p class="font-body-md text-on-surface-variant text-sm">馄饨</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-[18px] text-danger-red">-¥20.00</p>
+</div>
+</div>
+<!-- Transaction Item 3 -->
+<div class="bg-white p-4 rounded-2xl flex items-center justify-between card-shadow">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-[#F0F4FF] flex items-center justify-center">
+<span class="material-symbols-outlined text-blue-500">shopping_cart</span>
+</div>
+<div>
+<p class="font-headline-md text-[18px]">购物</p>
+<p class="font-body-md text-on-surface-variant text-sm">有线耳机</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-headline-md text-[18px] text-danger-red">-¥9.90</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-end px-4 py-2 pb-safe bg-white/70 glass-blur rounded-t-3xl border-t border-outline-variant shadow-lg h-20">
+<button class="flex flex-col items-center justify-center text-primary pb-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm text-label-sm">首页</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant pb-2">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label-sm text-label-sm">账本</span>
+</button>
+<!-- FAB Record Button -->
+<div class="relative -top-6 flex flex-col items-center">
+<button class="w-16 h-16 sunset-gradient rounded-full flex items-center justify-center shadow-lg shadow-primary/40 active:scale-95 transition-transform duration-150 ring-4 ring-white">
+<span class="material-symbols-outlined text-white text-3xl">mic</span>
+</button>
+<span class="font-label-sm text-label-sm mt-1 text-primary-container font-bold">记一笔</span>
+</div>
+<button class="flex flex-col items-center justify-center text-on-surface-variant pb-2">
+<span class="material-symbols-outlined">list_alt</span>
+<span class="font-label-sm text-label-sm">记录</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant pb-2">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-label-sm text-label-sm">分类</span>
+</button>
+</nav>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('touchstart', () => {
+                btn.classList.add('opacity-70');
+            });
+            btn.addEventListener('touchend', () => {
+                btn.classList.remove('opacity-70');
+            });
+        });
+    </script>
+</body></html>
