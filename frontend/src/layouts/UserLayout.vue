@@ -7,7 +7,10 @@
       class="flex-shrink-0 bg-surface/80 backdrop-blur-md sticky top-0 z-30"
     >
       <div class="flex items-center justify-between px-margin-mobile h-16">
-        <h1 class="font-headline-md text-headline-md text-on-surface">{{ pageTitle }}</h1>
+        <div class="flex items-center gap-2">
+          <img class="w-9 h-9 rounded-xl" src="../assets/logo.svg" alt="">
+          <h1 class="font-headline-md text-headline-md bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent whitespace-nowrap mt-2">Voice Accounting</h1>
+        </div>
         <div class="flex items-center gap-4">
           <button @click="showUserMenu = !showUserMenu" class="relative">
             <div

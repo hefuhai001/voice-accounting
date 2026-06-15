@@ -114,7 +114,7 @@
     <Transition name="fade">
       <div v-if="actionSheetVisible" class="fixed inset-0 z-50" @click="actionSheetVisible = false">
         <div class="absolute inset-0 bg-black/30" />
-        <div class="absolute bottom-0 left-0 right-0 pb-[env(safe-area-inset-bottom)]">
+        <div class="absolute bottom-36 left-0 right-0 pb-[env(safe-area-inset-bottom)]">
           <div class="mx-3 mb-2 bg-white/95 backdrop-blur-xl rounded-2xl overflow-hidden">
             <button
               @click.stop="handleEdit"
