@@ -73,6 +73,15 @@ public class ReminderController {
         return Result.ok(reminderService.updateById(entity));
     }
 
+    @Operation(summary = "重新开启提醒（恢复为待提醒状态）")
+    @PutMapping("/{id}/reopen")
+    public Result<Boolean> reopen(@PathVariable Long id) {
+        ReminderEntity entity = new ReminderEntity();
+        entity.setId(id);
+        entity.setStatus(0);
+        return Result.ok(reminderService.updateById(entity));
+    }
+
     @Operation(summary = "删除提醒")
     @DeleteMapping("/{id}")
     public Result<Boolean> delete(@PathVariable Long id) {

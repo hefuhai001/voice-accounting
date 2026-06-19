@@ -64,6 +64,14 @@ export const reminderApi = {
   },
 
   /**
+   * 重新开启提醒（恢复为待提醒状态）
+   * @param {string} id - 提醒ID（字符串类型的雪花ID）
+   */
+  reopen(id) {
+    return request.put(`/api/reminder/${id}/reopen`)
+  },
+
+  /**
    * 删除提醒
    * @param {string} id - 提醒ID（字符串类型的雪花ID）
    */

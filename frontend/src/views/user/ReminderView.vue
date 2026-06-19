@@ -104,11 +104,24 @@
         <!-- 操作按钮 -->
         <div class="flex gap-2 mt-3 pt-3 border-t border-surface-variant/50">
           <button
+            @click="handleEdit(item)"
+            class="flex-1 py-2 font-label-sm rounded-xl bg-primary-container/15 text-primary active:bg-primary-container/30 transition-colors"
+          >
+            编辑
+          </button>
+          <button
             v-if="item.status === 0"
             @click="handleMarkRead(item.id)"
             class="flex-1 py-2 font-label-sm rounded-xl bg-tertiary-container/15 text-tertiary active:bg-tertiary-container/30 transition-colors"
           >
             标记已提醒
+          </button>
+          <button
+            v-if="item.status === 2"
+            @click="handleReopen(item.id)"
+            class="flex-1 py-2 font-label-sm rounded-xl bg-tertiary-container/15 text-tertiary active:bg-tertiary-container/30 transition-colors"
+          >
+            开启提醒
           </button>
           <button
             v-if="item.status !== 2"
@@ -136,10 +149,10 @@
       </div>
     </div>
 
-    <!-- 新建弹窗 -->
+    <!-- 新建/编辑弹窗 -->
     <a-modal
       :open="modalVisible"
-      title="新建提醒"
+      :title="editingId ? '编辑提醒' : '新建提醒'"
       :footer="null"
       :width="360"
       centered
@@ -193,7 +206,7 @@
         <div class="flex gap-3 mt-2">
           <a-button block size="large" @click="modalVisible = false">取消</a-button>
           <a-button type="primary" block size="large" html-type="submit" :loading="submitting"
-            >创建</a-button
+            >{{ editingId ? '保存修改' : '创建' }}</a-button
           >
         </div>
       </a-form>
@@ -205,6 +218,7 @@
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import { BellOutlined } from '@ant-design/icons-vue'
+import dayjs from 'dayjs'
 import { reminderApi } from '@/api'
 import { useAuthStore } from '@/stores/auth'
 
@@ -216,6 +230,7 @@ const reminders = ref([])
 const statusFilter = ref('')
 const modalVisible = ref(false)
 const submitting = ref(false)
+const editingId = ref(null)
 
 const statusFilters = [
   { label: '全部', value: '' },
@@ -264,23 +279,42 @@ async function loadData() {
 }
 
 function showAddModal() {
+  editingId.value = null
   Object.assign(formState, { title: '', amount: null, remindDate: null, frequency: 1, remark: '' })
+  modalVisible.value = true
+}
+
+function handleEdit(item) {
+  editingId.value = item.id
+  Object.assign(formState, {
+    title: item.title,
+    amount: item.amount,
+    remindDate: item.remindDate ? dayjs(item.remindDate) : null,
+    frequency: item.frequency,
+    remark: item.remark || '',
+  })
   modalVisible.value = true
 }
 
 async function handleSubmit() {
   submitting.value = true
   try {
-    await reminderApi.save({
+    const data = {
       ...formState,
       remindDate: formState.remindDate?.format('YYYY-MM-DD'),
       userId: userId.value,
-    })
-    message.success('创建成功')
+    }
+    if (editingId.value) {
+      await reminderApi.update(editingId.value, data)
+      message.success('修改成功')
+    } else {
+      await reminderApi.save(data)
+      message.success('创建成功')
+    }
     modalVisible.value = false
     loadData()
   } catch (error) {
-    console.error('创建失败:', error)
+    console.error(editingId.value ? '修改失败:' : '创建失败:', error)
   } finally {
     submitting.value = false
   }
@@ -300,6 +334,16 @@ async function handleClose(id) {
   try {
     await reminderApi.close(id)
     message.success('关闭成功')
+    loadData()
+  } catch (error) {
+    console.error('操作失败:', error)
+  }
+}
+
+async function handleReopen(id) {
+  try {
+    await reminderApi.reopen(id)
+    message.success('已重新开启提醒')
     loadData()
   } catch (error) {
     console.error('操作失败:', error)
