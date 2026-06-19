@@ -254,6 +254,9 @@ public class ReminderEmailService {
                         <tr><td style="padding:8px 0;color:#999;">重复频率</td><td style="padding:8px 0;">%s</td></tr>
                         <tr><td style="padding:8px 0;color:#999;">备注</td><td style="padding:8px 0;">%s</td></tr>
                       </table>
+                      <div style="margin:24px 0 0;text-align:center;">
+                        <a href="https://www.hfh.asia" target="_blank" style="display:inline-block;padding:12px 32px;background:#ff6b35;color:#fff;text-decoration:none;border-radius:6px;font-size:14px;font-weight:bold;">前往查看详情</a>
+                      </div>
                       <p style="margin:16px 0 0;font-size:12px;color:#999;">本邮件由系统自动发送，请勿直接回复。</p>
                     </div>
                   </div>
