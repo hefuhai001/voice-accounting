@@ -113,7 +113,7 @@
 
     <!-- 底部导航栏 (悬浮胶囊式) -->
     <nav
-      class="fixed bottom-8 left-0 right-0 z-50 flex justify-around items-center px-6 py-4 mx-auto max-w-md bg-white/80 backdrop-blur-2xl rounded-full border border-black/5 shadow-2xl shadow-black/10 w-[calc(100%-48px)]"
+      class="fixed bottom-4 left-0 right-0 z-50 flex justify-around items-center px-2 py-2 mx-auto max-w-md bg-white/80 backdrop-blur-2xl rounded-full border border-black/5 shadow-2xl shadow-black/10 w-[calc(100%-48px)]"
     >
       <!-- Tab 1: 首页 -->
       <button
@@ -144,7 +144,7 @@
       <!-- Tab 3: 语音记账 (巨型中央按钮) -->
       <button
         @click.stop="navigate('/transaction')"
-        class="flex flex-col items-center justify-center scale-125 bg-primary rounded-full p-3 -translate-y-6 active:scale-110 transition-transform text-white relative shadow-lg shadow-primary/40 z-20"
+        class="flex flex-col items-center justify-center scale-125 bg-primary rounded-full px-2 py-1 -translate-y-6 active:scale-110 transition-transform text-white relative shadow-lg shadow-primary/40 z-20"
       >
         <div class="absolute inset-0 rounded-full border-4 border-white/30 animate-ping opacity-20"></div>
         <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">mic</span>
