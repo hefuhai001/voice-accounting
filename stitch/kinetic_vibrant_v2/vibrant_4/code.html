@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@500&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&family=JetBrains+Mono:wght@100..900&family=Sora:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .kinetic-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 107, 53, 0.2);
+            animation: ripple 3s infinite;
+        }
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+        body {
+            background: linear-gradient(135deg, #f9f9fc 0%, #fff0eb 100%);
+            min-height: 100vh;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#e1bfb5",
+                        "tertiary": "#3b6a00",
+                        "surface-container-high": "#e8e8ea",
+                        "secondary-fixed-dim": "#5ed5f3",
+                        "on-surface": "#1a1c1e",
+                        "on-primary-container": "#5f1900",
+                        "surface-bright": "#f9f9fc",
+                        "on-primary-fixed-variant": "#832600",
+                        "inverse-primary": "#ffb59d",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#004e5d",
+                        "primary-fixed": "#ffdbd0",
+                        "surface-tint": "#ab3500",
+                        "on-error": "#ffffff",
+                        "primary-container": "#ff6b35",
+                        "inverse-on-surface": "#f0f0f3",
+                        "on-tertiary-fixed-variant": "#2b5000",
+                        "surface-dim": "#dadadc",
+                        "surface": "#f9f9fc",
+                        "secondary-fixed": "#adecff",
+                        "error-container": "#ffdad6",
+                        "outline": "#8d7168",
+                        "primary": "#ab3500",
+                        "on-primary-fixed": "#390c00",
+                        "surface-variant": "#e2e2e5",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2f3133",
+                        "on-surface-variant": "#594139",
+                        "tertiary-container": "#68ab1d",
+                        "on-tertiary-container": "#1d3900",
+                        "surface-container": "#eeeef0",
+                        "secondary": "#00687b",
+                        "surface-container-low": "#f3f3f6",
+                        "on-tertiary-fixed": "#0e2000",
+                        "on-background": "#1a1c1e",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#001f26",
+                        "secondary-container": "#6be1ff",
+                        "tertiary-fixed": "#aef764",
+                        "primary-fixed-dim": "#ffb59d",
+                        "surface-container-highest": "#e2e2e5",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#93da4b",
+                        "on-secondary-container": "#006375",
+                        "background": "#f9f9fc",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "20px",
+                        "margin-desktop": "48px",
+                        "glass-padding": "24px",
+                        "unit": "4px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Hanken Grotesk"],
+                        "display-xl": ["Sora"],
+                        "label-sm": ["JetBrains Mono"],
+                        "headline-lg": ["Sora"],
+                        "headline-lg-mobile": ["Sora"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "display-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface antialiased overflow-x-hidden pb-32">
+<!-- Top AppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-mobile py-4 bg-surface/40 backdrop-blur-xl border-b border-white/50 shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A stylish, high-quality profile portrait of a young professional with a friendly expression. The lighting is warm and natural, suggesting an office or studio setting with soft bokeh background. The image has a clean, light-mode aesthetic that complements a modern orange and white UI design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCL3SxaTn95kU4cFhdysoX_-Pp7Npf44KdTbgw5HgWn82U-1HpKdL5hAUN4t9LGpylrqf6yuhxvXFEF3-NFsH3pAvGuCSFT6vwBH72manW3Fl5u5ns3ATW7q8Ku9V-wBXlsuxH1D3I6VWMI0g84X1U04WhUeNswUZJV2NRNaiqxzRkuhKzt2FXQXo7CVDF8r57XC6S6yOawvgLQQXUoOfpciQ4II3u77PM5ZyAHw3EzBbc4Q0EGQacWgRfK26lmQmow6bF6Flo_Bnt5"/>
+</div>
+<span class="text-headline-lg-mobile font-headline-lg-mobile font-extrabold text-primary">Kinetic</span>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 px-margin-mobile max-w-screen-md mx-auto">
+<!-- Welcome Greeting -->
+<section class="mb-8">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-1">Hi, hfh</h2>
+<p class="text-on-surface-variant font-body-md">这是你本月的财务洞察</p>
+</section>
+<!-- Hero Monthly Spending (The Focus) -->
+<section class="mb-8 relative overflow-hidden glass-card rounded-xl p-glass-padding shadow-lg">
+<div class="relative z-10">
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-widest">本月支出总额</span>
+<div class="flex items-baseline gap-1 mt-2">
+<span class="text-headline-lg font-headline-lg text-on-surface">¥</span>
+<span class="font-display-xl text-display-xl text-on-surface tracking-tighter">8,432.50</span>
+</div>
+<div class="mt-6 flex gap-2">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-tertiary-container text-on-tertiary-container text-label-sm font-label-sm">
+<span class="material-symbols-outlined text-[14px] mr-1" data-icon="trending_down">trending_down</span>
+                        较上月减少 12%
+                    </span>
+</div>
+</div>
+<!-- Decorative Element -->
+<div class="absolute -right-10 -bottom-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
+</section>
+<!-- Quick Stats Cards (Horizontal Scroll/Bento Lite) -->
+<section class="grid grid-cols-2 gap-4 mb-10">
+<div class="glass-card rounded-xl p-4 flex flex-col justify-between h-32 hover:scale-[1.02] transition-transform">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-secondary" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant uppercase">收入</span>
+</div>
+<div>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">¥12.5k</span>
+</div>
+</div>
+<div class="glass-card rounded-xl p-4 flex flex-col justify-between h-32 hover:scale-[1.02] transition-transform">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-tertiary" data-icon="savings">savings</span>
+<span class="font-label-sm text-[10px] text-on-surface-variant uppercase">结余</span>
+</div>
+<div>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">¥4,067</span>
+</div>
+</div>
+</section>
+<!-- Recent Transactions -->
+<section class="mb-12">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-headline-lg-mobile text-[20px] text-on-surface">最近记录</h3>
+<button class="text-primary font-label-sm text-label-sm">查看全部</button>
+</div>
+<div class="space-y-3">
+<!-- Transaction Item 1 -->
+<div class="glass-card rounded-xl p-4 flex items-center justify-between hover:bg-white/60 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined" data-icon="coffee">coffee</span>
+</div>
+<div>
+<p class="font-semibold text-on-surface">星巴克咖啡</p>
+<p class="text-on-surface-variant text-[12px]">今天, 09:41 · 餐饮</p>
+</div>
+</div>
+<span class="font-display-xl text-[18px] text-on-surface">-¥36.00</span>
+</div>
+<!-- Transaction Item 2 -->
+<div class="glass-card rounded-xl p-4 flex items-center justify-between hover:bg-white/60 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</div>
+<div>
+<p class="font-semibold text-on-surface">Apple Store</p>
+<p class="text-on-surface-variant text-[12px]">昨天, 14:20 · 购物</p>
+</div>
+</div>
+<span class="font-display-xl text-[18px] text-on-surface">-¥1,299.00</span>
+</div>
+<!-- Transaction Item 3 -->
+<div class="glass-card rounded-xl p-4 flex items-center justify-between hover:bg-white/60 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+</div>
+<div>
+<p class="font-semibold text-on-surface">工资收入</p>
+<p class="text-on-surface-variant text-[12px]">2023-10-25 · 薪资</p>
+</div>
+</div>
+<span class="font-display-xl text-[18px] text-tertiary">+¥12,500.00</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-end px-4 pb-4 h-24 bg-surface/40 dark:bg-surface-dim/40 backdrop-blur-xl border-t border-white/50 shadow-[0px_-20px_40px_rgba(255,107,53,0.15)] rounded-t-lg">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center text-primary transition-colors p-2" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<!-- Ledger -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-label-sm text-label-sm mt-1">Ledger</span>
+</a>
+<!-- Voice Hero Button (Massive Mic) -->
+<div class="relative -top-8">
+<div class="kinetic-ripple" style="width: 80px; height: 80px; left: -12px; top: -12px; animation-delay: 0s;"></div>
+<div class="kinetic-ripple" style="width: 80px; height: 80px; left: -12px; top: -12px; animation-delay: 1.5s;"></div>
+<button class="relative z-20 w-16 h-16 rounded-full bg-primary shadow-[0_10px_25px_rgba(171,53,0,0.4)] flex items-center justify-center text-white active:scale-90 transition-all duration-300" id="voice-btn">
+<span class="material-symbols-outlined text-[32px]" data-icon="mic" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+</div>
+<!-- Reminders -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="alarm">alarm</span>
+<span class="font-label-sm text-label-sm mt-1">Reminders</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for the Voice Hero Button
+        const voiceBtn = document.getElementById('voice-btn');
+        let isRecording = false;
+
+        voiceBtn.addEventListener('click', () => {
+            isRecording = !isRecording;
+            if (isRecording) {
+                voiceBtn.classList.remove('bg-primary');
+                voiceBtn.classList.add('bg-on-primary-container', 'scale-110');
+                // Trigger additional kinetic visual feedback here if needed
+            } else {
+                voiceBtn.classList.add('bg-primary');
+                voiceBtn.classList.remove('bg-on-primary-container', 'scale-110');
+            }
+        });
+
+        // Subtle parallax effect for glass cards on scroll
+        window.addEventListener('scroll', () => {
+            const scroll = window.pageYOffset;
+            const glassCards = document.querySelectorAll('.glass-card');
+            glassCards.forEach((card, index) => {
+                const speed = 0.05 * (index + 1);
+                card.style.transform = `translateY(${scroll * speed * -1}px)`;
+            });
+        });
+    </script>
+</body></html>

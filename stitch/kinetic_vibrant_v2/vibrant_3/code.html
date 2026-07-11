@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic Vibrant - 账本列表</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&amp;family=Hanken+Grotesk:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Hanken Grotesk', sans-serif;
+            background-color: #f9f9fc;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .glass-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0px 20px 40px rgba(255, 107, 53, 0.15);
+        }
+        .kinetic-ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        .kinetic-ripple::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,107,53,0.2) 0%, transparent 70%);
+            transform: translate(-50%, -50%) scale(0);
+            animation: pulse-ripple 3s infinite;
+        }
+        @keyframes pulse-ripple {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+        }
+        .masonry-item:nth-child(even) {
+            margin-top: 24px;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#e1bfb5",
+                    "tertiary": "#3b6a00",
+                    "surface-container-high": "#e8e8ea",
+                    "secondary-fixed-dim": "#5ed5f3",
+                    "on-surface": "#1a1c1e",
+                    "on-primary-container": "#5f1900",
+                    "surface-bright": "#f9f9fc",
+                    "on-primary-fixed-variant": "#832600",
+                    "inverse-primary": "#ffb59d",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#004e5d",
+                    "primary-fixed": "#ffdbd0",
+                    "surface-tint": "#ab3500",
+                    "on-error": "#ffffff",
+                    "primary-container": "#ff6b35",
+                    "inverse-on-surface": "#f0f0f3",
+                    "on-tertiary-fixed-variant": "#2b5000",
+                    "surface-dim": "#dadadc",
+                    "surface": "#f9f9fc",
+                    "secondary-fixed": "#adecff",
+                    "error-container": "#ffdad6",
+                    "outline": "#8d7168",
+                    "primary": "#ab3500",
+                    "on-primary-fixed": "#390c00",
+                    "surface-variant": "#e2e2e5",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#2f3133",
+                    "on-surface-variant": "#594139",
+                    "tertiary-container": "#68ab1d",
+                    "on-tertiary-container": "#1d3900",
+                    "surface-container": "#eeeef0",
+                    "secondary": "#00687b",
+                    "surface-container-low": "#f3f3f6",
+                    "on-tertiary-fixed": "#0e2000",
+                    "on-background": "#1a1c1e",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed": "#001f26",
+                    "secondary-container": "#6be1ff",
+                    "tertiary-fixed": "#aef764",
+                    "primary-fixed-dim": "#ffb59d",
+                    "surface-container-highest": "#e2e2e5",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed-dim": "#93da4b",
+                    "on-secondary-container": "#006375",
+                    "background": "#f9f9fc",
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "20px",
+                    "margin-desktop": "48px",
+                    "glass-padding": "24px",
+                    "unit": "4px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["Hanken Grotesk"],
+                    "display-xl": ["Sora"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-lg": ["Sora"],
+                    "headline-lg-mobile": ["Sora"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-mobile py-4 bg-surface/40 dark:bg-surface-dim/40 backdrop-blur-xl border-b border-white/50 shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img class="w-full h-full object-cover" data-alt="A youthful user profile photo with a modern, high-energy aesthetic. The person has a friendly expression and is framed in a bright, vibrant studio lighting setting that highlights warm skin tones and colorful clothing. The background is a soft, blurred gradient of orange and peach, matching the Kinetic Vibrant design system's primary color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuChgOlo5qTyXIuclSjsPEydOEYQDOZ1B5KNNHARsnABHNLSh2g2GFz_xHCyt8uw_DTO3uu57yzUU2uXz9lBKJAHXfg5q1WnTcG-WT-eU1X2QOMlAgzLzUSgl9YYXs6emZrsvDsdC4-B70KqcUVW4tttszFXLSTkcg3jarNsLA7CGLw5D9eeFdpo1pHdFhkMa8uFh8k6dWM8Q-lhPK6vNaLdSaVFbEHVeLgpGorJBXGJfKyVZ9_ExYpej-i-hWHbXdOYADkc06yBa2jJ"/>
+</div>
+<h1 class="text-headline-lg-mobile font-headline-lg-mobile font-extrabold text-primary">Kinetic Vibrant</h1>
+</div>
+<button class="material-symbols-outlined text-primary hover:opacity-80 transition-opacity">notifications</button>
+</header>
+<main class="pt-24 pb-32 px-margin-mobile max-w-screen-xl mx-auto">
+<!-- Header Section -->
+<section class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<p class="font-label-sm text-label-sm text-primary uppercase tracking-widest mb-2">My Finances</p>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-extrabold leading-tight">我的账本</h2>
+</div>
+<!-- New Ledger Button (Call to Action) -->
+<button class="flex items-center justify-center gap-2 bg-primary-container text-on-primary-container font-headline-lg-mobile text-[18px] py-4 px-8 rounded-full shadow-lg hover:scale-105 transition-transform duration-300 active:scale-95 group">
+<span class="material-symbols-outlined font-bold group-hover:rotate-90 transition-transform duration-500">add</span>
+<span class="font-bold">新建账本</span>
+</button>
+</section>
+<!-- Kinetic Art Ledger Cards - Bento Style / Masonry -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+<!-- Card 1: Primary Wallet -->
+<div class="masonry-item glass-card rounded-xl p-glass-padding relative overflow-hidden flex flex-col justify-between min-h-[220px]">
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-container/20 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+<div class="flex justify-between items-start z-10">
+<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container shadow-inner">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+</div>
+<span class="font-label-sm text-label-sm px-3 py-1 bg-primary/10 text-primary rounded-full">主账本</span>
+</div>
+<div class="mt-6 z-10">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">日常开支</h3>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-70">记录生活中的点点滴滴</p>
+</div>
+<div class="mt-4 z-10">
+<p class="font-label-sm text-label-sm text-on-surface-variant">当前余额</p>
+<p class="font-display-xl text-[32px] font-extrabold text-primary">¥ 12,480.00</p>
+</div>
+</div>
+<!-- Card 2: Travel (Secondary Color) -->
+<div class="masonry-item glass-card rounded-xl p-glass-padding relative overflow-hidden flex flex-col justify-between min-h-[260px]">
+<div class="absolute inset-0 bg-gradient-to-br from-secondary-container/10 to-transparent"></div>
+<div class="flex justify-between items-start z-10">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">flight_takeoff</span>
+</div>
+</div>
+<div class="mt-6 z-10">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">日本之旅 🌸</h3>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-70">2024 夏季休假专项基金</p>
+</div>
+<div class="mt-8 z-10">
+<div class="flex justify-between items-end">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">预算执行</p>
+<p class="font-display-xl text-[28px] font-extrabold text-secondary">¥ 8,500.00</p>
+</div>
+<div class="text-right">
+<p class="font-label-sm text-label-sm text-tertiary">剩余 42%</p>
+</div>
+</div>
+<div class="w-full h-2 bg-surface-variant rounded-full mt-2 overflow-hidden">
+<div class="w-[58%] h-full bg-secondary rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Card 3: Investment (Tertiary) -->
+<div class="masonry-item glass-card rounded-xl p-glass-padding relative overflow-hidden flex flex-col justify-between min-h-[220px]">
+<div class="flex justify-between items-start z-10">
+<div class="w-12 h-12 rounded-full bg-tertiary-container flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+</div>
+</div>
+<div class="mt-6 z-10">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">投资账户</h3>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-70">长期持有，稳健增长</p>
+</div>
+<div class="mt-4 z-10">
+<p class="font-label-sm text-label-sm text-on-surface-variant">总资产估值</p>
+<p class="font-display-xl text-[32px] font-extrabold text-tertiary">¥ 156,000.42</p>
+</div>
+</div>
+<!-- Card 4: Shared Expense (Asymmetric Layout) -->
+<div class="masonry-item glass-card rounded-xl p-glass-padding relative overflow-hidden flex flex-col justify-between min-h-[240px] lg:col-span-2">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
+<div class="flex flex-col justify-center">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed mb-4">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+</div>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">合租生活</h3>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-70">与室友分摊的水电费与房租</p>
+</div>
+<div class="flex flex-col justify-center items-start md:items-end md:text-right border-t md:border-t-0 md:border-l border-white/30 pt-4 md:pt-0 md:pl-8">
+<div class="flex -space-x-3 mb-4">
+<div class="w-8 h-8 rounded-full border-2 border-white overflow-hidden bg-primary-container">
+<img class="w-full h-full object-cover" data-alt="A professional close-up shot of a diverse young professional, with soft studio lighting reflecting off minimalist glass backgrounds. Part of a cohesive UI design system featuring vibrant orange accents and frosted textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjvUNSxjD-VoMYQVWee4fnBEmawHKQk4ng_bJx8zW7bTAifmyO0ceaciiSVay_qVDGuNZOE1wPlIIcDG6MFHgNmpri2cRxmub_A5Vazr3oScm3_1GyhTUAVE9KhjHtamXJPQkVqR1lU8glmRy6TR19w4d7j-TUwPJAcqauxQ0AqF3bVaMTI_Mi63JRnk375YN_JafIrbipE9mlKAdCQCFdfZERy6f_4HtQ-ffzlwgFoAsuZVFYAVHc68mAlJcQ-DPM_NE7MPwncuNr"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-white overflow-hidden bg-secondary-container">
+<img class="w-full h-full object-cover" data-alt="A portrait of a creative individual against a backdrop of kinetic digital art. The lighting is dynamic, echoing the Kinetic Vibrant theme with cool blue and warm orange tones blending seamlessly into the glassmorphic UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNNLLh6C7NixwOYeoVxXS9cscGjBzeNqEw8Mtp5QfQlnu1RWwVfJ4s51Vw94CZ5trninnPcznW5RNgWnfJV6emySByoMjZ1I4UvTsK0LmSypuUqk-2y2Q_knmOw0UePK0Zq4JSMSY5CgVcxSHn2Dtc42Mdtem90zNsqTLDsh53f0unIqrF0fjcKTbLQtAbPHyfZDXE8xPxH6qf4j6ACKw0yCP84oLDIy3R4ZFZo_Yt55RnK9F-m3o6X0vGkPq_sD-X8l0Fsg_ZbEJD"/>
+</div>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-surface flex items-center justify-center text-[10px] font-bold">+2</div>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">待分摊金额</p>
+<p class="font-display-xl text-[28px] font-extrabold text-error">¥ 2,130.00</p>
+</div>
+</div>
+</div>
+<!-- Card 5: Savings Goal -->
+<div class="masonry-item glass-card rounded-xl p-glass-padding relative overflow-hidden flex flex-col justify-between min-h-[220px]">
+<div class="absolute bottom-0 right-0 p-2">
+<span class="material-symbols-outlined text-primary/10 text-[100px] leading-none">savings</span>
+</div>
+<div class="flex justify-between items-start z-10">
+<div class="w-12 h-12 rounded-full bg-outline-variant flex items-center justify-center text-on-primary-fixed">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">savings</span>
+</div>
+</div>
+<div class="mt-6 z-10">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">新电脑基金</h3>
+<p class="font-body-md text-body-md text-on-surface-variant opacity-70">目标: MacBook Pro 16"</p>
+</div>
+<div class="mt-4 z-10">
+<p class="font-label-sm text-label-sm text-on-surface-variant">已存入</p>
+<p class="font-display-xl text-[32px] font-extrabold text-primary">¥ 5,000.00</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Shell) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-end px-4 pb-4 h-24 bg-surface/40 dark:bg-surface-dim/40 backdrop-blur-xl border-t border-white/50 shadow-[0px_-20px_40px_rgba(255,107,53,0.15)] rounded-t-lg">
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm mt-1">Home</span>
+</a>
+<!-- Active State: Ledger -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full p-3 shadow-lg scale-110 -translate-y-4 ring-4 ring-primary/20 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<span class="font-label-sm text-label-sm">Ledger</span>
+</a>
+<!-- Voice Hero Button (Core Interaction) -->
+<div class="relative -translate-y-4">
+<button class="w-16 h-16 bg-primary-container rounded-full flex items-center justify-center text-white shadow-xl kinetic-ripple relative z-10">
+<span class="material-symbols-outlined text-[32px]">mic</span>
+</button>
+<div class="absolute inset-0 bg-primary-container blur-xl opacity-30 rounded-full scale-125 -z-10 animate-pulse"></div>
+</div>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">alarm</span>
+<span class="font-label-sm text-label-sm mt-1">Reminders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for cards
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousedown', () => {
+                card.style.transform = 'scale(0.95) translateY(0px)';
+            });
+            card.addEventListener('mouseup', () => {
+                card.style.transform = 'scale(1.02) translateY(-8px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+            });
+        });
+
+        // Toggle FAB ripple animation on click
+        const micBtn = document.querySelector('.kinetic-ripple');
+        micBtn.addEventListener('click', () => {
+            micBtn.classList.toggle('active-state');
+            // Mock voice feedback effect
+            if (micBtn.classList.contains('active-state')) {
+                console.log("Listening...");
+            }
+        });
+    </script>
+</body></html>

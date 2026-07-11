@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&amp;family=Hanken+Grotesk:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#e1bfb5",
+                    "tertiary": "#3b6a00",
+                    "surface-container-high": "#e8e8ea",
+                    "secondary-fixed-dim": "#5ed5f3",
+                    "on-surface": "#1a1c1e",
+                    "on-primary-container": "#5f1900",
+                    "surface-bright": "#f9f9fc",
+                    "on-primary-fixed-variant": "#832600",
+                    "inverse-primary": "#ffb59d",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#004e5d",
+                    "primary-fixed": "#ffdbd0",
+                    "surface-tint": "#ab3500",
+                    "on-error": "#ffffff",
+                    "primary-container": "#ff6b35",
+                    "inverse-on-surface": "#f0f0f3",
+                    "on-tertiary-fixed-variant": "#2b5000",
+                    "surface-dim": "#dadadc",
+                    "surface": "#f9f9fc",
+                    "secondary-fixed": "#adecff",
+                    "error-container": "#ffdad6",
+                    "outline": "#8d7168",
+                    "primary": "#ab3500",
+                    "on-primary-fixed": "#390c00",
+                    "surface-variant": "#e2e2e5",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#2f3133",
+                    "on-surface-variant": "#594139",
+                    "tertiary-container": "#68ab1d",
+                    "on-tertiary-container": "#1d3900",
+                    "surface-container": "#eeeef0",
+                    "secondary": "#00687b",
+                    "surface-container-low": "#f3f3f6",
+                    "on-tertiary-fixed": "#0e2000",
+                    "on-background": "#1a1c1e",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed": "#001f26",
+                    "secondary-container": "#6be1ff",
+                    "tertiary-fixed": "#aef764",
+                    "primary-fixed-dim": "#ffb59d",
+                    "surface-container-highest": "#e2e2e5",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed-dim": "#93da4b",
+                    "on-secondary-container": "#006375",
+                    "background": "#f9f9fc",
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "20px",
+                    "margin-desktop": "48px",
+                    "glass-padding": "24px",
+                    "unit": "4px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "body-md": ["Hanken Grotesk"],
+                    "display-xl": ["Sora"],
+                    "label-sm": ["JetBrains Mono"],
+                    "headline-lg": ["Sora"],
+                    "headline-lg-mobile": ["Sora"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Hanken Grotesk', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .breathing-bg {
+            animation: breathe 4s ease-in-out infinite;
+        }
+        @keyframes breathe {
+            0%, 100% { opacity: 0.15; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(1.1); }
+        }
+        .kinetic-ripple {
+            animation: ripple 2s infinite;
+        }
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 16px;
+        }
+        .active-tab-indicator {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-32">
+<!-- Top App Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-margin-mobile py-4 bg-surface/40 backdrop-blur-xl border-b border-white/50 shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden border-2 border-white">
+<img class="w-full h-full object-cover" data-alt="A cinematic, high-resolution portrait of a young professional with a warm smile, set against a blurred modern office background with soft orange and blue ambient lighting. The style is clean, modern, and high-key, emphasizing a friendly and tech-savvy persona. The image uses a shallow depth of field to make the subject pop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCD_967kMtLUzszfD86Ch-n8WJWIBu37A9Hfq9j5XIlFwvg6AjaQfa43chfAc300DSCRPm78Cd0wXVTDZZ5qdUk6julMqRusVB2GogZI4e12_rFtquYo2u6aXEZfRIG_Hb0it0CnqnxlztXQ1Ardr8zwRHqKWTzZO0X8QrkR9g4ehQorqe4zLcfdvnX2OtzZFoczFsinCsedrKyczyGdACh4iBVt6s0fvpAmHCyC9RlCQ1gBlyLcuErhU3VBHtaovszGbaT2v6_eszw"/>
+</div>
+<h1 class="text-headline-lg-mobile font-headline-lg-mobile font-extrabold text-primary">Kinetic Vibrant</h1>
+</div>
+<button class="material-symbols-outlined text-primary p-2 rounded-full hover:bg-primary/10 transition-colors">notifications</button>
+</header>
+<main class="pt-24 px-margin-mobile max-w-[1200px] mx-auto">
+<!-- Section Header & Toggle -->
+<div class="flex flex-col gap-6 mb-8">
+<div class="flex items-end justify-between">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant tracking-widest uppercase">Management</span>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">分类管理</h2>
+</div>
+<button class="bg-primary text-on-primary rounded-full px-6 py-2 flex items-center gap-2 font-bold shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined">add</span>
+<span>新建</span>
+</button>
+</div>
+<!-- Segmented Control -->
+<div class="glass-card p-1.5 rounded-full flex relative overflow-hidden">
+<button class="flex-1 py-3 text-center z-10 font-bold transition-all text-on-primary" id="btn-expense" onclick="toggleTab('expense')">支出分类</button>
+<button class="flex-1 py-3 text-center z-10 font-bold transition-all text-on-surface-variant" id="btn-income" onclick="toggleTab('income')">收入分类</button>
+<div class="absolute top-1.5 left-1.5 w-[calc(50%-6px)] h-[calc(100%-12px)] bg-primary-container rounded-full shadow-md active-tab-indicator" id="tab-indicator"></div>
+</div>
+</div>
+<!-- Category Grid: Expense -->
+<div class="category-grid" id="expense-grid">
+<!-- Item 1 -->
+<div class="glass-card p-5 rounded-xl flex flex-col items-center justify-center gap-4 text-center hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/10 breathing-bg -z-10"></div>
+<div class="w-16 h-16 rounded-full bg-primary-container/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+</div>
+<span class="font-body-md text-body-md font-bold text-on-surface-variant">餐饮美食</span>
+<span class="text-xs text-on-surface-variant/60">24 个子类</span>
+</div>
+<!-- Item 2 -->
+<div class="glass-card p-5 rounded-xl flex flex-col items-center justify-center gap-4 text-center hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-secondary/10 breathing-bg -z-10" style="animation-delay: 0.5s"></div>
+<div class="w-16 h-16 rounded-full bg-secondary-container/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-secondary" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+</div>
+<span class="font-body-md text-body-md font-bold text-on-surface-variant">购物消费</span>
+<span class="text-xs text-on-surface-variant/60">18 个子类</span>
+</div>
+<!-- Item 3 -->
+<div class="glass-card p-5 rounded-xl flex flex-col items-center justify-center gap-4 text-center hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-tertiary/10 breathing-bg -z-10" style="animation-delay: 1s"></div>
+<div class="w-16 h-16 rounded-full bg-tertiary-container/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-tertiary" style="font-variation-settings: 'FILL' 1;">commute</span>
+</div>
+<span class="font-body-md text-body-md font-bold text-on-surface-variant">交通出行</span>
+<span class="text-xs text-on-surface-variant/60">12 个子类</span>
+</div>
+<!-- Item 4 -->
+<div class="glass-card p-5 rounded-xl flex flex-col items-center justify-center gap-4 text-center hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-error/10 breathing-bg -z-10" style="animation-delay: 1.5s"></div>
+<div class="w-16 h-16 rounded-full bg-error-container/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-error" style="font-variation-settings: 'FILL' 1;">home</span>
+</div>
+<span class="font-body-md text-body-md font-bold text-on-surface-variant">居家物业</span>
+<span class="text-xs text-on-surface-variant/60">8 个子类</span>
+</div>
+<!-- Item 5 -->
+<div class="glass-card p-5 rounded-xl flex flex-col items-center justify-center gap-4 text-center hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/10 breathing-bg -z-10" style="animation-delay: 2s"></div>
+<div class="w-16 h-16 rounded-full bg-primary-container/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">movie</span>
+</div>
+<span class="font-body-md text-body-md font-bold text-on-surface-variant">休闲娱乐</span>
+<span class="text-xs text-on-surface-variant/60">15 个子类</span>
+</div>
+<!-- Item 6 -->
+<div class="glass-card p-5 rounded-xl flex flex-col items-center justify-center gap-4 text-center hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-secondary/10 breathing-bg -z-10" style="animation-delay: 2.5s"></div>
+<div class="w-16 h-16 rounded-full bg-secondary-container/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-secondary" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+</div>
+<span class="font-body-md text-body-md font-bold text-on-surface-variant">医疗保健</span>
+<span class="text-xs text-on-surface-variant/60">6 个子类</span>
+</div>
+<!-- Add More Placeholder -->
+<div class="border-2 border-dashed border-outline-variant/30 p-5 rounded-xl flex flex-col items-center justify-center gap-4 text-center hover:bg-surface-variant/20 transition-all cursor-pointer">
+<div class="w-16 h-16 rounded-full bg-surface-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-outline">add</span>
+</div>
+<span class="font-body-md text-body-md font-bold text-outline">添加更多</span>
+</div>
+</div>
+<!-- Category Grid: Income (Hidden by default) -->
+<div class="category-grid hidden" id="income-grid">
+<!-- Item 1 -->
+<div class="glass-card p-5 rounded-xl flex flex-col items-center justify-center gap-4 text-center hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-tertiary/10 breathing-bg -z-10"></div>
+<div class="w-16 h-16 rounded-full bg-tertiary-container/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-tertiary" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<span class="font-body-md text-body-md font-bold text-on-surface-variant">工资薪酬</span>
+<span class="text-xs text-on-surface-variant/60">2 个子类</span>
+</div>
+<!-- Item 2 -->
+<div class="glass-card p-5 rounded-xl flex flex-col items-center justify-center gap-4 text-center hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-secondary/10 breathing-bg -z-10" style="animation-delay: 0.5s"></div>
+<div class="w-16 h-16 rounded-full bg-secondary-container/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-secondary" style="font-variation-settings: 'FILL' 1;">monitoring</span>
+</div>
+<span class="font-body-md text-body-md font-bold text-on-surface-variant">投资收益</span>
+<span class="text-xs text-on-surface-variant/60">5 个子类</span>
+</div>
+<!-- Item 3 -->
+<div class="glass-card p-5 rounded-xl flex flex-col items-center justify-center gap-4 text-center hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden">
+<div class="absolute inset-0 bg-primary/10 breathing-bg -z-10" style="animation-delay: 1s"></div>
+<div class="w-16 h-16 rounded-full bg-primary-container/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">redeem</span>
+</div>
+<span class="font-body-md text-body-md font-bold text-on-surface-variant">意外奖金</span>
+<span class="text-xs text-on-surface-variant/60">3 个子类</span>
+</div>
+<!-- Add More Placeholder -->
+<div class="border-2 border-dashed border-outline-variant/30 p-5 rounded-xl flex flex-col items-center justify-center gap-4 text-center hover:bg-surface-variant/20 transition-all cursor-pointer">
+<div class="w-16 h-16 rounded-full bg-surface-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-outline">add</span>
+</div>
+<span class="font-body-md text-body-md font-bold text-outline">添加更多</span>
+</div>
+</div>
+<!-- Featured Section -->
+<section class="mt-12 mb-8">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-6">智能分析</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="glass-card p-glass-padding rounded-xl relative overflow-hidden group">
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary">analytics</span>
+<span class="font-bold text-on-surface">使用频率最高</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant/80">“餐饮美食”占据了你上个月支出的 45%，建议设置分类限额。</p>
+</div>
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl text-primary">pie_chart</span>
+</div>
+</div>
+<div class="glass-card p-glass-padding rounded-xl relative overflow-hidden group">
+<div class="relative z-10">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-secondary">tips_and_updates</span>
+<span class="font-bold text-on-surface">自动归类提示</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant/80">检测到 12 笔未归类交易，大部分可能属于“居家物业”。</p>
+</div>
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl text-secondary">auto_awesome</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-end px-4 pb-4 h-24 bg-surface/40 backdrop-blur-xl border-t border-white/50 shadow-[0px_-20px_40px_rgba(255,107,53,0.15)] rounded-t-lg">
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-sm text-label-sm">Ledger</span>
+</a>
+<!-- Voice Hero Button -->
+<div class="relative -translate-y-4">
+<div class="absolute inset-0 bg-primary/20 rounded-full kinetic-ripple"></div>
+<div class="absolute inset-0 bg-primary/10 rounded-full kinetic-ripple" style="animation-delay: 0.5s"></div>
+<button class="relative w-20 h-20 bg-primary-container text-on-primary-container rounded-full shadow-2xl flex items-center justify-center z-10 scale-110 active:scale-95 transition-transform ring-8 ring-surface/40">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+</div>
+<a class="flex flex-col items-center justify-center text-primary p-2 active-nav-indicator" href="#">
+<span class="material-symbols-outlined">alarm</span>
+<span class="font-label-sm text-label-sm">Reminders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</a>
+</nav>
+<script>
+        function toggleTab(type) {
+            const expenseGrid = document.getElementById('expense-grid');
+            const incomeGrid = document.getElementById('income-grid');
+            const btnExpense = document.getElementById('btn-expense');
+            const btnIncome = document.getElementById('btn-income');
+            const indicator = document.getElementById('tab-indicator');
+
+            if (type === 'expense') {
+                expenseGrid.classList.remove('hidden');
+                incomeGrid.classList.add('hidden');
+                btnExpense.classList.add('text-on-primary');
+                btnExpense.classList.remove('text-on-surface-variant');
+                btnIncome.classList.remove('text-on-primary');
+                btnIncome.classList.add('text-on-surface-variant');
+                indicator.style.left = '6px';
+                indicator.style.transform = 'translateX(0)';
+            } else {
+                expenseGrid.classList.add('hidden');
+                incomeGrid.classList.remove('hidden');
+                btnIncome.classList.add('text-on-primary');
+                btnIncome.classList.remove('text-on-surface-variant');
+                btnExpense.classList.remove('text-on-primary');
+                btnExpense.classList.add('text-on-surface-variant');
+                indicator.style.left = 'calc(50% + 1.5px)';
+            }
+        }
+
+        // Initialize view
+        document.addEventListener('DOMContentLoaded', () => {
+            toggleTab('expense');
+        });
+    </script>
+</body></html>
