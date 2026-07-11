@@ -1,7 +1,7 @@
 <template>
-  <div class="px-margin-mobile pb-32 flex flex-col gap-section-gap max-w-md mx-auto">
+  <div class="px-margin-mobile pb-32 flex flex-col gap-4 max-w-md mx-auto">
     <!-- Header Section -->
-    <section class="flex justify-between items-end mt-8">
+    <section class="flex justify-between items-end mt-6">
       <div>
         <h2 class="font-display-lg text-display-lg text-on-surface tracking-tight mb-1">我的账本</h2>
         <p class="text-on-surface-variant font-label-caps text-label-caps uppercase tracking-[0.2em]">MY LEDGERS</p>
@@ -16,22 +16,22 @@
     </section>
 
     <!-- Card Flow -->
-    <section class="flex flex-col gap-8 mt-8">
+    <section class="flex flex-col gap-4 mt-4">
       <div
         v-for="(book) in books"
         :key="book.id"
         @click="handleEdit(book)"
-        class="glass-panel rounded-3xl p-8 relative overflow-hidden group cursor-pointer"
+        class="glass-panel rounded-3xl p-4 relative overflow-hidden group cursor-pointer"
         :class="{ 'ml-0 md:ml-12 border-l-8 border-l-secondary': book.type === 2, 'ml-0 md:ml-24': book.type === 3 }"
       >
         <div class="absolute right-0 top-0 w-48 h-48 rounded-full blur-3xl -mr-24 -mt-24 transition-colors"
           :class="book.type === 1 ? 'bg-primary/5 group-hover:bg-primary/10' : book.type === 2 ? 'bg-secondary/5 group-hover:bg-secondary/10' : 'bg-tertiary/5 group-hover:bg-tertiary/10'"></div>
 
-        <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div class="flex gap-6 items-center">
-            <div class="w-16 h-16 rounded-2xl flex items-center justify-center border group-hover:rotate-6 transition-transform"
+        <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+          <div class="flex gap-4 items-center">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center border group-hover:rotate-6 transition-transform"
               :class="getIconBgClass(book.type)">
-              <span class="material-symbols-outlined text-3xl" :class="getIconColorClass(book.type)">{{ getBookIcon(book.type) }}</span>
+              <span class="material-symbols-outlined text-2xl" :class="getIconColorClass(book.type)">{{ getBookIcon(book.type) }}</span>
             </div>
             <div>
               <h3 class="text-2xl font-bold text-on-surface">{{ book.name }}</h3>

@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-background flex flex-col font-body-md mesh-bg">
     <!-- 顶部装饰区 -->
-    <div class="flex-shrink-0 pt-12 pb-8 px-6 text-center relative overflow-hidden">
+    <div class="flex-shrink-0 pt-10 pb-6 px-6 text-center relative overflow-hidden">
       <!-- 背景装饰圆 -->
       <div
         class="absolute -top-20 -left-20 w-64 h-64 rounded-full bg-gradient-to-br from-primary/20 to-secondary/10 blur-3xl"
@@ -12,9 +12,9 @@
 
       <!-- Logo -->
       <div
-        class="relative inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-[#983f19] to-[#ab3500] shadow-lg shadow-primary/25 mb-5"
+        class="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#983f19] to-[#ab3500] shadow-lg shadow-primary/25 mb-4"
       >
-        <span class="material-symbols-outlined text-white text-[40px]" style="font-variation-settings: 'FILL' 1;">mic</span>
+        <span class="material-symbols-outlined text-white text-[32px]" style="font-variation-settings: 'FILL' 1;">mic</span>
       </div>
 
       <h1 class="font-display-lg text-display-lg text-on-surface tracking-tight">语音记账</h1>
@@ -22,8 +22,8 @@
     </div>
 
     <!-- 表单卡片 -->
-    <div class="flex-1 px-5 pb-8">
-      <div class="glass-panel rounded-3xl shadow-sm px-6 pt-6 pb-8 max-w-md mx-auto">
+    <div class="flex-1 px-5 pb-6">
+      <div class="glass-panel rounded-3xl shadow-sm px-5 pt-5 pb-6 max-w-md mx-auto">
         <!-- iOS 分段控制器 -->
         <div class="flex bg-surface-container-low rounded-2xl p-1 mb-7">
           <button

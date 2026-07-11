@@ -1,5 +1,5 @@
 <template>
-  <div class="px-margin-mobile pt-20 pb-28 flex flex-col gap-6 max-w-md mx-auto">
+  <div class="px-margin-mobile pt-16 pb-28 flex flex-col gap-4 max-w-md mx-auto">
     <!-- 标题栏 -->
     <div class="flex items-center justify-between">
       <div>
@@ -37,7 +37,7 @@
       <div
         v-for="item in reminders"
         :key="item.id"
-        class="glass-panel rounded-3xl p-5 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all duration-300"
+        class="glass-panel rounded-3xl p-4 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all duration-300"
       >
         <!-- 装饰性光圈 -->
         <div

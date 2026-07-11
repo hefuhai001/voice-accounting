@@ -1,16 +1,16 @@
 <template>
-  <div class="px-margin-mobile pt-20 pb-28 max-w-md mx-auto">
+  <div class="px-margin-mobile pt-16 pb-28 max-w-md mx-auto">
     <!-- 页面标题 -->
-    <div class="mb-8">
+    <div class="mb-6">
       <h1 class="font-display-lg text-display-lg text-on-surface tracking-tight">个人中心</h1>
       <p class="text-label-sm text-on-surface-variant uppercase tracking-widest mt-1">MY PROFILE</p>
     </div>
 
     <!-- 用户头像卡片 -->
-    <div class="glass-panel rounded-3xl p-6 mb-6 text-center">
+    <div class="glass-panel rounded-3xl p-4 mb-4 text-center">
       <div class="relative inline-block">
         <div
-          class="w-24 h-24 rounded-full bg-gradient-to-r from-[#983f19] to-[#ab3500] flex items-center justify-center text-white text-[40px] font-bold shadow-lg shadow-primary/30"
+          class="w-20 h-20 rounded-full bg-gradient-to-r from-[#983f19] to-[#ab3500] flex items-center justify-center text-white text-[36px] font-bold shadow-lg shadow-primary/30"
         >
           {{ userInfo?.nickname?.charAt(0) || userInfo?.username?.charAt(0) || 'U' }}
         </div>
@@ -26,8 +26,8 @@
     </div>
 
     <!-- 基本信息 -->
-    <div class="glass-panel rounded-3xl p-5 mb-6">
-      <div class="flex items-center justify-between mb-4">
+    <div class="glass-panel rounded-3xl p-4 mb-4">
+      <div class="flex items-center justify-between mb-3">
         <h3 class="font-headline-md text-on-surface flex items-center gap-2">
           <span class="material-symbols-outlined text-primary">person</span>
           基本信息
@@ -102,8 +102,8 @@
     </div>
 
     <!-- 安全设置 -->
-    <div class="glass-panel rounded-3xl p-5 mb-6">
-      <h3 class="font-headline-md text-on-surface flex items-center gap-2 mb-4">
+    <div class="glass-panel rounded-3xl p-4 mb-4">
+      <h3 class="font-headline-md text-on-surface flex items-center gap-2 mb-3">
         <span class="material-symbols-outlined text-primary">security</span>
         安全设置
       </h3>
@@ -120,8 +120,8 @@
     </div>
 
     <!-- 账户信息 -->
-    <div class="glass-panel rounded-3xl p-5">
-      <h3 class="font-headline-md text-on-surface flex items-center gap-2 mb-4">
+    <div class="glass-panel rounded-3xl p-4">
+      <h3 class="font-headline-md text-on-surface flex items-center gap-2 mb-3">
         <span class="material-symbols-outlined text-primary">info</span>
         账户信息
       </h3>

@@ -11,7 +11,7 @@
           <div class="w-10 h-10 rounded-full overflow-hidden border border-black/5 ring-2 ring-primary/10">
             <img class="w-full h-full object-cover" src="../assets/logo.svg" alt="">
           </div>
-          <h1 class="mt-4 font-headline-lg-mobile text-headline-lg-mobile font-bold tracking-tight bg-gradient-to-r from-[#983f19] to-[#ab3500] bg-clip-text text-transparent">
+          <h1 class="mt-2 font-headline-lg-mobile text-headline-lg-mobile font-bold tracking-tight bg-gradient-to-r from-[#983f19] to-[#ab3500] bg-clip-text text-transparent">
             FinanceFlow
           </h1>
         </div>
@@ -111,9 +111,11 @@
       </div>
     </Transition>
 
-    <!-- 底部导航栏 (悬浮胶囊式) -->
+    <!-- 底部导航栏 (悬浮胶囊式) - 键盘弹出时隐藏 -->
     <nav
-      class="fixed bottom-4 left-0 right-0 z-50 flex justify-around items-center px-2 py-2 mx-auto max-w-md bg-white/80 backdrop-blur-2xl rounded-full border border-black/5 shadow-2xl shadow-black/10 w-[calc(100%-48px)]"
+      v-show="!isKeyboardOpen"
+      class="fixed bottom-4 left-0 right-0 z-50 flex justify-around items-center px-2 py-2 mx-auto max-w-md bg-white/80 backdrop-blur-2xl rounded-full border border-black/5 shadow-2xl shadow-black/10 w-[calc(100%-38px)] transition-all duration-300"
+      :class="{ 'opacity-0 translate-y-full': isKeyboardOpen }"
     >
       <!-- Tab 1: 首页 -->
       <button
@@ -180,7 +182,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { usePwaInstall } from '@/composables/usePwaInstall'
@@ -190,8 +192,19 @@ const route = useRoute()
 const authStore = useAuthStore()
 const showUserMenu = ref(false)
 
+// 键盘弹出状态
+const isKeyboardOpen = ref(false)
+
 // PWA 安装提示
 const { showInstallModal, promptInstall, dismissInstall, shouldShowPrompt } = usePwaInstall()
+
+// 监听键盘弹出/收起
+function handleResize() {
+  // 当视口高度变化超过 150px 时，认为是键盘弹出
+  const viewportHeight = window.visualViewport?.height || window.innerHeight
+  const windowHeight = window.screen.height
+  isKeyboardOpen.value = windowHeight - viewportHeight > 150
+}
 
 onMounted(() => {
   // 注册后首次进入，弹出安装提示
@@ -201,6 +214,21 @@ onMounted(() => {
       promptInstall()
     }, 800)
   }
+
+  // 监听视口变化（键盘弹出）
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', handleResize)
+    window.visualViewport.addEventListener('scroll', handleResize)
+  }
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  if (window.visualViewport) {
+    window.visualViewport.removeEventListener('resize', handleResize)
+    window.visualViewport.removeEventListener('scroll', handleResize)
+  }
+  window.removeEventListener('resize', handleResize)
 })
 
 // 判断 Tab 激活
