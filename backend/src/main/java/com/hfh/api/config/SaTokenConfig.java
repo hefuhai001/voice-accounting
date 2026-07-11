@@ -24,6 +24,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
                         "/api/auth/login",
                         "/api/auth/register",
                         "/api/auth/refresh-token",
+                        "/api/auth/reset-password",
                         // 验证码相关接口
                         "/api/captcha/**",
                         // Knife4j / SpringDoc 文档路径
