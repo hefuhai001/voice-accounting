@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FinanceFlow - 分类管理</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&amp;family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&amp;family=Sora:wght@100..800&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "surface-container-high": "#ffffff",
+                "on-surface": "#1a1c1e",
+                "surface-dim": "#f8f9fc",
+                "secondary": "#006a5a",
+                "error-container": "#ffdad6",
+                "background": "#f8f9fc",
+                "on-primary": "#ffffff",
+                "primary": "#ff6b35",
+                "on-tertiary": "#ffffff",
+                "on-secondary": "#ffffff",
+                "on-tertiary-fixed-variant": "#680eac",
+                "inverse-surface": "#2f3033",
+                "surface": "#ffffff",
+                "surface-bright": "#ffffff",
+                "inverse-primary": "#ffb59d",
+                "surface-tint": "#ff6b35",
+                "on-error": "#ffffff",
+                "tertiary-container": "#f1dbff",
+                "on-surface-variant": "#44474e",
+                "secondary-fixed-dim": "#00dfc1",
+                "tertiary-fixed": "#f1dbff",
+                "surface-container-lowest": "#ffffff",
+                "on-tertiary-fixed": "#2d0050",
+                "on-primary-fixed-variant": "#832600",
+                "surface-container-low": "#f1f3f9",
+                "inverse-on-surface": "#f1f0f4",
+                "secondary-fixed": "#26fedc",
+                "on-primary-fixed": "#390c00",
+                "secondary-container": "#00f2d1",
+                "on-secondary-fixed-variant": "#005144",
+                "surface-variant": "#e1e2ec",
+                "outline": "#74777f",
+                "error": "#ba1a1a",
+                "primary-fixed": "#ffdbd0",
+                "primary-container": "#ff6b35",
+                "on-secondary-container": "#00201a",
+                "surface-container-highest": "#e2e2e6",
+                "primary-fixed-dim": "#ffb59d",
+                "on-error-container": "#410002",
+                "on-tertiary-container": "#240045",
+                "on-primary-container": "#ffffff",
+                "on-background": "#1a1c1e",
+                "tertiary-fixed-dim": "#deb7ff",
+                "outline-variant": "#c4c6d0",
+                "tertiary": "#7e3ff2",
+                "on-secondary-fixed": "#00201a",
+                "surface-container": "#f1f3f9"
+              },
+              "borderRadius": {
+                "DEFAULT": "1rem",
+                "lg": "2rem",
+                "xl": "2.5rem",
+                "2xl": "3rem",
+                "3xl": "3.5rem",
+                "full": "9999px"
+              },
+              "spacing": {
+                "unit": "8px",
+                "section-gap": "40px",
+                "gutter": "16px",
+                "container-padding": "24px"
+              },
+              "fontFamily": {
+                "headline-lg": ["Sora"],
+                "headline-lg-mobile": ["Sora"],
+                "display-lg": ["Sora"],
+                "body-md": ["Hanken Grotesk"],
+                "label-caps": ["JetBrains Mono"],
+                "finance-xl": ["Sora"]
+              },
+              "fontSize": {
+                "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                "headline-lg-mobile": ["28px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "500"}],
+                "finance-xl": ["40px", {"lineHeight": "1", "letterSpacing": "-0.04em", "fontWeight": "600"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body {
+            background-color: #f8f9fc;
+            color: theme('colors.on-background');
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(255, 107, 53, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 242, 209, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+            min-height: 100dvh;
+        }
+        
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
+            border-color: theme('colors.primary');
+        }
+        
+        .category-card:active {
+            transform: scale(0.96);
+        }
+        
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        #toggle-indicator {
+            transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased pb-32">
+<!-- TopAppBar -->
+<header class="bg-white/70 backdrop-blur-xl fixed top-0 w-full z-50 border-b border-black/5 flex justify-between items-center px-container-padding py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary/20">
+<img class="w-full h-full object-cover" data-alt="Stylized 3D avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhHdGjvDBYH0oBBlJAQLfqw4W6B9i8ESG5eb5puBLwtAHZ9iido_djLU1InTo0IARnPu_D9LB31FH59qgZKHA1_5sno8bQ2I1nQRl4SmNkgduIcFeEqlWc56iYNVfSeXkM1u9zX8XobBH5wdL68bT5or4sHN69CmQAst8Y71KIJZaDnSUqWC-cBL2imPK-Y_K3l6wJtpD61poL0ihURWRvznC0wm94V2_j4BOevkwpCleWcJIFz6Xm1Q8411s2lHjwo-tKm0wOZnEg"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">FinanceFlow</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-sm border border-black/5 hover:bg-surface-container-low active:scale-95 transition-all text-on-surface-variant">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-28 px-container-padding max-w-lg mx-auto">
+<!-- Header Section -->
+<section class="mb-8">
+<h2 class="font-display-lg text-display-lg mb-2 text-primary">分类管理</h2>
+<p class="text-on-surface-variant font-medium">自定义您的财务领域</p>
+</section>
+<!-- Toggle Switch -->
+<div class="bg-white rounded-3xl p-1.5 flex mb-8 relative border border-black/5 shadow-sm">
+<div class="absolute inset-y-1.5 left-1.5 w-[calc(50%-3px)] bg-primary rounded-2xl shadow-lg shadow-primary/20" id="toggle-indicator"></div>
+<button class="flex-1 py-3 text-center z-10 font-bold text-white transition-colors" onclick="switchTab('expense', this)">支出</button>
+<button class="flex-1 py-3 text-center z-10 font-bold text-on-surface-variant transition-colors" onclick="switchTab('income', this)">收入</button>
+</div>
+<!-- Category Grid -->
+<div class="grid grid-cols-2 gap-4 auto-rows-[130px]">
+<!-- Dining -->
+<div class="category-card glass-panel rounded-3xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer">
+<div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">restaurant</span>
+</div>
+<span class="font-bold text-on-surface">餐饮</span>
+</div>
+<!-- Transport -->
+<div class="category-card glass-panel rounded-3xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer">
+<div class="w-12 h-12 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">directions_car</span>
+</div>
+<span class="font-bold text-on-surface">交通</span>
+</div>
+<!-- Shopping -->
+<div class="col-span-2 category-card glass-panel rounded-3xl p-4 flex flex-row items-center justify-between px-6 cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">local_mall</span>
+</div>
+<div>
+<span class="font-bold text-on-surface block">购物</span>
+<span class="text-xs text-on-surface-variant font-medium">12 个子分类</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+<!-- Entertainment -->
+<div class="category-card glass-panel rounded-3xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer row-span-2">
+<div class="w-16 h-16 rounded-2xl bg-error/10 flex items-center justify-center text-error mb-1">
+<span class="material-symbols-outlined text-[36px]" style="font-variation-settings: 'FILL' 1;">movie</span>
+</div>
+<span class="font-bold text-on-surface text-center">娱乐</span>
+<div class="mt-2 px-3 py-1 bg-surface-container-low border border-black/5 rounded-full text-[10px] text-on-surface-variant font-bold">常用</div>
+</div>
+<!-- Housing -->
+<div class="category-card glass-panel rounded-3xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer">
+<div class="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">home</span>
+</div>
+<span class="font-bold text-on-surface">居住</span>
+</div>
+<!-- Medical -->
+<div class="category-card glass-panel rounded-3xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer">
+<div class="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+</div>
+<span class="font-bold text-on-surface">医疗</span>
+</div>
+<!-- Add New (Dashed) -->
+<div class="col-span-2 mt-4 category-card bg-white border-2 border-dashed border-primary/30 rounded-3xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary transition-all group">
+<div class="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 0;">add</span>
+</div>
+<span class="text-sm font-bold text-primary">添加自定义分类</span>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-white/80 backdrop-blur-2xl fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] rounded-full shadow-xl shadow-black/5 border border-black/5 z-50 flex justify-around items-center px-6 py-3 mx-auto max-w-md">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="text-[10px] font-bold mt-1">主页</span>
+</a>
+<!-- Ledger -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">account_balance_wallet</span>
+<span class="text-[10px] font-bold mt-1">账本</span>
+</a>
+<!-- Voice -->
+<a class="flex flex-col items-center justify-center bg-primary rounded-full p-4 -translate-y-6 shadow-lg shadow-primary/40 active:scale-90 transition-transform text-white" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mic</span>
+</a>
+<!-- Records -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">history</span>
+<span class="text-[10px] font-bold mt-1">记录</span>
+</a>
+<!-- Categories (ACTIVE) -->
+<a class="flex flex-col items-center justify-center text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+<span class="text-[10px] font-bold mt-1">分类</span>
+</a>
+</nav>
+<script>
+        function switchTab(tab, element) {
+            const indicator = document.getElementById('toggle-indicator');
+            const buttons = element.parentElement.querySelectorAll('button');
+            
+            buttons.forEach(btn => {
+                btn.classList.remove('text-white');
+                btn.classList.add('text-on-surface-variant');
+            });
+            
+            element.classList.remove('text-on-surface-variant');
+            element.classList.add('text-white');
+
+            if (tab === 'expense') {
+                indicator.style.transform = 'translateX(0)';
+            } else {
+                indicator.style.transform = 'translateX(100%)';
+            }
+        }
+    </script>
+</body></html>
