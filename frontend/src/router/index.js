@@ -57,6 +57,12 @@ const routes = [
         component: () => import('@/views/user/ReminderView.vue'),
         meta: { title: '我的提醒' },
       },
+      {
+        path: 'profile',
+        name: 'UserProfile',
+        component: () => import('@/views/user/ProfileView.vue'),
+        meta: { title: '个人中心' },
+      },
     ],
   },
 

@@ -42,6 +42,13 @@
           </div>
           <nav class="py-1">
             <button
+              @click="navigate('/profile')"
+              class="w-full text-left px-4 py-2.5 font-body-md text-on-surface hover:bg-surface-container/30 active:bg-surface-container/50 transition-colors flex items-center gap-3"
+            >
+              <span class="material-symbols-outlined text-[20px]">person</span>
+              个人中心
+            </button>
+            <button
               @click="navigate('/reminder')"
               class="w-full text-left px-4 py-2.5 font-body-md text-on-surface hover:bg-surface-container/30 active:bg-surface-container/50 transition-colors flex items-center gap-3"
             >
