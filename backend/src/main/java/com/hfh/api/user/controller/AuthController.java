@@ -5,6 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.hfh.api.common.Result;
 import com.hfh.api.dto.LoginDTO;
 import com.hfh.api.dto.RegisterDTO;
+import com.hfh.api.dto.ResetPasswordDTO;
 import com.hfh.api.dto.TokenVO;
 import com.hfh.api.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,6 +43,15 @@ public class AuthController {
     @Operation(summary = "用户注册", description = "新用户注册，默认为普通用户角色，注册成功后自动登录并返回双Token")
     public Result<TokenVO> register(@Valid @RequestBody RegisterDTO registerDTO) {
         return authService.register(registerDTO);
+    }
+
+    /**
+     * 找回密码（通过邮箱验证码重置）
+     */
+    @PostMapping("/reset-password")
+    @Operation(summary = "找回密码", description = "通过邮箱验证码重置密码")
+    public Result<Void> resetPassword(@Valid @RequestBody ResetPasswordDTO resetPasswordDTO) {
+        return authService.resetPassword(resetPasswordDTO);
     }
 
     /**

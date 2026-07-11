@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hfh.api.common.Result;
 import com.hfh.api.dto.LoginDTO;
 import com.hfh.api.dto.RegisterDTO;
+import com.hfh.api.dto.ResetPasswordDTO;
 import com.hfh.api.dto.TokenVO;
 import com.hfh.api.entity.SysUserEntity;
 import com.hfh.api.mapper.SysUserMapper;
@@ -30,7 +31,7 @@ public class AuthService {
     private final SysUserMapper sysUserMapper;
     private final CaptchaService captchaService;
     private final StringRedisTemplate redisTemplate;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder passwordEncoder;
 
     private static final String REFRESH_TOKEN_PREFIX = "auth:refresh:";
     private static final long REFRESH_TOKEN_TTL = 2592000L; // 30天（秒）
@@ -158,6 +159,33 @@ public class AuthService {
         if (refreshTokenValue != null && !refreshTokenValue.isEmpty()) {
             redisTemplate.delete(REFRESH_TOKEN_PREFIX + refreshTokenValue);
         }
+        return Result.ok(null);
+    }
+
+    /**
+     * 找回密码（通过邮箱验证码重置）
+     */
+    public Result<Void> resetPassword(ResetPasswordDTO dto) {
+        // 1. 校验邮箱验证码
+        if (!captchaService.verifyEmailCode(dto.getEmail(), dto.getCode())) {
+            return Result.fail(400, "验证码错误或已过期");
+        }
+
+        // 2. 查询用户
+        SysUserEntity user = sysUserMapper.selectOne(
+                new LambdaQueryWrapper<SysUserEntity>()
+                        .eq(SysUserEntity::getEmail, dto.getEmail())
+        );
+        if (user == null) {
+            return Result.fail(400, "该邮箱未注册");
+        }
+
+        // 3. 更新密码
+        SysUserEntity updateEntity = new SysUserEntity();
+        updateEntity.setId(user.getId());
+        updateEntity.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        sysUserMapper.updateById(updateEntity);
+
         return Result.ok(null);
     }
 

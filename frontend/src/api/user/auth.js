@@ -42,6 +42,17 @@ export const authApi = {
   getUserInfo() {
     return request.get('/api/auth/info')
   },
+
+  /**
+   * 找回密码（通过邮箱验证码重置）
+   * @param {Object} data - 重置数据
+   * @param {string} data.email - 邮箱
+   * @param {string} data.code - 验证码
+   * @param {string} data.newPassword - 新密码
+   */
+  resetPassword(data) {
+    return request.post('/api/auth/reset-password', data)
+  },
 }
 
 /**

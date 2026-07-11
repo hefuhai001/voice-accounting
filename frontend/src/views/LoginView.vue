@@ -90,7 +90,7 @@
 
         <!-- 注册表单 -->
         <a-form
-          v-else
+          v-else-if="activeTab === 'register'"
           :model="registerForm"
           :rules="registerRules"
           ref="registerFormRef"
@@ -197,6 +197,101 @@
             </button>
           </a-form-item>
         </a-form>
+
+        <!-- 找回密码表单 -->
+        <a-form
+          v-else-if="activeTab === 'reset'"
+          :model="resetForm"
+          :rules="resetRules"
+          ref="resetFormRef"
+          @finish="handleResetPassword"
+          layout="vertical"
+          class="space-y-1"
+        >
+          <a-form-item name="email" class="!mb-4">
+            <label
+              class="block text-label-sm text-on-surface-variant mb-1.5 ml-0.5 uppercase tracking-wider font-semibold"
+              >邮箱</label
+            >
+            <a-input
+              v-model:value="resetForm.email"
+              placeholder="请输入注册邮箱"
+              size="large"
+              class="login-input"
+            >
+              <template #prefix><span class="material-symbols-outlined text-on-surface-variant">mail</span></template>
+            </a-input>
+          </a-form-item>
+
+          <a-form-item name="code" class="!mb-4">
+            <label
+              class="block text-label-sm text-on-surface-variant mb-1.5 ml-0.5 uppercase tracking-wider font-semibold"
+              >验证码</label
+            >
+            <div class="flex gap-2">
+              <a-input
+                v-model:value="resetForm.code"
+                placeholder="6位验证码"
+                size="large"
+                :maxlength="6"
+                class="login-input flex-1"
+              >
+                <template #prefix><span class="material-symbols-outlined text-on-surface-variant">verified_user</span></template>
+              </a-input>
+              <button
+                type="button"
+                :disabled="codeSending || resetCountdown > 0 || !resetForm.email"
+                @click="handleSendResetCode"
+                class="flex-shrink-0 h-12 px-4 rounded-2xl text-label-md font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                :class="resetCountdown > 0
+                  ? 'bg-surface-container-low text-on-surface-variant'
+                  : 'bg-gradient-to-r from-[#983f19] to-[#ab3500] text-white shadow-sm hover:shadow-primary/30'"
+              >
+                {{ codeSending ? '发送中' : resetCountdown > 0 ? `${resetCountdown}s` : '获取验证码' }}
+              </button>
+            </div>
+          </a-form-item>
+
+          <a-form-item name="newPassword" class="!mb-4">
+            <label
+              class="block text-label-sm text-on-surface-variant mb-1.5 ml-0.5 uppercase tracking-wider font-semibold"
+              >新密码</label
+            >
+            <a-input-password
+              v-model:value="resetForm.newPassword"
+              placeholder="6-20个字符"
+              size="large"
+              class="login-input"
+            >
+              <template #prefix><span class="material-symbols-outlined text-on-surface-variant">lock</span></template>
+            </a-input-password>
+          </a-form-item>
+
+          <a-form-item name="confirmPassword" class="!mb-6">
+            <label
+              class="block text-label-sm text-on-surface-variant mb-1.5 ml-0.5 uppercase tracking-wider font-semibold"
+              >确认密码</label
+            >
+            <a-input-password
+              v-model:value="resetForm.confirmPassword"
+              placeholder="再次输入新密码"
+              size="large"
+              class="login-input"
+            >
+              <template #prefix><span class="material-symbols-outlined text-on-surface-variant">lock</span></template>
+            </a-input-password>
+          </a-form-item>
+
+          <a-form-item class="!mb-0">
+            <button
+              type="submit"
+              :disabled="loading"
+              class="w-full h-12 rounded-2xl text-white text-headline-md font-semibold shadow-lg transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 bg-gradient-to-r from-[#983f19] to-[#ab3500] shadow-primary/30 hover:shadow-primary/40"
+            >
+              {{ loading ? '重置中...' : '重置密码' }}
+            </button>
+          </a-form-item>
+        </a-form>
       </div>
 
       <!-- 底部提示 -->
@@ -216,7 +311,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import { useAuthStore } from '@/stores/auth'
-import { captchaApi } from '@/api/user/auth'
+import { authApi, captchaApi } from '@/api/user/auth'
 import SliderCaptcha from '@/components/SliderCaptcha.vue'
 
 const router = useRouter()
@@ -230,6 +325,7 @@ const registerFormRef = ref()
 const tabOptions = [
   { key: 'login', label: '登录' },
   { key: 'register', label: '注册' },
+  { key: 'reset', label: '找回密码' },
 ]
 
 // 登录表单
@@ -247,11 +343,22 @@ const registerForm = reactive({
   nickname: '',
 })
 
+// 找回密码表单
+const resetFormRef = ref()
+const resetForm = reactive({
+  email: '',
+  code: '',
+  newPassword: '',
+  confirmPassword: '',
+})
+
 // 验证码相关
 const sliderVisible = ref(false)
 const codeSending = ref(false)
 const countdown = ref(0)
+const resetCountdown = ref(0)
 let countdownTimer = null
+let resetCountdownTimer = null
 
 // 验证规则
 const loginRules = {
@@ -278,6 +385,33 @@ const registerRules = {
   ],
 }
 
+// 找回密码确认密码验证
+const validateResetConfirmPassword = async (_rule, value) => {
+  if (value !== resetForm.newPassword) {
+    return Promise.reject('两次密码输入不一致')
+  }
+  return Promise.resolve()
+}
+
+const resetRules = {
+  email: [
+    { required: true, message: '请输入邮箱', trigger: 'blur' },
+    { type: 'email', message: '邮箱格式不正确', trigger: 'blur' },
+  ],
+  code: [
+    { required: true, message: '请输入验证码', trigger: 'blur' },
+    { len: 6, message: '验证码为6位', trigger: 'blur' },
+  ],
+  newPassword: [
+    { required: true, message: '请输入新密码', trigger: 'blur' },
+    { min: 6, max: 20, message: '密码长度在6-20个字符之间', trigger: 'blur' },
+  ],
+  confirmPassword: [
+    { required: true, message: '请确认新密码', trigger: 'blur' },
+    { validator: validateResetConfirmPassword, trigger: 'blur' },
+  ],
+}
+
 // 点击获取验证码 -> 弹出滑块验证
 const handleSendCode = () => {
   if (!registerForm.email) {
@@ -287,16 +421,30 @@ const handleSendCode = () => {
   sliderVisible.value = true
 }
 
+// 点击获取找回密码验证码 -> 弹出滑块验证
+const handleSendResetCode = () => {
+  if (!resetForm.email) {
+    message.warning('请先输入邮箱')
+    return
+  }
+  sliderVisible.value = true
+}
+
 // 滑块验证成功 -> 发送邮箱验证码
 const onSliderSuccess = async (captchaToken) => {
   codeSending.value = true
+  const email = activeTab.value === 'reset' ? resetForm.email : registerForm.email
   try {
     await captchaApi.sendEmailCode({
-      email: registerForm.email,
+      email,
       captchaToken,
     })
     message.success('验证码已发送')
-    startCountdown()
+    if (activeTab.value === 'reset') {
+      startResetCountdown()
+    } else {
+      startCountdown()
+    }
   } catch (error) {
     console.error('发送验证码失败:', error)
   } finally {
@@ -312,6 +460,17 @@ const startCountdown = () => {
     if (countdown.value <= 0) {
       clearInterval(countdownTimer)
       countdownTimer = null
+    }
+  }, 1000)
+}
+
+const startResetCountdown = () => {
+  resetCountdown.value = 60
+  resetCountdownTimer = setInterval(() => {
+    resetCountdown.value--
+    if (resetCountdown.value <= 0) {
+      clearInterval(resetCountdownTimer)
+      resetCountdownTimer = null
     }
   }, 1000)
 }
@@ -352,6 +511,27 @@ const handleRegister = async () => {
     }
   } catch (error) {
     console.error('注册失败:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// 处理找回密码
+const handleResetPassword = async () => {
+  loading.value = true
+  try {
+    await authApi.resetPassword({
+      email: resetForm.email,
+      code: resetForm.code,
+      newPassword: resetForm.newPassword,
+    })
+    message.success('密码重置成功，请登录')
+    activeTab.value = 'login'
+    loginForm.username = ''
+    loginForm.password = ''
+  } catch (error) {
+    console.error('重置密码失败:', error)
+    message.error(error.response?.data?.msg || '重置密码失败')
   } finally {
     loading.value = false
   }
