@@ -1,95 +1,94 @@
 <template>
-  <div class="px-margin-mobile pt-stack-lg pb-8">
-    <!-- Search & Filter Section -->
-    <section class="space-y-stack-md">
-      <!-- Search Bar -->
-      <div class="relative group">
-        <svg
-          class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-on-surface-variant group-focus-within:text-primary transition-colors"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <circle cx="11" cy="11" r="8" />
-          <path d="M21 21l-4.35-4.35" />
-        </svg>
+  <div class="px-margin-mobile pb-32 flex flex-col gap-8 max-w-3xl mx-auto">
+    <!-- Header & Search -->
+    <section class="flex flex-col gap-6 mt-8">
+      <div class="flex items-end justify-between">
+        <h2 class="font-headline-lg-mobile text-[28px] font-bold text-on-surface tracking-tight">交易记录</h2>
+        <span class="text-on-surface-variant font-medium text-sm">本月支出: ¥{{ monthlyExpense.toFixed(2) }}</span>
+      </div>
+
+      <div class="relative w-full group">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors text-[22px]">search</span>
         <input
           v-model="searchText"
           type="text"
-          placeholder="搜索备注..."
-          class="w-full h-12 pl-12 pr-4 bg-surface-gray border-none rounded-xl focus:ring-2 focus:ring-primary-container text-body-md placeholder-on-surface-variant/60"
+          placeholder="查找餐饮、购物或转账..."
+          class="w-full bg-white border border-outline rounded-3xl py-3.5 pl-12 pr-4 text-[15px] focus:ring-2 focus:ring-primary/10 focus:border-primary focus:outline-none placeholder:text-on-surface-variant shadow-sm transition-all"
           @keyup.enter="handleSearch"
         />
       </div>
-      <!-- Filter Chips -->
-      <div class="flex gap-stack-sm overflow-x-auto pb-2 scrollbar-hide">
+
+      <!-- Filter Tabs -->
+      <div class="flex gap-3 overflow-x-auto pb-1 no-scrollbar">
         <button
           v-for="f in filters"
           :key="f.value"
           @click="setFilter(f.value)"
-          class="px-6 py-2 rounded-full font-label-md transition-transform active:scale-95"
+          class="px-6 py-2.5 rounded-full text-[14px] font-bold transition-all active:scale-95"
           :class="
             activeFilter === f.value
-              ? 'bg-primary-container text-on-secondary'
-              : 'bg-white text-on-surface-variant border border-outline-variant hover:bg-surface-container-low transition-all'
+              ? 'bg-primary text-white shadow-lg shadow-primary/20'
+              : 'bg-white border border-outline text-on-surface-variant hover:border-primary/30 hover:bg-primary/5'
           "
         >
           {{ f.label }}
         </button>
+        <button class="px-4 py-2.5 rounded-full bg-white border border-outline text-on-surface-variant hover:text-primary transition-all">
+          <span class="material-symbols-outlined text-[18px]">tune</span>
+        </button>
       </div>
     </section>
 
-    <!-- Transaction History List -->
-    <div class="transaction-list space-y-stack-lg mt-stack-md">
-      <!-- 按日期分组 -->
+    <!-- Timeline -->
+    <section class="flex flex-col gap-10 relative timeline-line">
       <template v-for="(group, date) in groupedRecords" :key="date">
-        <section>
-          <!-- 日期标题 -->
-          <h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-stack-md">
-            {{ formatDate(date) }}
-          </h3>
-          <div class="space-y-stack-md">
-            <!-- 记录卡片 -->
+        <div class="relative flex flex-col gap-5">
+          <!-- Date Header -->
+          <div class="flex items-center gap-4 z-10">
+            <div class="w-10 h-10 rounded-full bg-white border border-outline flex items-center justify-center shrink-0 shadow-sm">
+              <span class="material-symbols-outlined text-primary text-[20px]">calendar_today</span>
+            </div>
+            <div class="font-bold text-[15px] text-on-surface tracking-wide">{{ formatDate(date) }}</div>
+          </div>
+
+          <!-- Records -->
+          <div class="ml-10 flex flex-col gap-4">
             <div
               v-for="record in group"
               :key="record.id"
-              class="group bg-white p-4 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex items-center gap-4 hover:bg-surface-container-low transition-colors cursor-pointer"
               @click="showActions(record)"
+              class="custom-card p-5 flex justify-between items-center cursor-pointer"
             >
-              <!-- 图标 -->
-              <div
-                class="w-12 h-12 rounded-full flex items-center justify-center text-xl shrink-0"
-                :class="record.type === 1 ? 'bg-orange-100' : 'bg-blue-50'"
-              >
-                {{ record.categoryIcon || (record.type === 1 ? '💸' : '💰') }}
+              <div class="flex items-center gap-4">
+                <div
+                  class="w-12 h-12 rounded-2xl flex items-center justify-center"
+                  :class="getCategoryBgClass(record.type, record.categoryName)"
+                >
+                  <span class="material-symbols-outlined text-[24px]" :class="getCategoryColorClass(record.type, record.categoryName)">
+                    {{ getCategoryIcon(record.categoryName) }}
+                  </span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-[16px] text-on-surface font-bold">{{ record.categoryName }}</span>
+                  <span class="text-[13px] text-on-surface-variant font-medium">
+                    {{ formatTime(record.transactionDate || record.date) }} · {{ record.remark || '无备注' }}
+                  </span>
+                </div>
               </div>
-              <!-- 内容 -->
-              <div class="flex-1">
-                <div class="flex justify-between items-center">
-                  <span
-                    class="font-headline-md tabular-nums"
-                    :class="record.type === 1 ? 'text-danger-red' : 'text-success-green'"
-                  >
-                    {{ record.type === 1 ? '-' : '+' }}¥{{ Number(record.amount).toFixed(2) }}
-                  </span>
-                  <span class="font-label-sm text-label-sm text-on-surface-variant">
-                    {{ formatDateShort(record.transactionDate || record.date) }}
-                  </span>
-                </div>
-                <div class="flex justify-between items-center mt-1">
-                  <span class="font-body-md text-on-surface-variant">{{ record.remark || '' }}</span>
-                  <svg class="w-4 h-4 text-outline-variant" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
+              <div class="text-right">
+                <span
+                  class="text-[20px] font-bold font-finance-xl"
+                  :class="record.type === 1 ? 'text-error' : 'text-secondary'"
+                >
+                  {{ record.type === 1 ? '-' : '+' }}¥{{ Number(record.amount).toFixed(2) }}
+                </span>
               </div>
             </div>
           </div>
-        </section>
+        </div>
       </template>
 
-      <!-- 加载更多 -->
+      <!-- Load More -->
       <div v-if="hasMore && records.length > 0" class="py-4 text-center">
         <button
           @click="loadMore"
@@ -100,25 +99,25 @@
         </button>
       </div>
 
-      <!-- 空状态 -->
-      <div v-if="records.length === 0 && !loading" class="py-16 text-center">
-        <UnorderedListOutlined class="text-4xl text-outline" />
-        <p class="font-body-md text-body-md text-on-surface-variant mt-3">暂无记录</p>
-        <button @click="goToTransaction" class="mt-3 font-label-md text-primary">
+      <!-- Empty State -->
+      <div v-if="records.length === 0 && !loading" class="custom-card rounded-3xl p-12 text-center">
+        <span class="material-symbols-outlined text-6xl text-outline mb-4 block">history</span>
+        <p class="font-body-md text-body-md text-on-surface-variant">暂无记录</p>
+        <button @click="goToTransaction" class="mt-4 bg-primary text-white px-6 py-2 rounded-full font-bold text-sm">
           去记一笔
         </button>
       </div>
-    </div>
+    </section>
 
-    <!-- 操作菜单 ActionSheet -->
+    <!-- ActionSheet -->
     <Transition name="fade">
       <div v-if="actionSheetVisible" class="fixed inset-0 z-50" @click="actionSheetVisible = false">
         <div class="absolute inset-0 bg-black/30" />
         <div class="absolute bottom-36 left-0 right-0 pb-[env(safe-area-inset-bottom)]">
-          <div class="mx-3 mb-2 bg-white/95 backdrop-blur-xl rounded-2xl overflow-hidden">
+          <div class="mx-3 mb-2 bg-white/95 backdrop-blur-xl rounded-3xl overflow-hidden">
             <button
               @click.stop="handleEdit"
-              class="w-full py-3.5 text-[17px] text-tertiary font-normal border-b border-outline-variant/30 active:bg-surface-container-low"
+              class="w-full py-3.5 text-[17px] text-tertiary font-normal border-b border-outline/30 active:bg-surface-container-low"
             >
               编辑记录
             </button>
@@ -129,7 +128,7 @@
               删除记录
             </button>
           </div>
-          <div class="mx-3 bg-white/95 backdrop-blur-xl rounded-2xl overflow-hidden">
+          <div class="mx-3 bg-white/95 backdrop-blur-xl rounded-3xl overflow-hidden">
             <button
               @click="actionSheetVisible = false"
               class="w-full py-3.5 text-[17px] text-tertiary font-semibold active:bg-surface-container-low"
@@ -141,7 +140,7 @@
       </div>
     </Transition>
 
-    <!-- 编辑弹窗 -->
+    <!-- Edit Modal -->
     <a-modal
       :open="editModalVisible"
       title="编辑记录"
@@ -151,7 +150,6 @@
       @cancel="editModalVisible = false"
     >
       <a-form :model="editForm" layout="vertical" class="mt-3" @finish="handleEditSubmit">
-        <!-- 类型切换 -->
         <div class="bg-surface-container-low p-1 rounded-xl flex mb-4">
           <button
             v-for="t in [{ value: 1, label: '支出' }, { value: 2, label: '收入' }]"
@@ -183,7 +181,8 @@
         <a-form-item label="分类" name="categoryId" :rules="[{ required: true, message: '请选择分类' }]">
           <a-select v-model:value="editForm.categoryId" placeholder="选择分类" size="large">
             <a-select-option v-for="item in editCategories" :key="item.id" :value="item.id">
-              {{ item.icon }} {{ item.name }}
+              <span class="material-symbols-outlined text-[16px] mr-2">{{ item.icon }}</span>
+              {{ item.name }}
             </a-select-option>
           </a-select>
         </a-form-item>
@@ -214,7 +213,6 @@
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { message, Modal } from 'ant-design-vue'
-import { UnorderedListOutlined } from '@ant-design/icons-vue'
 import { transactionApi, categoryApi } from '@/api'
 import { useAuthStore } from '@/stores/auth'
 
@@ -228,12 +226,11 @@ const records = ref([])
 const searchText = ref('')
 const activeFilter = ref('all')
 const pagination = reactive({ current: 1, pageSize: 20, total: 0 })
+const monthlyExpense = ref(0)
 
-// ActionSheet
 const actionSheetVisible = ref(false)
 const activeRecord = ref(null)
 
-// 编辑弹窗
 const editModalVisible = ref(false)
 const editSubmitting = ref(false)
 const editCategories = ref([])
@@ -254,7 +251,6 @@ const filters = [
 
 const hasMore = computed(() => records.value.length < pagination.total)
 
-// 按日期分组
 const groupedRecords = computed(() => {
   const map = {}
   for (const r of records.value) {
@@ -277,28 +273,60 @@ function formatDate(dateStr) {
   return `${d.getMonth() + 1}月${d.getDate()}日`
 }
 
-function formatDateShort(dateStr) {
+function formatTime(dateStr) {
   if (!dateStr) return ''
   const d = new Date(dateStr)
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${y}-${m}-${day}`
+  const hours = String(d.getHours()).padStart(2, '0')
+  const minutes = String(d.getMinutes()).padStart(2, '0')
+  return `${hours}:${minutes}`
 }
 
-// 显示操作菜单
+function getCategoryIcon(name) {
+  const map = {
+    餐饮: 'restaurant',
+    交通: 'directions_car',
+    工资: 'payments',
+    购物: 'shopping_bag',
+    娱乐: 'sports_esports',
+    住房: 'home',
+    医疗: 'local_hospital',
+    教育: 'school',
+  }
+  return map[name] || 'receipt'
+}
+
+function getCategoryBgClass(type, name) {
+  if (type === 2) return 'bg-green-50'
+  const map = {
+    餐饮: 'bg-orange-50',
+    交通: 'bg-blue-50',
+    购物: 'bg-violet-50',
+    娱乐: 'bg-pink-50',
+  }
+  return map[name] || 'bg-slate-50'
+}
+
+function getCategoryColorClass(type, name) {
+  if (type === 2) return 'text-green-500'
+  const map = {
+    餐饮: 'text-orange-500',
+    交通: 'text-blue-500',
+    购物: 'text-violet-500',
+    娱乐: 'text-pink-500',
+  }
+  return map[name] || 'text-slate-500'
+}
+
 function showActions(record) {
   activeRecord.value = record
   actionSheetVisible.value = true
 }
 
-// 编辑
 async function handleEdit() {
   actionSheetVisible.value = false
   const record = activeRecord.value
   if (!record) return
 
-  // 加载分类列表
   try {
     const catRes = await categoryApi.getList(userId.value)
     editCategories.value = catRes.data || []
@@ -317,7 +345,6 @@ async function handleEdit() {
   editModalVisible.value = true
 }
 
-// 提交编辑
 async function handleEditSubmit() {
   editSubmitting.value = true
   try {
@@ -338,7 +365,6 @@ async function handleEditSubmit() {
   }
 }
 
-// 删除
 function handleDelete() {
   actionSheetVisible.value = false
   const record = activeRecord.value
@@ -362,22 +388,17 @@ function handleDelete() {
   })
 }
 
-// 切换筛选条件
 function setFilter(value) {
   activeFilter.value = value
   loadData()
 }
 
-// 跳转到记账页
 function goToTransaction() {
   router.push('/transaction')
 }
 
 async function loadData(reset = true) {
-  if (!userId.value) {
-    console.warn('userId 未加载，等待用户信息...')
-    return
-  }
+  if (!userId.value) return
 
   if (reset) {
     records.value = []
@@ -401,6 +422,12 @@ async function loadData(reset = true) {
       records.value.push(...newRecords)
     }
     pagination.total = res.data.total
+
+    // 计算本月支出
+    const monthExpense = records.value
+      .filter(r => r.type === 1)
+      .reduce((sum, r) => sum + Number(r.amount), 0)
+    monthlyExpense.value = monthExpense
   } catch (error) {
     console.error('加载失败:', error)
   } finally {
@@ -419,12 +446,10 @@ function loadMore() {
   loadData(false)
 }
 
-// 监听 userId 变化
 watch(userId, (newUserId) => {
   if (newUserId) loadData()
 })
 
-// 页面加载时检查登录状态
 onMounted(async () => {
   if (!authStore.userInfo) {
     await authStore.checkLoginStatus()
@@ -434,29 +459,52 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.transaction-list::-webkit-scrollbar {
-  display: none;
-}
-.transaction-list {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.tabular-nums {
-  font-variant-numeric: tabular-nums;
+.custom-card {
+  background: #ffffff;
+  border-radius: 2rem;
+  border: 1px solid rgba(241, 245, 249, 0.8);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ActionSheet 动画 */
+.custom-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.timeline-line::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #e2e8f0;
+  opacity: 0.5;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.rounded-3xl {
+  border-radius: 2rem;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;

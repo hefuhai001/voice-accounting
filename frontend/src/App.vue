@@ -9,10 +9,10 @@ import zhCN from 'ant-design-vue/es/locale/zh_CN'
 
 const antdTheme = {
   token: {
-    // 主色 - 对应 primary-container (#ff6b35)
-    colorPrimary: '#ff6b35',
+    // 主色 - 应用主题色 (#983f19)
+    colorPrimary: '#983f19',
     // 链接色
-    colorLink: '#ff6b35',
+    colorLink: '#983f19',
     colorLinkHover: '#ab3500',
     colorLinkActive: '#832600',
     // 成功色 - 对应 success-green
@@ -67,18 +67,18 @@ const antdTheme = {
   },
   components: {
     Button: {
-      primaryShadow: '0 4px 12px rgba(255, 107, 53, 0.3)',
+      primaryShadow: '0 4px 12px rgba(152, 63, 25, 0.3)',
       defaultBorderColor: '#e1bfb5',
       defaultColor: '#1b1b1d',
     },
     Input: {
-      activeBorderColor: '#ff6b35',
+      activeBorderColor: '#983f19',
       hoverBorderColor: '#e1bfb5',
       colorBorder: '#e4e2e4',
     },
     Select: {
       colorBorder: '#e4e2e4',
-      optionSelectedBg: 'rgba(255, 107, 53, 0.08)',
+      optionSelectedBg: 'rgba(152, 63, 25, 0.08)',
     },
     Modal: {
       borderRadiusLG: 20,
@@ -91,12 +91,12 @@ const antdTheme = {
     },
     DatePicker: {
       colorBorder: '#e4e2e4',
-      activeBorderColor: '#ff6b35',
+      activeBorderColor: '#983f19',
     },
     Tabs: {
-      inkBarColor: '#ff6b35',
+      inkBarColor: '#983f19',
       itemActiveColor: '#ab3500',
-      itemSelectedColor: '#ff6b35',
+      itemSelectedColor: '#983f19',
       itemHoverColor: '#ab3500',
     },
   },

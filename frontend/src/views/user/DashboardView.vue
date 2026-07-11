@@ -1,127 +1,117 @@
 <template>
-  <div class="px-margin-mobile pt-stack-lg pb-8 flex flex-col gap-stack-lg">
+  <div class="px-margin-mobile pb-32 flex flex-col gap-stack-lg max-w-md mx-auto">
     <!-- Greeting Section -->
-    <section class="mt-4">
-      <h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">
-        Hi，{{ authStore.userInfo?.nickname || '用户' }}
-      </h1>
-      <p class="font-body-md text-on-surface-variant opacity-70">{{ currentDate }}</p>
+    <section class="flex flex-col gap-1 mb-2">
+      <span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">欢迎回来</span>
+      <h2 class="font-headline-lg text-headline-lg text-on-surface">你好，{{ authStore.userInfo?.nickname || '用户' }}</h2>
     </section>
 
-    <!-- Monthly Overview (Bento Style) -->
-    <section class="bg-white rounded-3xl p-6 shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex flex-col gap-6">
-      <div class="flex justify-between items-center">
-        <h2 class="font-headline-md text-headline-md">本月概览</h2>
-        <span class="bg-surface-gray px-3 py-1 rounded-full font-label-sm text-on-surface-variant">{{ currentMonth }}</span>
-      </div>
-      <div class="grid grid-cols-2 gap-4">
-        <!-- Expenditure -->
-        <div class="bg-[#FFF5F2] p-5 rounded-2xl flex flex-col gap-2">
-          <div class="flex items-center gap-2 text-primary">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="9" />
-              <path stroke-linecap="round" d="M8 12h8" />
-            </svg>
-            <span class="font-label-md">支出</span>
+    <!-- Bento Grid: Financial Overview -->
+    <section class="grid grid-cols-2 gap-4">
+      <!-- Main Spend Card -->
+      <div class="col-span-2 glass-card rounded-3xl p-6 flex flex-col gap-4 relative overflow-hidden group">
+        <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/15 transition-colors duration-500"></div>
+        <div class="flex justify-between items-start z-10">
+          <div class="flex flex-col gap-1">
+            <span class="font-label-caps text-label-caps text-on-surface-variant uppercase font-semibold">本月支出</span>
+            <div class="font-display-lg text-display-lg text-primary mt-2">
+              ¥{{ formatAmount(stats.monthExpense) }}
+            </div>
           </div>
-          <div class="font-headline-md text-headline-md text-primary">
-            ¥{{ stats.monthExpense.toLocaleString() }}
-          </div>
-        </div>
-        <!-- Income -->
-        <div class="bg-[#F2FAF5] p-5 rounded-2xl flex flex-col gap-2">
-          <div class="flex items-center gap-2 text-success-green">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="9" />
-              <path stroke-linecap="round" d="M12 8v8m-4-4h8" />
-            </svg>
-            <span class="font-label-md">收入</span>
-          </div>
-          <div class="font-headline-md text-headline-md text-success-green">
-            ¥{{ stats.monthIncome.toLocaleString() }}
+          <div class="bg-secondary-container/10 text-secondary border border-secondary/30 px-3 py-1 rounded-full flex items-center gap-1 backdrop-blur-md">
+            <span class="material-symbols-outlined text-[14px] font-bold">trending_down</span>
+            <span class="font-label-caps text-label-caps font-bold">较上月 -12%</span>
           </div>
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-4">
-        <div class="bg-surface-gray/50 p-4 rounded-2xl flex items-center gap-3">
-          <UnorderedListOutlined class="text-on-surface-variant" />
-          <div>
-            <p class="text-[10px] uppercase text-on-surface-variant tracking-wider">记账笔数</p>
-            <p class="font-headline-md text-[18px]">{{ stats.recordCount }} 笔</p>
+
+      <!-- Income Block -->
+      <div class="glass-panel rounded-3xl p-6 flex flex-col gap-2 justify-center relative overflow-hidden group border border-on-surface/5">
+        <div class="absolute -bottom-5 -left-5 w-24 h-24 bg-secondary/10 rounded-full blur-2xl group-hover:bg-secondary/15 transition-colors"></div>
+        <div class="flex items-center gap-2 z-10 text-on-surface-variant mb-1">
+          <div class="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-secondary text-sm font-bold">arrow_downward</span>
           </div>
+          <span class="font-label-caps text-label-caps uppercase font-semibold">收入</span>
         </div>
-        <div class="bg-surface-gray/50 p-4 rounded-2xl flex items-center gap-3">
-          <BellOutlined class="text-secondary" />
-          <div>
-            <p class="text-[10px] uppercase text-on-surface-variant tracking-wider">待处理</p>
-            <p class="font-headline-md text-[18px] text-secondary">{{ stats.pendingReminders }} 个</p>
+        <div class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface z-10 font-bold">
+          ¥{{ formatCompact(stats.monthIncome) }}
+        </div>
+      </div>
+
+      <!-- Balance Block -->
+      <div class="glass-panel rounded-3xl p-6 flex flex-col gap-2 justify-center relative overflow-hidden group border border-on-surface/5">
+        <div class="absolute -bottom-5 -right-5 w-24 h-24 bg-tertiary/10 rounded-full blur-2xl group-hover:bg-tertiary/15 transition-colors"></div>
+        <div class="flex items-center gap-2 z-10 text-on-surface-variant mb-1">
+          <div class="w-8 h-8 rounded-full bg-tertiary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-tertiary text-sm font-bold">account_balance_wallet</span>
           </div>
+          <span class="font-label-caps text-label-caps uppercase font-semibold">余额</span>
+        </div>
+        <div class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface z-10 font-bold">
+          ¥{{ formatCompact(stats.monthIncome - stats.monthExpense) }}
+        </div>
+      </div>
+
+      <!-- Record Count Block -->
+      <div class="glass-panel rounded-3xl p-5 flex flex-col gap-2 justify-center relative overflow-hidden group border border-on-surface/5">
+        <div class="flex items-center gap-2 z-10 text-on-surface-variant mb-1">
+          <div class="w-7 h-7 rounded-full bg-outline/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-outline text-sm font-bold">receipt_long</span>
+          </div>
+          <span class="font-label-caps text-label-caps uppercase font-semibold">记账</span>
+        </div>
+        <div class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface z-10 font-bold">
+          {{ stats.recordCount }} 笔
+        </div>
+      </div>
+
+      <!-- Reminder Block -->
+      <div class="glass-panel rounded-3xl p-5 flex flex-col gap-2 justify-center relative overflow-hidden group border border-on-surface/5">
+        <div class="flex items-center gap-2 z-10 text-on-surface-variant mb-1">
+          <div class="w-7 h-7 rounded-full bg-secondary/10 flex items-center justify-center">
+            <span class="material-symbols-outlined text-secondary text-sm font-bold">alarm</span>
+          </div>
+          <span class="font-label-caps text-label-caps uppercase font-semibold">提醒</span>
+        </div>
+        <div class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface z-10 font-bold">
+          {{ stats.pendingReminders }} 个
         </div>
       </div>
     </section>
 
-    <!-- Quick Actions Grid -->
-    <section class="grid grid-cols-4 gap-4">
-      <button
-        v-for="action in quickActions"
-        :key="action.label"
-        @click="navigateTo(action.path)"
-        class="flex flex-col items-center gap-2"
-      >
-        <div class="w-16 h-16 rounded-2xl flex items-center justify-center" :class="action.bgClass">
-          <component :is="action.icon" class="text-[32px]" :class="action.iconClass" />
-        </div>
-        <span class="font-label-sm text-on-surface">{{ action.label }}</span>
-      </button>
-    </section>
-
-    <!-- Recent Records -->
+    <!-- Recent Records Section -->
     <section class="flex flex-col gap-4">
       <div class="flex justify-between items-center">
-        <h2 class="font-headline-md text-headline-md">最近记账</h2>
-        <button
-          @click="navigateTo('/records')"
-          class="text-primary font-label-md flex items-center gap-1"
-        >
-          查看全部
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        <h3 class="font-body-md text-body-md text-on-surface font-bold">最近语音记录</h3>
+        <button @click="navigateTo('/records')" class="font-label-caps text-label-caps text-primary hover:bg-primary/5 px-3 py-1 rounded-full transition-colors font-bold">查看全部</button>
       </div>
       <div class="flex flex-col gap-3">
         <div
           v-for="record in recentRecords"
           :key="record.id"
-          class="bg-white p-4 rounded-2xl flex items-center justify-between shadow-[0_4px_20px_rgba(0,0,0,0.04)]"
+          class="glass-panel rounded-3xl p-4 flex items-center justify-between hover:bg-white transition-all cursor-pointer group border border-on-surface/5"
         >
           <div class="flex items-center gap-4">
-            <div
-              class="w-12 h-12 rounded-xl flex items-center justify-center text-lg"
-              :class="record.type === 1 ? 'bg-[#FFF5F2]' : 'bg-[#F0F4FF]'"
-            >
-              {{ getCategoryEmoji(record.categoryIcon, record.categoryName) }}
+            <div class="w-14 h-14 rounded-2xl bg-surface-container flex items-center justify-center border border-on-surface/5 group-hover:scale-105 transition-transform">
+              <span class="material-symbols-outlined text-tertiary text-3xl" style="font-variation-settings: 'FILL' 1;">{{ getCategoryIcon(record.categoryName) }}</span>
             </div>
-            <div>
-              <p class="font-headline-md text-[18px]">{{ record.categoryName }}</p>
-              <p class="font-body-md text-on-surface-variant text-sm">{{ record.remark || record.transactionDate }}</p>
+            <div class="flex flex-col">
+              <span class="font-body-md text-body-md font-bold text-on-surface">{{ record.categoryName }}</span>
+              <span class="font-label-caps text-label-caps text-on-surface-variant">{{ record.remark || record.transactionDate }}</span>
             </div>
           </div>
-          <div class="text-right">
-            <p class="font-headline-md text-[18px]" :class="record.type === 1 ? 'text-danger-red' : 'text-success-green'">
-              {{ record.type === 1 ? '-' : '+' }}¥{{ Number(record.amount).toFixed(2) }}
-            </p>
-          </div>
+          <span
+            class="font-body-md text-body-md font-bold"
+            :class="record.type === 1 ? 'text-on-surface' : 'text-secondary text-lg'"
+          >
+            {{ record.type === 1 ? '-' : '+' }}¥{{ Number(record.amount).toFixed(2) }}
+          </span>
         </div>
       </div>
       <div v-if="recentRecords.length === 0" class="py-12 text-center">
         <p class="font-body-md text-on-surface-variant">暂无记账记录</p>
-        <button
-          @click="router.push('/transaction')"
-          class="mt-3 font-label-md text-primary"
-        >
-          去记一笔
-        </button>
+        <button @click="router.push('/transaction')" class="mt-3 font-label-md text-primary">去记一笔</button>
       </div>
     </section>
   </div>
@@ -130,13 +120,6 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import {
-  UnorderedListOutlined,
-  BellOutlined,
-  EditOutlined,
-  BookOutlined,
-  AppstoreOutlined,
-} from '@ant-design/icons-vue'
 import { dashboardApi } from '@/api'
 import { useAuthStore } from '@/stores/auth'
 
@@ -144,7 +127,15 @@ const authStore = useAuthStore()
 const userId = computed(() => authStore.userInfo?.id)
 const router = useRouter()
 
-// Tab 页用 replace 不产生历史记录，其他页用 push
+const loading = ref(false)
+const recentRecords = ref([])
+const stats = reactive({
+  monthExpense: 0,
+  monthIncome: 0,
+  recordCount: 0,
+  pendingReminders: 0,
+})
+
 const tabPaths = new Set(['/dashboard', '/books', '/records', '/category'])
 function navigateTo(path) {
   if (tabPaths.has(path)) {
@@ -154,78 +145,38 @@ function navigateTo(path) {
   }
 }
 
-// 当前日期
-const currentDate = computed(() => {
-  const d = new Date()
-  const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 ${weekdays[d.getDay()]}`
-})
-
-const currentMonth = computed(() => {
-  const d = new Date()
-  return `${d.getMonth() + 1}月`
-})
-
-// 统计数据
-const stats = reactive({
-  monthExpense: 0,
-  monthIncome: 0,
-  recordCount: 0,
-  pendingReminders: 0,
-})
-
-// 最近记录
-const recentRecords = ref([])
-
-// 快捷操作
-const quickActions = [
-  {
-    label: '记一笔',
-    path: '/transaction',
-    icon: EditOutlined,
-    bgClass: 'bg-[#FFEFEA]',
-    iconClass: 'text-primary-container',
-  },
-  {
-    label: '账本',
-    path: '/books',
-    icon: BookOutlined,
-    bgClass: 'bg-[#EEF2FF]',
-    iconClass: 'text-blue-500',
-  },
-  {
-    label: '分类',
-    path: '/category',
-    icon: AppstoreOutlined,
-    bgClass: 'bg-[#F5F3FF]',
-    iconClass: 'text-purple-500',
-  },
-  {
-    label: '提醒',
-    path: '/reminder',
-    icon: BellOutlined,
-    bgClass: 'bg-[#FFFBEB]',
-    iconClass: 'text-amber-500',
-  },
-]
-
-// 图标显示：emoji直接显示，英文单词只取首字母大写
-function getIconDisplay(icon) {
-  if (!icon) return ''
-  if (/[\u0080-\uffff]/.test(icon)) return icon
-  return icon.charAt(0).toUpperCase()
+function formatAmount(value) {
+  return Number(value || 0).toLocaleString('zh-CN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
 }
 
-// 分类 emoji 映射
-function getCategoryEmoji(icon, name) {
-  if (icon) return getIconDisplay(icon)
-  const map = { 餐饮: '🍜', 交通: '🚗', 工资: '💰', 购物: '🛒', 娱乐: '🎮', 住房: '🏠', 医疗: '💊', 教育: '📚' }
-  return map[name] || '📝'
+function formatCompact(value) {
+  const num = Number(value || 0)
+  if (num >= 10000) return (num / 10000).toFixed(1) + 'w'
+  if (num >= 1000) return (num / 1000).toFixed(1) + 'k'
+  return num.toFixed(0)
 }
 
-// 加载数据
+function getCategoryIcon(name) {
+  const map = {
+    餐饮: 'restaurant',
+    交通: 'directions_car',
+    工资: 'payments',
+    购物: 'shopping_bag',
+    娱乐: 'sports_esports',
+    住房: 'home',
+    医疗: 'local_hospital',
+    教育: 'school',
+    旅行: 'flight',
+  }
+  return map[name] || 'receipt'
+}
+
 async function loadData() {
   if (!userId.value) return
+  loading.value = true
   try {
     const [statsRes, recentRes] = await Promise.all([
       dashboardApi.getStats(userId.value),
@@ -240,15 +191,15 @@ async function loadData() {
     recentRecords.value = recentRes.data || []
   } catch (error) {
     console.error('加载首页数据失败:', error)
+  } finally {
+    loading.value = false
   }
 }
 
-// 监听 userId 变化
 watch(userId, (newUserId) => {
   if (newUserId) loadData()
 })
 
-// 页面加载时检查登录状态
 onMounted(async () => {
   if (!authStore.userInfo) {
     await authStore.checkLoginStatus()
@@ -256,3 +207,39 @@ onMounted(async () => {
   if (userId.value) loadData()
 })
 </script>
+
+<style scoped>
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 3rem;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02);
+  border-radius: 3rem;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* 强制大圆角 */
+.rounded-3xl {
+  border-radius: 3rem !important;
+}
+
+.rounded-2xl {
+  border-radius: 2rem !important;
+}
+
+.rounded-full {
+  border-radius: 9999px !important;
+}
+</style>

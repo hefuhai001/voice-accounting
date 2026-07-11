@@ -1,30 +1,88 @@
 <template>
-  <div class="px-margin-mobile pt-20 pb-32 space-y-stack-lg max-w-md mx-auto">
-    <!-- Transaction Input Section -->
-    <section class="glass-card rounded-[2rem] p-gutter-md shadow-sm border border-white/40">
-      <!-- Tabs -->
-      <div class="flex bg-surface-container-low rounded-xl p-1 mb-8">
+  <div class="px-margin-mobile pb-32 flex flex-col gap-8 max-w-md mx-auto">
+    <!-- Voice Hero Section -->
+    <section class="mt-8">
+      <div class="relative flex flex-col items-center justify-center py-12">
+        <!-- Decorative Background -->
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="w-48 h-48 rounded-full bg-primary/5 blur-3xl"></div>
+        </div>
+
+        <!-- Main Voice Button -->
         <button
-          v-for="t in [
-            { value: 1, label: '支出' },
-            { value: 2, label: '收入' },
-          ]"
-          :key="t.value"
-          @click="formState.type = t.value"
-          class="flex-1 py-2 rounded-lg font-label-md transition-all"
-          :class="
-            formState.type === t.value
-              ? 'bg-white shadow-sm text-on-surface'
-              : 'text-on-surface-variant hover:bg-surface-variant/50'
-          "
+          @click="toggleRecording"
+          :disabled="isRecognizing"
+          class="relative z-10 w-32 h-32 rounded-full bg-primary flex items-center justify-center shadow-2xl shadow-primary/40 transition-all duration-300 active:scale-90"
+          :class="isRecording ? 'recording-pulse scale-110' : 'hover:scale-105'"
         >
-          {{ t.label }}
+          <!-- Pulse Rings -->
+          <div v-if="isRecording" class="absolute inset-0 rounded-full border-4 border-primary/30 animate-ping"></div>
+          <div v-if="isRecording" class="absolute inset-4 rounded-full border-2 border-white/20 animate-ping" style="animation-delay: 0.5s"></div>
+
+          <!-- Mic Icon -->
+          <span class="material-symbols-outlined text-white" style="font-size: 48px; font-variation-settings: 'FILL' 1;">
+            mic
+          </span>
+        </button>
+
+        <!-- Status Text -->
+        <div class="mt-6 text-center">
+          <h3 class="font-headline-md text-headline-md text-on-surface font-bold">
+            {{ isRecording ? '正在录音...' : isRecognizing ? 'AI分析中...' : '语音记账' }}
+          </h3>
+          <p class="text-on-surface-variant font-medium mt-1">
+            {{ isRecording ? '请说出您的消费内容' : '点击按钮开始录音' }}
+          </p>
+        </div>
+
+        <!-- AI Result -->
+        <Transition name="fade">
+          <div v-if="aiResult" class="mt-6 w-full glass-panel rounded-3xl p-5">
+            <div class="flex items-start gap-3">
+              <span class="material-symbols-outlined text-tertiary text-2xl">auto_awesome</span>
+              <div class="flex-1">
+                <p class="font-label-sm text-label-sm text-tertiary uppercase font-bold mb-2">AI识别结果</p>
+                <p class="text-on-surface whitespace-pre-wrap">{{ aiResult }}</p>
+              </div>
+            </div>
+          </div>
+        </Transition>
+      </div>
+    </section>
+
+    <!-- Manual Input Section -->
+    <section class="glass-panel rounded-3xl p-6 shadow-lg">
+      <!-- Header -->
+      <div class="flex items-center gap-3 mb-6">
+        <span class="material-symbols-outlined text-on-surface-variant text-2xl">edit</span>
+        <h3 class="font-headline-md text-headline-md text-on-surface font-bold">手动记账</h3>
+      </div>
+
+      <!-- Tabs -->
+      <div class="bg-surface-container-low rounded-2xl p-1.5 flex mb-6 relative">
+        <div
+          class="absolute inset-y-1.5 w-[calc(50%-6px)] bg-primary rounded-xl shadow-lg shadow-primary/20 transition-all duration-300"
+          :class="formState.type === 1 ? 'left-1.5' : 'left-[calc(50%+1.5px)]'"
+        ></div>
+        <button
+          @click="formState.type = 1"
+          class="flex-1 py-3 text-center z-10 font-bold transition-colors"
+          :class="formState.type === 1 ? 'text-white' : 'text-on-surface-variant'"
+        >
+          支出
+        </button>
+        <button
+          @click="formState.type = 2"
+          class="flex-1 py-3 text-center z-10 font-bold transition-colors"
+          :class="formState.type === 2 ? 'text-white' : 'text-on-surface-variant'"
+        >
+          收入
         </button>
       </div>
 
       <!-- Amount Display -->
-      <div class="text-center mb-8 relative">
-        <span class="absolute left-4 top-1/2 -translate-y-1/2 font-headline-lg text-headline-lg text-on-surface-variant/40">¥</span>
+      <div class="text-center mb-8 py-6 bg-surface-container-low rounded-2xl relative">
+        <span class="absolute left-6 top-1/2 -translate-y-1/2 font-headline-lg text-headline-lg text-on-surface-variant/40">¥</span>
         <input
           v-model.number="amountDisplay"
           type="number"
@@ -36,9 +94,12 @@
       </div>
 
       <!-- Detail Rows -->
-      <div class="space-y-4">
-        <div class="flex justify-between items-center py-3 border-b border-surface-variant/50">
-          <span class="font-body-md text-on-surface-variant">分类</span>
+      <div class="space-y-1">
+        <div class="flex justify-between items-center py-4 border-b border-outline-variant/30">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-on-surface-variant">category</span>
+            <span class="font-body-md text-on-surface-variant">分类</span>
+          </div>
           <a-select
             v-model:value="formState.categoryId"
             placeholder="选择分类"
@@ -48,12 +109,17 @@
             style="background: transparent"
           >
             <a-select-option v-for="item in categories" :key="item.id" :value="item.id">
-              {{ item.icon }} {{ item.name }}
+              <span class="material-symbols-outlined text-[16px] mr-2">{{ getCategoryIcon(item.name) }}</span>
+              {{ item.name }}
             </a-select-option>
           </a-select>
         </div>
-        <div class="flex justify-between items-center py-3 border-b border-surface-variant/50">
-          <span class="font-body-md text-on-surface-variant">账本</span>
+
+        <div class="flex justify-between items-center py-4 border-b border-outline-variant/30">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-on-surface-variant">account_balance_wallet</span>
+            <span class="font-body-md text-on-surface-variant">账本</span>
+          </div>
           <a-select
             v-model:value="formState.bookId"
             placeholder="选择账本"
@@ -62,81 +128,48 @@
             :bordered="false"
             style="background: transparent"
           >
-            <a-select-option v-for="item in books" :key="item.id" :value="item.id">{{
-              item.name
-            }}</a-select-option>
+            <a-select-option v-for="item in books" :key="item.id" :value="item.id">
+              {{ item.name }}
+            </a-select-option>
           </a-select>
         </div>
-        <div class="flex justify-between items-center py-3 border-b border-surface-variant/50">
-          <span class="font-body-md text-on-surface-variant">日期</span>
+
+        <div class="flex justify-between items-center py-4 border-b border-outline-variant/30">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-on-surface-variant">calendar_today</span>
+            <span class="font-body-md text-on-surface-variant">日期</span>
+          </div>
           <a-date-picker
             v-model:value="formState.transactionDate"
             size="large"
             :bordered="false"
             style="background: transparent"
+            value-format="YYYY-MM-DD"
           />
         </div>
-        <div class="pt-2">
+
+        <div class="flex items-center py-4 gap-3">
+          <span class="material-symbols-outlined text-on-surface-variant">edit_note</span>
           <a-input
             v-model:value="formState.remark"
             placeholder="添加备注..."
             :bordered="false"
-            class="!font-body-md !px-0"
+            class="flex-1 !font-body-md !px-0"
             style="background: transparent"
           />
         </div>
       </div>
     </section>
 
-    <!-- Voice Recognition Section -->
-    <section class="glass-card rounded-[2rem] p-gutter-md shadow-sm border border-white/40 space-y-4">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-tertiary-container/20 flex items-center justify-center text-tertiary">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-          </svg>
-        </div>
-        <div>
-          <h3 class="font-headline-md text-body-lg font-bold">语音记账</h3>
-          <p class="text-label-sm text-on-surface-variant/60 font-medium">点击开始录音，说出消费内容</p>
-        </div>
-      </div>
-      <button
-        @click="toggleRecording"
-        :disabled="isRecognizing"
-        class="w-full bg-surface-container-low hover:bg-surface-container-high py-4 rounded-2xl flex items-center justify-center gap-3 transition-colors active:scale-95 duration-150"
-        :class="isRecording ? 'recording-pulse' : ''"
-      >
-        <div
-          class="w-2.5 h-2.5 rounded-full"
-          :class="
-            isRecording
-              ? 'bg-success-green shadow-[0_0_10px_rgba(52,199,89,0.5)]'
-              : isRecognizing
-                ? 'bg-tertiary animate-pulse'
-                : 'bg-danger-red shadow-[0_0_10px_rgba(255,59,48,0.5)]'
-          "
-        />
-        <span class="font-label-md text-on-surface">
-          {{ isRecording ? '正在识别...' : isRecognizing ? 'AI分析记账中...' : '开始录音' }}
-        </span>
-      </button>
-      <!-- AI记账结果 -->
-      <div v-if="aiResult" class="p-3 bg-tertiary-container/10 rounded-xl text-xs text-tertiary whitespace-pre-wrap">
-        {{ aiResult }}
-      </div>
-    </section>
-
-    <!-- Primary Action Button -->
-    <div class="fixed bottom-24 left-margin-mobile right-margin-mobile max-w-md mx-auto">
-      <button
-        @click="handleSubmit"
-        :disabled="submitting"
-        class="w-full sunset-gradient text-white py-4 rounded-2xl font-headline-md text-headline-md shadow-xl shadow-primary/20 active:scale-95 transition-transform disabled:opacity-50"
-      >
-        {{ submitting ? '保存中...' : '保存记账' }}
-      </button>
-    </div>
+    <!-- Submit Button -->
+    <button
+      @click="handleSubmit"
+      :disabled="submitting"
+      class="w-full bg-primary text-white py-4 rounded-3xl font-headline-md text-headline-md shadow-xl shadow-primary/30 active:scale-95 transition-transform disabled:opacity-50 flex items-center justify-center gap-2"
+    >
+      <span class="material-symbols-outlined">save</span>
+      {{ submitting ? '保存中...' : '保存记账' }}
+    </button>
   </div>
 </template>
 
@@ -176,6 +209,20 @@ const amountDisplay = computed({
 
 const categories = ref([])
 const books = ref([])
+
+function getCategoryIcon(name) {
+  const map = {
+    餐饮: 'restaurant',
+    交通: 'directions_car',
+    购物: 'local_mall',
+    娱乐: 'movie',
+    居住: 'home',
+    医疗: 'medical_services',
+    教育: 'school',
+    工资: 'payments',
+  }
+  return map[name] || 'category'
+}
 
 async function loadOptions() {
   if (!userId.value) return
@@ -236,11 +283,11 @@ function handleReset() {
     categoryId: undefined,
     remark: '',
   })
+  aiResult.value = ''
 }
 
 async function toggleRecording() {
   if (isRecording.value) {
-    // 停止录音，获取WAV数据，调用语音智能记账接口
     const wavBlob = await stopRecording()
     if (!wavBlob) {
       message.warning('未录制到音频')
@@ -261,18 +308,15 @@ async function toggleRecording() {
       isRecognizing.value = false
     }
   } else {
-    // 开始录音
     aiResult.value = ''
     await startRecording()
   }
 }
 
-// 监听 userId 变化
 watch(userId, (newUserId) => {
   if (newUserId) loadOptions()
 })
 
-// 页面加载时检查登录状态
 onMounted(async () => {
   if (!authStore.userInfo) {
     await authStore.checkLoginStatus()
@@ -282,20 +326,39 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.glass-card {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+.glass-panel {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04);
 }
-.sunset-gradient {
-  background: linear-gradient(135deg, #ab3500 0%, #fe9824 100%);
+
+.rounded-3xl {
+  border-radius: 2.5rem;
 }
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
 .recording-pulse {
   animation: pulse 2s infinite;
 }
+
 @keyframes pulse {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(171, 53, 0, 0.4); }
-  70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(171, 53, 0, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(171, 53, 0, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.4); }
+  70% { box-shadow: 0 0 0 20px rgba(255, 107, 53, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

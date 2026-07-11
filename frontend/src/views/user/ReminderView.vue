@@ -1,36 +1,31 @@
 <template>
-  <div class="px-margin-mobile pt-stack-lg pb-8 flex flex-col gap-stack-lg">
+  <div class="px-margin-mobile pt-20 pb-28 flex flex-col gap-6 max-w-md mx-auto">
     <!-- 标题栏 -->
-    <div class="flex items-center justify-between mt-4">
-      <h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">我的提醒</h1>
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="font-display-lg text-display-lg text-on-surface tracking-tight">我的提醒</h1>
+        <p class="text-label-sm text-on-surface-variant uppercase tracking-widest mt-1">MY REMINDERS</p>
+      </div>
       <button
         @click="showAddModal"
-        class="flex items-center gap-1 px-4 py-2 sunset-gradient text-white font-label-md rounded-full active:scale-95 transition-transform shadow-sm shadow-primary/20"
+        class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#983f19] to-[#ab3500] text-white font-label-md rounded-full active:scale-95 transition-transform shadow-lg shadow-primary/30"
       >
-        <svg
-          class="w-3.5 h-3.5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2.5"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-        </svg>
+        <span class="material-symbols-outlined text-lg">add</span>
         新建
       </button>
     </div>
 
     <!-- 状态筛选 -->
-    <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+    <div class="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
       <button
         v-for="s in statusFilters"
         :key="s.value"
         @click="setStatusFilter(s.value)"
-        class="shrink-0 px-4 py-1.5 rounded-full font-label-sm whitespace-nowrap transition-all duration-200"
+        class="shrink-0 px-5 py-2 rounded-full font-label-md whitespace-nowrap transition-all duration-200"
         :class="
           statusFilter === s.value
-            ? 'sunset-gradient text-white shadow-sm shadow-primary/20'
-            : 'bg-surface-gray text-on-surface-variant active:bg-surface-container-high'
+            ? 'bg-gradient-to-r from-[#983f19] to-[#ab3500] text-white shadow-lg shadow-primary/20'
+            : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container'
         "
       >
         {{ s.label }}
@@ -38,114 +33,126 @@
     </div>
 
     <!-- 提醒列表 -->
-    <div class="flex flex-col gap-3">
+    <div class="flex flex-col gap-4">
       <div
         v-for="item in reminders"
         :key="item.id"
-        class="glass-card rounded-2xl p-5 shadow-sm border border-white/40 border-l-4"
-        :class="{
-          'border-l-primary-container': item.status === 0,
-          'border-l-tertiary': item.status === 1,
-          'border-l-outline-variant': item.status === 2,
-        }"
+        class="glass-panel rounded-3xl p-5 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all duration-300"
       >
-        <div class="flex items-start justify-between">
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <p class="font-headline-md text-[18px] text-on-surface truncate">{{ item.title }}</p>
-              <a-badge
-                :status="getStatusBadge(item.status)"
-                :text="getStatusText(item.status)"
-                class="!text-[10px]"
-              />
-            </div>
-            <div class="flex items-center gap-3 mt-2 flex-wrap">
-              <span class="inline-flex items-center gap-1 font-label-sm text-on-surface-variant">
-                <svg
-                  class="w-3.5 h-3.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-                {{ item.remindDate }}
-              </span>
-              <span class="inline-flex items-center gap-1 font-label-sm text-on-surface-variant">
-                <svg
-                  class="w-3.5 h-3.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <polyline points="23 4 23 10 17 10" />
-                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-                </svg>
-                {{ getFrequencyName(item.frequency) }}
-              </span>
-              <span
-                class="font-headline-md text-[16px]"
-                :class="item.status === 2 ? 'text-on-surface-variant/40' : 'text-tertiary'"
-              >
-                ¥{{ item.amount }}
-              </span>
-            </div>
-            <p v-if="item.remark" class="font-body-md text-on-surface-variant/60 text-sm mt-1.5 line-clamp-2">
-              {{ item.remark }}
-            </p>
-          </div>
-        </div>
+        <!-- 装饰性光圈 -->
+        <div
+          class="absolute -right-10 -bottom-10 w-32 h-32 rounded-full blur-3xl transition-colors"
+          :class="{
+            'bg-primary/10 group-hover:bg-primary/15': item.status === 0,
+            'bg-tertiary/10 group-hover:bg-tertiary/15': item.status === 1,
+            'bg-surface-variant/50': item.status === 2,
+          }"
+        ></div>
 
-        <!-- 操作按钮 -->
-        <div class="flex gap-2 mt-3 pt-3 border-t border-surface-variant/50">
-          <button
-            @click="handleEdit(item)"
-            class="flex-1 py-2 font-label-sm rounded-xl bg-primary-container/15 text-primary active:bg-primary-container/30 transition-colors"
-          >
-            编辑
-          </button>
-          <button
-            v-if="item.status === 0"
-            @click="handleMarkRead(item.id)"
-            class="flex-1 py-2 font-label-sm rounded-xl bg-tertiary-container/15 text-tertiary active:bg-tertiary-container/30 transition-colors"
-          >
-            标记已提醒
-          </button>
-          <button
-            v-if="item.status === 2"
-            @click="handleReopen(item.id)"
-            class="flex-1 py-2 font-label-sm rounded-xl bg-tertiary-container/15 text-tertiary active:bg-tertiary-container/30 transition-colors"
-          >
-            开启提醒
-          </button>
-          <button
-            v-if="item.status !== 2"
-            @click="handleClose(item.id)"
-            class="flex-1 py-2 font-label-sm rounded-xl bg-surface-gray text-on-surface-variant active:bg-surface-container-high transition-colors"
-          >
-            关闭提醒
-          </button>
-          <button
-            @click="confirmDelete(item.id)"
-            class="flex-1 py-2 font-label-sm rounded-xl bg-error-container/50 text-danger-red active:bg-error-container transition-colors"
-          >
-            删除
-          </button>
+        <div class="relative z-10">
+          <!-- 标题和状态 -->
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <div
+                class="w-10 h-10 rounded-2xl flex items-center justify-center"
+                :class="{
+                  'bg-primary/10 text-primary': item.status === 0,
+                  'bg-tertiary/10 text-tertiary': item.status === 1,
+                  'bg-surface-container text-on-surface-variant': item.status === 2,
+                }"
+              >
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">alarm</span>
+              </div>
+              <div>
+                <h3 class="font-headline-md text-[18px] text-on-surface">{{ item.title }}</h3>
+                <span
+                  class="text-label-sm font-semibold"
+                  :class="{
+                    'text-primary': item.status === 0,
+                    'text-tertiary': item.status === 1,
+                    'text-on-surface-variant': item.status === 2,
+                  }"
+                >{{ getStatusText(item.status) }}</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <p
+                class="font-finance-xl text-finance-xl"
+                :class="item.status === 2 ? 'text-on-surface-variant/40' : 'text-primary'"
+              >
+                ¥{{ Number(item.amount).toFixed(2) }}
+              </p>
+            </div>
+          </div>
+
+          <!-- 详情信息 -->
+          <div class="flex items-center gap-4 text-label-sm text-on-surface-variant">
+            <span class="inline-flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">calendar_today</span>
+              {{ item.remindDate }}
+            </span>
+            <span class="inline-flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">repeat</span>
+              {{ getFrequencyName(item.frequency) }}
+            </span>
+          </div>
+
+          <!-- 备注 -->
+          <p v-if="item.remark" class="text-body-md text-on-surface-variant/60 text-sm mt-2 line-clamp-2">
+            {{ item.remark }}
+          </p>
+
+          <!-- 操作按钮 -->
+          <div class="flex gap-2 mt-4 pt-4 border-t border-surface-variant/50">
+            <button
+              @click="handleEdit(item)"
+              class="flex-1 py-2.5 font-label-md rounded-2xl bg-surface-container-low text-on-surface hover:bg-surface-container active:scale-95 transition-all flex items-center justify-center gap-1"
+            >
+              <span class="material-symbols-outlined text-[18px]">edit</span>
+              编辑
+            </button>
+            <button
+              v-if="item.status === 0"
+              @click="handleMarkRead(item.id)"
+              class="flex-1 py-2.5 font-label-md rounded-2xl bg-tertiary/10 text-tertiary hover:bg-tertiary/20 active:scale-95 transition-all flex items-center justify-center gap-1"
+            >
+              <span class="material-symbols-outlined text-[18px]">check_circle</span>
+              标记
+            </button>
+            <button
+              v-if="item.status === 2"
+              @click="handleReopen(item.id)"
+              class="flex-1 py-2.5 font-label-md rounded-2xl bg-primary/10 text-primary hover:bg-primary/20 active:scale-95 transition-all flex items-center justify-center gap-1"
+            >
+              <span class="material-symbols-outlined text-[18px]">play_circle</span>
+              开启提醒
+            </button>
+            <button
+              v-if="item.status !== 2"
+              @click="handleClose(item.id)"
+              class="flex-1 py-2.5 font-label-md rounded-2xl bg-surface-container-low text-on-surface-variant hover:bg-surface-container active:scale-95 transition-all flex items-center justify-center gap-1"
+            >
+              <span class="material-symbols-outlined text-[18px]">cancel</span>
+              关闭
+            </button>
+            <button
+              @click="confirmDelete(item.id)"
+              class="flex-1 py-2.5 font-label-md rounded-2xl bg-error/10 text-error hover:bg-error/20 active:scale-95 transition-all flex items-center justify-center gap-1"
+            >
+              <span class="material-symbols-outlined text-[18px]">delete</span>
+              删除
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- 空状态 -->
-      <div v-if="reminders.length === 0 && !loading" class="py-16 text-center">
-        <BellOutlined class="text-4xl text-on-surface-variant/30" />
-        <p class="font-body-md text-on-surface-variant mt-3">暂无提醒</p>
-        <button @click="showAddModal" class="mt-3 font-label-md text-primary">
-          创建第一个提醒
-        </button>
+      <div v-if="reminders.length === 0 && !loading" class="py-20 text-center">
+        <div class="w-20 h-20 rounded-full bg-surface-container-low mx-auto flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-4xl text-on-surface-variant/40">alarm</span>
+        </div>
+        <p class="font-headline-md text-on-surface-variant">暂无提醒</p>
+        <p class="text-body-md text-on-surface-variant/60 mt-1">点击上方按钮创建第一个提醒</p>
       </div>
     </div>
 
@@ -154,11 +161,11 @@
       :open="modalVisible"
       :title="editingId ? '编辑提醒' : '新建提醒'"
       :footer="null"
-      :width="360"
+      :width="380"
       centered
       @cancel="modalVisible = false"
     >
-      <a-form :model="formState" layout="vertical" class="mt-2" @finish="handleSubmit">
+      <a-form :model="formState" layout="vertical" class="mt-4" @finish="handleSubmit">
         <a-form-item
           label="提醒标题"
           name="title"
@@ -168,6 +175,7 @@
             v-model:value="formState.title"
             placeholder="如：信用卡还款、房租缴纳等"
             size="large"
+            class="modal-input"
           />
         </a-form-item>
         <a-form-item
@@ -203,11 +211,18 @@
         <a-form-item label="备注">
           <a-textarea v-model:value="formState.remark" placeholder="可选备注信息" :rows="2" />
         </a-form-item>
-        <div class="flex gap-3 mt-2">
+        <div class="flex gap-3 mt-4">
           <a-button block size="large" @click="modalVisible = false">取消</a-button>
-          <a-button type="primary" block size="large" html-type="submit" :loading="submitting"
-            >{{ editingId ? '保存修改' : '创建' }}</a-button
+          <a-button
+            type="primary"
+            block
+            size="large"
+            html-type="submit"
+            :loading="submitting"
+            class="!bg-gradient-to-r !from-[#983f19] !to-[#ab3500] !border-none"
           >
+            {{ editingId ? '保存修改' : '创建' }}
+          </a-button>
         </div>
       </a-form>
     </a-modal>
@@ -217,7 +232,6 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { message } from 'ant-design-vue'
-import { BellOutlined } from '@ant-design/icons-vue'
 import dayjs from 'dayjs'
 import { reminderApi } from '@/api'
 import { useAuthStore } from '@/stores/auth'
@@ -247,9 +261,6 @@ const formState = reactive({
   remark: '',
 })
 
-function getStatusBadge(status) {
-  return { 0: 'warning', 1: 'processing', 2: 'default' }[status] || 'default'
-}
 function getStatusText(status) {
   return { 0: '待提醒', 1: '已提醒', 2: '已关闭' }[status] || '未知'
 }
@@ -375,25 +386,46 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.glass-card {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+.glass-panel {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.sunset-gradient {
-  background: linear-gradient(135deg, #ab3500 0%, #fe9824 100%);
+
+.glass-panel:hover {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Modal input styles */
+.modal-input :deep(.ant-input),
+.modal-input :deep(.ant-input-affix-wrapper) {
+  border-radius: 1rem !important;
+  border-color: #e4e2e4 !important;
+}
+
+.modal-input :deep(.ant-input:focus),
+.modal-input :deep(.ant-input-affix-wrapper-focused) {
+  border-color: #983f19 !important;
+  box-shadow: 0 0 0 2px rgba(152, 63, 25, 0.1) !important;
 }
 </style>

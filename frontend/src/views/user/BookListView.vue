@@ -1,93 +1,86 @@
 <template>
-  <div class="px-margin-mobile pt-stack-lg pb-8">
-    <!-- Dashboard Header -->
-    <div class="flex justify-between items-end mb-stack-lg">
-      <div class="flex flex-col gap-1">
-        <h2 class="font-headline-lg-mobile text-headline-lg-mobile font-bold tracking-tight text-on-surface">我的账本</h2>
-        <p class="font-label-sm text-label-sm text-on-surface-variant/60">共 {{ books.length }} 个账本</p>
+  <div class="px-margin-mobile pb-32 flex flex-col gap-section-gap max-w-md mx-auto">
+    <!-- Header Section -->
+    <section class="flex justify-between items-end mt-8">
+      <div>
+        <h2 class="font-display-lg text-display-lg text-on-surface tracking-tight mb-1">我的账本</h2>
+        <p class="text-on-surface-variant font-label-caps text-label-caps uppercase tracking-[0.2em]">MY LEDGERS</p>
       </div>
-      <button @click="showAddModal"
-        class="bg-primary-container text-on-primary-container h-10 px-5 rounded-full flex items-center gap-2 font-label-md text-label-md active:scale-95 transition-transform duration-150 shadow-sm">
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-        </svg>
-        新建
+      <button
+        @click="showAddModal"
+        class="bg-primary text-white px-8 py-3 rounded-full font-bold text-sm shadow-xl shadow-primary/25 hover:shadow-primary/40 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 border-none"
+      >
+        <span class="material-symbols-outlined text-lg">add</span>
+        新建账本
       </button>
-    </div>
+    </section>
 
-    <!-- Ledger Cards List -->
-    <section class="flex flex-col gap-stack-md">
-      <div v-for="book in books" :key="book.id" @click="handleEdit(book)"
-        class="bg-white p-5 rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex gap-4 items-center group relative overflow-hidden active:bg-surface-container-low transition-colors duration-200 border border-transparent hover:border-outline-variant/30 cursor-pointer">
-        <!-- Icon -->
-        <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0"
-          :class="book.isDefault === 1 ? 'bg-primary-fixed' : 'bg-surface-gray'">
-          <!-- 日常账本 -->
-          <svg v-if="book.type === 1" class="w-7 h-7"
-            :class="book.isDefault === 1 ? 'text-primary' : 'text-on-surface-variant'" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-          </svg>
-          <!-- 旅行账本 -->
-          <svg v-else-if="book.type === 2" class="w-7 h-7"
-            :class="book.isDefault === 1 ? 'text-primary' : 'text-on-surface-variant'" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
-          </svg>
-          <!-- 共享账本 -->
-          <svg v-else class="w-7 h-7" :class="book.isDefault === 1 ? 'text-primary' : 'text-on-surface-variant'"
-            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-          </svg>
-        </div>
-        <!-- Info -->
-        <div class="flex flex-col flex-grow gap-0.5">
-          <div class="flex items-center gap-2">
-            <span class="font-headline-md text-headline-md text-on-surface">{{ book.name }}</span>
-            <span v-if="book.isDefault === 1"
-              class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-[10px] uppercase tracking-wider">默认</span>
+    <!-- Card Flow -->
+    <section class="flex flex-col gap-8 mt-8">
+      <div
+        v-for="(book) in books"
+        :key="book.id"
+        @click="handleEdit(book)"
+        class="glass-panel rounded-3xl p-8 relative overflow-hidden group cursor-pointer"
+        :class="{ 'ml-0 md:ml-12 border-l-8 border-l-secondary': book.type === 2, 'ml-0 md:ml-24': book.type === 3 }"
+      >
+        <div class="absolute right-0 top-0 w-48 h-48 rounded-full blur-3xl -mr-24 -mt-24 transition-colors"
+          :class="book.type === 1 ? 'bg-primary/5 group-hover:bg-primary/10' : book.type === 2 ? 'bg-secondary/5 group-hover:bg-secondary/10' : 'bg-tertiary/5 group-hover:bg-tertiary/10'"></div>
+
+        <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div class="flex gap-6 items-center">
+            <div class="w-16 h-16 rounded-2xl flex items-center justify-center border group-hover:rotate-6 transition-transform"
+              :class="getIconBgClass(book.type)">
+              <span class="material-symbols-outlined text-3xl" :class="getIconColorClass(book.type)">{{ getBookIcon(book.type) }}</span>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold text-on-surface">{{ book.name }}</h3>
+              <p class="text-on-surface-variant text-xs font-bold tracking-widest uppercase mt-1">{{ getTypeName(book.type) }}</p>
+              <p v-if="book.description" class="text-outline text-sm mt-1">{{ book.description }}</p>
+            </div>
           </div>
-          <span class="font-body-md text-body-md text-on-surface-variant">{{ getTypeName(book.type) }}</span>
-          <span v-if="book.description" class="font-label-sm text-label-sm text-outline">{{ book.description }}</span>
+
+          <div class="text-left md:text-right w-full md:w-auto flex items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+              <span v-if="book.isDefault === 1"
+                class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-secondary-fixed/20 text-secondary">
+                <span class="material-symbols-outlined text-[14px] mr-1">check_circle</span>
+                默认
+              </span>
+            </div>
+
+            <!-- Delete Button -->
+            <button
+              v-if="book.userId"
+              @click.stop="confirmDelete(book)"
+              class="text-outline hover:text-danger-red transition-colors flex items-center gap-1 text-sm"
+            >
+              <span class="material-symbols-outlined text-lg">delete</span>
+              删除
+            </button>
+          </div>
         </div>
-        <!-- Delete Button -->
-        <button @click.stop="confirmDelete(book)"
-          class="opacity-0 group-hover:opacity-100 p-2 text-outline hover:text-danger-red transition-all duration-200">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-          </svg>
-        </button>
       </div>
     </section>
 
     <!-- Empty State -->
-    <div v-if="books.length === 0 && !loading" class="py-16 text-center">
-      <BookOutlined class="text-4xl text-outline" />
-      <p class="font-body-md text-body-md text-on-surface-variant mt-3">还没有账本</p>
-      <button @click="showAddModal" class="mt-3 font-label-md text-primary">
+    <div v-if="books.length === 0 && !loading" class="glass-panel rounded-3xl p-12 text-center">
+      <span class="material-symbols-outlined text-6xl text-outline mb-4 block">account_balance_wallet</span>
+      <p class="font-body-md text-body-md text-on-surface-variant">还没有账本</p>
+      <button @click="showAddModal" class="mt-4 bg-primary text-white px-6 py-2 rounded-full font-bold text-sm">
         创建第一个账本
       </button>
     </div>
 
-    <!-- Decorative Illustration Section -->
-    <section class="mt-8 rounded-2xl overflow-hidden relative h-48 bg-surface-container">
-      <img class="w-full h-full object-cover mix-blend-overlay opacity-30"
-        data-alt="A sophisticated macro photograph of textured high-quality paper with subtle debossed patterns and elegant minimalist typography. The lighting is soft and cinematic, highlighting a calm and organized professional atmosphere. The color palette consists of warm whites, charcoal grays, and soft terracotta orange accents, maintaining a modern minimalist aesthetic consistent with a premium financial management app."
-        src="../../assets/unnamed.png" />
-      <div
-        class="absolute inset-0 p-6 flex flex-col justify-end gap-2 bg-gradient-to-t from-background via-transparent to-transparent">
-        <p class="font-headline-md text-headline-md font-bold text-on-surface">掌握您的财务未来</p>
-        <p class="font-body-md text-body-md text-on-surface-variant">通过语音轻松分类每一笔支出</p>
-      </div>
-    </section>
-
     <!-- 新建/编辑弹窗 -->
-    <a-modal :open="modalVisible" :title="isEdit ? '编辑账本' : '新建账本'" :footer="null" :width="360" centered
-      @cancel="modalVisible = false">
+    <a-modal
+      :open="modalVisible"
+      :title="isEdit ? '编辑账本' : '新建账本'"
+      :footer="null"
+      :width="360"
+      centered
+      @cancel="modalVisible = false"
+    >
       <a-form :model="formState" layout="vertical" class="mt-2" @finish="handleSubmit">
         <a-form-item label="账本名称" name="name" :rules="[{ required: true, message: '请输入名称' }]">
           <a-input v-model:value="formState.name" placeholder="给账本起个名字" size="large" />
@@ -138,7 +131,29 @@ const formState = reactive({
   userId: null,
 })
 
-const getTypeName = (type) => ({ 1: '日常账本', 2: '旅行账本', 3: '共享账本' })[type] || '未知'
+function getTypeName(type) {
+  const map = { 1: 'DAILY SPENDING', 2: 'JAPAN TRIP', 3: 'INVESTMENT' }
+  return map[type] || 'UNKNOWN'
+}
+
+function getBookIcon(type) {
+  const map = { 1: 'shopping_cart', 2: 'flight_takeoff', 3: 'monitoring' }
+  return map[type] || 'account_balance_wallet'
+}
+
+function getIconBgClass(type) {
+  const map = {
+    1: 'bg-indigo-50 border-indigo-100',
+    2: 'bg-emerald-50 border-emerald-100',
+    3: 'bg-orange-50 border-orange-100'
+  }
+  return map[type] || 'bg-surface-container border-outline'
+}
+
+function getIconColorClass(type) {
+  const map = { 1: 'text-indigo-500', 2: 'text-emerald-500', 3: 'text-orange-600' }
+  return map[type] || 'text-on-surface-variant'
+}
 
 async function loadData() {
   if (!userId.value) return
@@ -211,12 +226,10 @@ function confirmDelete(book) {
   })
 }
 
-// 监听 userId 变化
 watch(userId, (newUserId) => {
   if (newUserId) loadData()
 })
 
-// 页面加载时检查登录状态
 onMounted(async () => {
   if (!authStore.userInfo) {
     await authStore.checkLoginStatus()
@@ -224,3 +237,27 @@ onMounted(async () => {
   if (userId.value) loadData()
 })
 </script>
+
+<style scoped>
+.glass-panel {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.rounded-3xl {
+  border-radius: 2.5rem;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+</style>
