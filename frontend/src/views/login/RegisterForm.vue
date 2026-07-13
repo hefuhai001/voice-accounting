@@ -116,7 +116,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 
-const props = defineProps({
+defineProps({
   loading: {
     type: Boolean,
     default: false

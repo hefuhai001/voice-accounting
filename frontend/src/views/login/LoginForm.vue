@@ -7,13 +7,13 @@
     layout="vertical"
     class="space-y-1"
   >
-    <a-form-item name="username" class="!mb-5">
+    <a-form-item name="account" class="!mb-5">
       <label class="block text-label-sm text-on-surface-variant mb-1.5 ml-0.5 uppercase tracking-wider font-semibold">
-        用户名
+        用户名 / 邮箱
       </label>
       <a-input
-        v-model:value="formState.username"
-        placeholder="请输入用户名"
+        v-model:value="formState.account"
+        placeholder="请输入用户名或邮箱"
         size="large"
         class="login-input"
       >
@@ -54,7 +54,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 
-const props = defineProps({
+defineProps({
   loading: {
     type: Boolean,
     default: false
@@ -66,12 +66,12 @@ const emit = defineEmits(['submit'])
 const formRef = ref()
 
 const formState = reactive({
-  username: '',
+  account: '',
   password: ''
 })
 
 const rules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  account: [{ required: true, message: '请输入用户名或邮箱', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 }
 
@@ -81,7 +81,7 @@ function handleSubmit() {
 
 defineExpose({
   reset: () => {
-    formState.username = ''
+    formState.account = ''
     formState.password = ''
   }
 })

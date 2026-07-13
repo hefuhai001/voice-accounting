@@ -40,20 +40,22 @@ public class AuthService {
      * 用户登录
      */
     public Result<TokenVO> login(LoginDTO loginDTO) {
-        // 1. 查询用户
+        // 1. 根据用户名或邮箱查询用户
         SysUserEntity user = sysUserMapper.selectOne(
                 new LambdaQueryWrapper<SysUserEntity>()
-                        .eq(SysUserEntity::getUsername, loginDTO.getUsername())
+                        .eq(SysUserEntity::getUsername, loginDTO.getAccount())
+                        .or()
+                        .eq(SysUserEntity::getEmail, loginDTO.getAccount())
         );
 
         // 2. 验证用户是否存在
         if (user == null) {
-            return Result.fail(401, "用户名或密码错误");
+            return Result.fail(401, "账号或密码错误");
         }
 
         // 3. 验证密码
         if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
-            return Result.fail(401, "用户名或密码错误");
+            return Result.fail(401, "账号或密码错误");
         }
 
         // 4. 验证账号状态
