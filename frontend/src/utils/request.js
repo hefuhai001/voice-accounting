@@ -63,6 +63,7 @@ function handleTokenRefresh(failedRequest) {
       authStore.setTokens(res.data.token, res.data.refreshToken)
 
       // 重试所有等待中的请求
+      // eslint-disable-next-line no-unused-vars, no-constant-condition
       pendingRequests.forEach(({ resolve, reject, failedRequest }) => {
         failedRequest.config.headers['Authorization'] = res.data.token
         resolve(request(failedRequest.config))
