@@ -1,0 +1,120 @@
+import { useAuthStore } from '@/stores/auth'
+
+// #ifdef H5
+const BASE_URL = import.meta.env.DEV ? '' : 'https://www.hfh.asia'
+// #endif
+
+let isRefreshing = false
+let pendingRequests = []
+
+function handleTokenRefresh(failedConfig) {
+  const authStore = useAuthStore()
+  const refreshToken = authStore.refreshToken
+
+  if (!refreshToken) {
+    authStore.clearAuthState()
+    uni.showToast({ title: '登录已过期，请重新登录', icon: 'none' })
+    uni.redirectTo({ url: '/pages/login/login' })
+    return Promise.reject(new Error('无Refresh Token'))
+  }
+
+  if (isRefreshing) {
+    return new Promise((resolve, reject) => {
+      pendingRequests.push({ resolve, reject, failedConfig })
+    })
+  }
+
+  isRefreshing = true
+
+  return new Promise((resolve, reject) => {
+    uni.request({
+      url: `${BASE_URL}/api/auth/refresh-token`,
+      method: 'POST',
+      header: { 'Refresh-Token': refreshToken },
+      success: (res) => {
+        const data = res.data
+        if (data.code !== 200) {
+          authStore.clearAuthState()
+          uni.showToast({ title: '登录已过期，请重新登录', icon: 'none' })
+          uni.redirectTo({ url: '/pages/login/login' })
+          reject(new Error(data.message || '刷新Token失败'))
+          return
+        }
+        authStore.setTokens(data.data.token, data.data.refreshToken)
+        pendingRequests.forEach(({ resolve: r }) => {
+          r(request(failedConfig))
+        })
+        pendingRequests = []
+        resolve(request(failedConfig))
+      },
+      fail: (err) => {
+        pendingRequests.forEach(({ reject: r }) => r(err))
+        pendingRequests = []
+        authStore.clearAuthState()
+        uni.redirectTo({ url: '/pages/login/login' })
+        reject(err)
+      },
+      complete: () => {
+        isRefreshing = false
+      }
+    })
+  })
+}
+
+function request(options) {
+  const authStore = useAuthStore()
+
+  const config = {
+    url: options.url.startsWith('http') ? options.url : `${BASE_URL}${options.url}`,
+    method: options.method || 'GET',
+    data: options.data || options.params,
+    header: {
+      'Content-Type': 'application/json',
+      ...options.header,
+    },
+    timeout: options.timeout || 10000,
+  }
+
+  // Add auth token
+  if (authStore.accessToken) {
+    config.header['Authorization'] = authStore.accessToken
+  }
+  // Add refresh token for logout
+  if (options.url?.includes('/auth/logout') && authStore.refreshToken) {
+    config.header['Refresh-Token'] = authStore.refreshToken
+  }
+
+  return new Promise((resolve, reject) => {
+    uni.request({
+      ...config,
+      success: (res) => {
+        const data = res.data
+        if (data.code === 200) {
+          resolve(data)
+        } else if (data.code === 401) {
+          // Try refresh token
+          handleTokenRefresh(options).then(resolve).catch(reject)
+        } else {
+          uni.showToast({ title: data.message || '请求失败', icon: 'none' })
+          reject(new Error(data.message || '请求失败'))
+        }
+      },
+      fail: (err) => {
+        if (err.statusCode === 401) {
+          handleTokenRefresh(options).then(resolve).catch(reject)
+        } else {
+          uni.showToast({ title: '网络错误', icon: 'none' })
+          reject(err)
+        }
+      }
+    })
+  })
+}
+
+// Convenience methods
+request.get = (url, options = {}) => request({ url, method: 'GET', params: options.params, ...options })
+request.post = (url, data, options = {}) => request({ url, method: 'POST', data, ...options })
+request.put = (url, data, options = {}) => request({ url, method: 'PUT', data, ...options })
+request.delete = (url, options = {}) => request({ url, method: 'DELETE', ...options })
+
+export default request

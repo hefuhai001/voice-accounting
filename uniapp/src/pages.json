@@ -1,0 +1,79 @@
+{
+  "pages": [
+    {
+      "path": "pages/dashboard/dashboard",
+      "style": {
+        "navigationBarTitleText": "首页",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/books/books",
+      "style": {
+        "navigationBarTitleText": "我的账本",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/transaction/transaction",
+      "style": {
+        "navigationBarTitleText": "语音记账",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/records/records",
+      "style": {
+        "navigationBarTitleText": "记账记录",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/category/category",
+      "style": {
+        "navigationBarTitleText": "分类管理",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/login/login",
+      "style": {
+        "navigationBarTitleText": "登录",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/reminder/reminder",
+      "style": {
+        "navigationBarTitleText": "我的提醒",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/profile/profile",
+      "style": {
+        "navigationBarTitleText": "个人中心",
+        "navigationStyle": "custom"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "语音记账",
+    "navigationBarBackgroundColor": "#F8F9FC",
+    "backgroundColor": "#F8F9FC"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#594139",
+    "selectedColor": "#ab3500",
+    "backgroundColor": "#ffffff",
+    "list": [
+      { "pagePath": "pages/dashboard/dashboard", "text": "首页" },
+      { "pagePath": "pages/books/books", "text": "账本" },
+      { "pagePath": "pages/transaction/transaction", "text": "记账" },
+      { "pagePath": "pages/records/records", "text": "流水" },
+      { "pagePath": "pages/category/category", "text": "分类" }
+    ]
+  }
+}
