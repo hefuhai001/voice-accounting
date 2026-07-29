@@ -77,6 +77,16 @@
       v-model:visible="sliderVisible"
       @success="onSliderSuccess"
     />
+
+    <!-- ICP 备案 -->
+    <p class="text-center text-label-sm text-on-surface-variant/60 py-4">
+      <a
+        href="https://beian.miit.gov.cn/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hover:text-on-surface-variant transition-colors"
+      >赣ICP备2025072831号-1</a>
+    </p>
   </div>
 </template>
 
