@@ -4,7 +4,7 @@ import { useAuthStore } from '@/stores/auth'
 const BASE_URL = import.meta.env.DEV ? '' : 'https://www.hfh.asia'
 // #endif
 // #ifdef APP-PLUS
-const BASE_URL = 'https://www.hfh.asia'
+const BASE_URL = 'https://www.hfh.asia/api'
 // #endif
 
 let isRefreshing = false
