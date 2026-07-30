@@ -366,7 +366,17 @@ async function loadBooks() {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  // 检查登录状态
+  if (!authStore.isLoginChecked) {
+    await authStore.checkLoginStatus()
+  }
+  // 如果未登录，跳转到登录页
+  if (!authStore.userInfo?.id) {
+    uni.reLaunch({ url: '/pages/login/login' })
+    return
+  }
+  // 如果已登录，加载数据
   loadCategories()
   loadBooks()
 })

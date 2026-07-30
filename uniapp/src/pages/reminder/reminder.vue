@@ -276,7 +276,7 @@ function goBack() {
   if (pages.length > 1) {
     uni.navigateBack()
   } else {
-    uni.switchTab({ url: '/pages/dashboard/dashboard' })
+    uni.reLaunch({ url: '/pages/dashboard/dashboard' })
   }
 }
 

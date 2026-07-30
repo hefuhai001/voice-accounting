@@ -175,11 +175,11 @@ function getCategoryIcon(name) {
 }
 
 function goToRecords() {
-  uni.switchTab({ url: '/pages/records/records' })
+  uni.reLaunch({ url: '/pages/records/records' })
 }
 
 function goToTransaction() {
-  uni.switchTab({ url: '/pages/transaction/transaction' })
+  uni.reLaunch({ url: '/pages/transaction/transaction' })
 }
 
 async function loadData() {
@@ -190,7 +190,12 @@ async function loadData() {
       dashboardApi.getRecent(userId, 5),
     ])
     if (statsRes?.data) {
-      Object.assign(stats, statsRes.data)
+      Object.assign(stats, {
+        monthExpense: statsRes.data.monthExpense ?? 0,
+        monthIncome: statsRes.data.monthIncome ?? 0,
+        recordCount: statsRes.data.recordCount ?? 0,
+        pendingReminders: statsRes.data.pendingReminders ?? 0,
+      })
     }
     if (recentRes?.data) {
       recentList.value = recentRes.data
@@ -200,7 +205,17 @@ async function loadData() {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  // 检查登录状态
+  if (!authStore.isLoginChecked) {
+    await authStore.checkLoginStatus()
+  }
+  // 如果未登录，跳转到登录页
+  if (!authStore.userInfo?.id) {
+    uni.reLaunch({ url: '/pages/login/login' })
+    return
+  }
+  // 如果已登录，加载数据
   loadData()
 })
 </script>

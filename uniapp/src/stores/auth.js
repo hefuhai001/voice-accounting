@@ -2,10 +2,44 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import request from '@/utils/request'
 
+// 持久化存储键名
+const STORAGE_KEY = 'auth-store'
+
+// 从本地存储加载数据
+function loadFromStorage() {
+  try {
+    const data = uni.getStorageSync(STORAGE_KEY)
+    return data ? JSON.parse(data) : null
+  } catch (e) {
+    return null
+  }
+}
+
+// 保存到本地存储
+function saveToStorage(data) {
+  try {
+    uni.setStorageSync(STORAGE_KEY, JSON.stringify(data))
+  } catch (e) {
+    console.error('保存认证信息失败:', e)
+  }
+}
+
+// 清除本地存储
+function clearStorage() {
+  try {
+    uni.removeStorageSync(STORAGE_KEY)
+  } catch (e) {
+    console.error('清除认证信息失败:', e)
+  }
+}
+
 export const useAuthStore = defineStore('auth', () => {
-  const accessToken = ref('')
-  const refreshToken = ref('')
-  const userInfo = ref(null)
+  // 初始化时从本地存储加载
+  const savedData = loadFromStorage()
+
+  const accessToken = ref(savedData?.accessToken || '')
+  const refreshToken = ref(savedData?.refreshToken || '')
+  const userInfo = ref(savedData?.userInfo || null)
   const isLoginChecked = ref(false)
 
   const isLoggedIn = computed(() => !!userInfo.value || !!accessToken.value)
@@ -14,6 +48,11 @@ export const useAuthStore = defineStore('auth', () => {
   function setTokens(newAccessToken, newRefreshToken) {
     accessToken.value = newAccessToken
     refreshToken.value = newRefreshToken
+    saveToStorage({
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+      userInfo: userInfo.value
+    })
   }
 
   async function login(loginForm) {
@@ -35,6 +74,12 @@ export const useAuthStore = defineStore('auth', () => {
       if (userId) {
         const userRes = await request.get(`/api/user/info/${userId}`)
         userInfo.value = userRes.data
+        // 更新持久化数据
+        saveToStorage({
+          accessToken: accessToken.value,
+          refreshToken: refreshToken.value,
+          userInfo: userRes.data
+        })
       }
       return res
     } catch (error) {
@@ -64,6 +109,7 @@ export const useAuthStore = defineStore('auth', () => {
     refreshToken.value = ''
     userInfo.value = null
     isLoginChecked.value = false
+    clearStorage()
   }
 
   return {
@@ -71,8 +117,4 @@ export const useAuthStore = defineStore('auth', () => {
     isLoggedIn, isAdmin,
     setTokens, login, register, getUserInfo, checkLoginStatus, logout, clearAuthState,
   }
-}, {
-  persist: {
-    pick: ['accessToken', 'refreshToken', 'userInfo'],
-  },
 })

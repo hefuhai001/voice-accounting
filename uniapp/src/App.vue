@@ -66,7 +66,13 @@ export default {
   }
 }
 
-/* Material Symbols Outlined 图标字体 */
+/* Material Symbols Outlined 图标字体 - 本地字体用于 APP 端 */
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  src: url('/static/fonts/MaterialSymbolsOutlined.woff2') format('woff2');
+}
+
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
@@ -81,11 +87,5 @@ export default {
   direction: ltr;
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   -webkit-font-smoothing: antialiased;
-}
-
-/* 隐藏原生 tabBar（custom:true 在 H5 下仍会渲染） */
-.uni-tabbar,
-.uni-tabbar-bottom {
-  display: none !important;
 }
 </style>

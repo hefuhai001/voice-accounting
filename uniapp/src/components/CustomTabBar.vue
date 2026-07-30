@@ -33,6 +33,6 @@ function isActive(path) {
 
 function switchTab(path) {
   if (isActive(path)) return
-  uni.switchTab({ url: path })
+  uni.reLaunch({ url: path })
 }
 </script>

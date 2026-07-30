@@ -10,7 +10,7 @@
       </view>
 
       <!-- 右侧：用户头像按钮 -->
-      <view @click="showUserMenu = !showUserMenu" class="w-10 h-10 rounded-full flex items-center justify-center active:scale-95 transition-transform bg-gradient-to-r from-[#983f19] to-[#ab3500] shadow-md">
+      <view @click="showUserMenu = !showUserMenu" class="w-10 h-10 rounded-full flex items-center justify-center active:scale-95 transition-transform bg-gradient-to-r from-[#983f19] to-[#ab3500] shadow-md relative z-50">
         <view class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
           <text class="text-white font-bold text-sm">{{ nickname.charAt(0) }}</text>
         </view>
@@ -70,7 +70,7 @@ function handleLogout() {
     success: (res) => {
       if (res.confirm) {
         authStore.logout()
-        uni.redirectTo({ url: '/pages/login/login' })
+        uni.reLaunch({ url: '/pages/login/login' })
       }
     }
   })

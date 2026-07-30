@@ -136,7 +136,7 @@
     </view>
 
     <!-- Slider Captcha -->
-    <SliderCaptcha v-model:visible="sliderVisible" @success="onSliderSuccess" />
+    <!-- <SliderCaptcha v-model:visible="sliderVisible" @success="onSliderSuccess" /> -->
   </view>
 </template>
 
@@ -144,7 +144,7 @@
 import { ref, reactive } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { authApi, captchaApi } from '@/api/user/auth'
-import SliderCaptcha from '@/components/SliderCaptcha.vue'
+// import SliderCaptcha from '@/components/SliderCaptcha.vue'
 
 const authStore = useAuthStore()
 const statusBarHeight = ref(0)
@@ -211,7 +211,7 @@ async function handleLogin() {
     await authStore.login({ account: loginForm.account, password: loginForm.password })
     await authStore.getUserInfo()
     uni.showToast({ title: '登录成功', icon: 'success' })
-    uni.switchTab({ url: '/pages/dashboard/dashboard' })
+    uni.reLaunch({ url: '/pages/dashboard/dashboard' })
   } catch (error) {
     console.error('登录失败:', error)
   } finally {
@@ -228,7 +228,7 @@ async function handleRegister() {
     await authStore.register(registerForm)
     await authStore.getUserInfo()
     uni.showToast({ title: '注册成功', icon: 'success' })
-    uni.switchTab({ url: '/pages/dashboard/dashboard' })
+    uni.reLaunch({ url: '/pages/dashboard/dashboard' })
   } catch (error) {
     console.error('注册失败:', error)
   } finally {

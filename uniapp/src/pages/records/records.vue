@@ -81,7 +81,7 @@
         <view v-if="groupedRecords.length === 0" class="flex flex-col items-center justify-center pt-32">
           <text class="material-symbols-outlined text-6xl text-outline/40">receipt_long</text>
           <text class="text-on-surface-variant text-body-lg mt-4">暂无交易记录</text>
-          <view class="mt-3 bg-primary/10 rounded-full px-4 py-2" @click="uni.switchTab({ url: '/pages/transaction/transaction' })">
+          <view class="mt-3 bg-primary/10 rounded-full px-4 py-2" @click="uni.reLaunch({ url: '/pages/transaction/transaction' })">
             <text class="text-primary text-label-md font-semibold">去记一笔</text>
           </view>
         </view>
@@ -454,7 +454,17 @@ async function loadCategories() {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  // 检查登录状态
+  if (!authStore.isLoginChecked) {
+    await authStore.checkLoginStatus()
+  }
+  // 如果未登录，跳转到登录页
+  if (!authStore.userInfo?.id) {
+    uni.reLaunch({ url: '/pages/login/login' })
+    return
+  }
+  // 如果已登录，加载数据
   loadData()
   loadCategories()
 })

@@ -3,6 +3,9 @@ import request from '@/utils/request'
 // #ifdef H5
 const BASE_URL = import.meta.env.DEV ? '' : 'https://www.hfh.asia'
 // #endif
+// #ifdef APP-PLUS
+const BASE_URL = 'https://www.hfh.asia'
+// #endif
 
 export const voiceApi = {
   recognize(filePath) {

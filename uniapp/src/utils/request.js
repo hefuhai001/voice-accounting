@@ -3,6 +3,9 @@ import { useAuthStore } from '@/stores/auth'
 // #ifdef H5
 const BASE_URL = import.meta.env.DEV ? '' : 'https://www.hfh.asia'
 // #endif
+// #ifdef APP-PLUS
+const BASE_URL = 'https://www.hfh.asia'
+// #endif
 
 let isRefreshing = false
 let pendingRequests = []
@@ -14,7 +17,7 @@ function handleTokenRefresh(failedConfig) {
   if (!refreshToken) {
     authStore.clearAuthState()
     uni.showToast({ title: '登录已过期，请重新登录', icon: 'none' })
-    uni.redirectTo({ url: '/pages/login/login' })
+    uni.reLaunch({ url: '/pages/login/login' })
     return Promise.reject(new Error('无Refresh Token'))
   }
 
@@ -36,7 +39,7 @@ function handleTokenRefresh(failedConfig) {
         if (data.code !== 200) {
           authStore.clearAuthState()
           uni.showToast({ title: '登录已过期，请重新登录', icon: 'none' })
-          uni.redirectTo({ url: '/pages/login/login' })
+          uni.reLaunch({ url: '/pages/login/login' })
           reject(new Error(data.message || '刷新Token失败'))
           return
         }
@@ -51,7 +54,7 @@ function handleTokenRefresh(failedConfig) {
         pendingRequests.forEach(({ reject: r }) => r(err))
         pendingRequests = []
         authStore.clearAuthState()
-        uni.redirectTo({ url: '/pages/login/login' })
+        uni.reLaunch({ url: '/pages/login/login' })
         reject(err)
       },
       complete: () => {
