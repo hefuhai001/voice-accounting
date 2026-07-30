@@ -169,8 +169,9 @@ router.beforeEach(async (to, from, next) => {
     try {
       await authStore.getUserInfo()
     } catch (error) {
-      // 拦截器已经处理了token刷新和登录跳转，这里不再重复处理
-      // 直接阻止导航即可
+      // 获取用户信息失败，清除状态并跳转登录
+      authStore.clearAuthState()
+      next({ path: '/login', query: { redirect: to.fullPath } })
       return
     }
   }
