@@ -285,7 +285,7 @@ function goBack() {
   if (pages.length > 1) {
     uni.navigateBack()
   } else {
-    uni.navigateTo({ url: '/pages/dashboard/dashboard' })
+    uni.switchTab({ url: '/pages/dashboard/dashboard' })
   }
 }
 

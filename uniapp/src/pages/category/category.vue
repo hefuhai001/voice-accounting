@@ -53,7 +53,7 @@
               class="material-symbols-outlined"
               :class="getIconColorClass(cat.name, index)"
               :style="{ fontSize: index === 3 ? '36px' : index === 2 ? '32px' : '28px', fontVariationSettings: 'FILL 1' }"
-            >{{ getCategoryIcon(cat) }}</text>
+            >{{ getCategoryIcon(cat.name) }}</text>
           </view>
 
           <!-- Name -->
@@ -209,10 +209,7 @@ const form = reactive({
   userId: null
 })
 
-function getCategoryIcon(cat) {
-  // 优先使用 cat.icon
-  if (cat.icon) return cat.icon
-  // 按中文名映射
+function getCategoryIcon(name) {
   const map = {
     餐饮: 'restaurant',
     交通: 'directions_car',
@@ -227,7 +224,7 @@ function getCategoryIcon(cat) {
     旅行: 'flight',
     宠物: 'pets',
   }
-  return map[cat.name] || 'category'
+  return map[name] || 'category'
 }
 
 function getIconBgClass(name, index) {
@@ -288,7 +285,7 @@ function openAddModal() {
 function openEditModal(cat) {
   editingCategory.value = cat
   form.name = cat.name
-  form.icon = cat.icon || getCategoryIcon(cat)
+  form.icon = cat.icon || getCategoryIcon(cat.name)
   form.sort = cat.sort || 0
   form.type = cat.type || activeTab.value
   form.userId = cat.userId

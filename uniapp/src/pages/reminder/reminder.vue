@@ -128,7 +128,7 @@
           <text class="text-label-md text-on-surface-variant mb-1">标题</text>
           <input
             v-model="form.title"
-            class="w-full px-4 py-3 rounded-xl bg-surface-container text-body-md text-on-surface"
+            class="w-full h-11 px-3 rounded-xl bg-surface-container text-on-surface text-body-md border border-outline/20 focus:border-primary box-border"
             placeholder="请输入提醒标题"
           />
         </view>
@@ -139,7 +139,7 @@
           <input
             v-model="form.amount"
             type="digit"
-            class="w-full px-4 py-3 rounded-xl bg-surface-container text-body-md text-on-surface"
+            class="w-full h-11 px-3 rounded-xl bg-surface-container text-on-surface text-body-md border border-outline/20 focus:border-primary box-border"
             placeholder="请输入金额"
           />
         </view>
@@ -148,7 +148,7 @@
         <view class="mb-4">
           <text class="text-label-md text-on-surface-variant mb-1">提醒日期</text>
           <picker mode="date" :value="form.reminderDate" @change="onDateChange">
-            <view class="w-full px-4 py-3 rounded-xl bg-surface-container text-body-md text-on-surface flex items-center">
+            <view class="h-11 px-3 rounded-xl bg-surface-container text-on-surface text-body-md border border-outline/20 flex items-center">
               <text class="material-symbols-outlined text-on-surface-variant mr-2">calendar_today</text>
               <text>{{ form.reminderDate || '请选择日期' }}</text>
             </view>
@@ -176,7 +176,7 @@
           <text class="text-label-md text-on-surface-variant mb-1">备注</text>
           <textarea
             v-model="form.remark"
-            class="w-full px-4 py-3 rounded-xl bg-surface-container text-body-md text-on-surface min-h-[80px]"
+            class="w-full px-3 rounded-xl bg-surface-container text-on-surface text-body-md border border-outline/20 focus:border-primary box-border"
             placeholder="请输入备注"
           />
         </view>
@@ -276,7 +276,7 @@ function goBack() {
   if (pages.length > 1) {
     uni.navigateBack()
   } else {
-    uni.navigateTo({ url: '/pages/dashboard/dashboard' })
+    uni.switchTab({ url: '/pages/dashboard/dashboard' })
   }
 }
 
