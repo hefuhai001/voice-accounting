@@ -4,7 +4,7 @@ import { useAuthStore } from '@/stores/auth'
 const BASE_URL = import.meta.env.DEV ? '' : 'https://www.hfh.asia'
 // #endif
 // #ifdef APP-PLUS
-const BASE_URL = 'https://www.hfh.asia'
+const BASE_URL = 'https://www.hfh.asia/api'
 // #endif
 
 let isRefreshing = false
@@ -88,9 +88,18 @@ function request(options) {
   }
 
   return new Promise((resolve, reject) => {
+    console.log('=== Request Debug ===')
+    console.log('URL:', config.url)
+    console.log('Method:', config.method)
+    console.log('Data:', config.data)
+    console.log('Headers:', config.header)
+
     uni.request({
       ...config,
       success: (res) => {
+        console.log('=== Response Success ===')
+        console.log('Status:', res.statusCode)
+        console.log('Data:', res.data)
         const data = res.data
         if (data.code === 200) {
           resolve(data)
@@ -103,6 +112,8 @@ function request(options) {
         }
       },
       fail: (err) => {
+        console.log('=== Response Failed ===')
+        console.log('Error:', err)
         if (err.statusCode === 401) {
           handleTokenRefresh(options).then(resolve).catch(reject)
         } else {
