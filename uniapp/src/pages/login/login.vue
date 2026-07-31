@@ -211,7 +211,7 @@ async function handleLogin() {
     await authStore.login({ account: loginForm.account, password: loginForm.password })
     await authStore.getUserInfo()
     uni.showToast({ title: '登录成功', icon: 'success' })
-    uni.reLaunch({ url: '/pages/dashboard/dashboard' })
+    uni.reLaunch({ url: '/pages/layout/layout' })
   } catch (error) {
     console.error('登录失败:', error)
   } finally {
@@ -228,7 +228,7 @@ async function handleRegister() {
     await authStore.register(registerForm)
     await authStore.getUserInfo()
     uni.showToast({ title: '注册成功', icon: 'success' })
-    uni.reLaunch({ url: '/pages/dashboard/dashboard' })
+    uni.reLaunch({ url: '/pages/layout/layout' })
   } catch (error) {
     console.error('注册失败:', error)
   } finally {

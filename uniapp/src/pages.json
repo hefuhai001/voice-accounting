@@ -1,44 +1,16 @@
 {
   "pages": [
     {
-      "path": "pages/login/login",
-      "style": {
-        "navigationBarTitleText": "登录",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/dashboard/dashboard",
-      "style": {
-        "navigationBarTitleText": "首页",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/books/books",
-      "style": {
-        "navigationBarTitleText": "我的账本",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/transaction/transaction",
+      "path": "pages/layout/layout",
       "style": {
         "navigationBarTitleText": "语音记账",
         "navigationStyle": "custom"
       }
     },
     {
-      "path": "pages/records/records",
+      "path": "pages/login/login",
       "style": {
-        "navigationBarTitleText": "记账记录",
-        "navigationStyle": "custom"
-      }
-    },
-    {
-      "path": "pages/category/category",
-      "style": {
-        "navigationBarTitleText": "分类管理",
+        "navigationBarTitleText": "登录",
         "navigationStyle": "custom"
       }
     },
