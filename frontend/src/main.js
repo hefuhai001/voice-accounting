@@ -24,3 +24,12 @@ app.use(router)
 registerComponents(app)
 
 app.mount('#app')
+
+// 生产环境注册 Service Worker（PWA 可安装性必要条件）
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((err) => {
+      console.error('Service Worker 注册失败:', err)
+    })
+  })
+}

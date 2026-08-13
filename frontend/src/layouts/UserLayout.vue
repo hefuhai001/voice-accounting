@@ -56,6 +56,14 @@
               我的提醒
             </button>
             <button
+              v-if="!isStandalone"
+              @click="handleInstall"
+              class="w-full text-left px-4 py-2.5 font-body-md text-on-surface hover:bg-surface-container/30 active:bg-surface-container/50 transition-colors flex items-center gap-3"
+            >
+              <span class="material-symbols-outlined text-[20px]">download</span>
+              安装应用
+            </button>
+            <button
               @click="handleLogout"
               class="w-full text-left px-4 py-2.5 font-body-md text-danger-red hover:bg-error-container/30 active:bg-error-container/50 transition-colors flex items-center gap-3"
             >
@@ -88,18 +96,34 @@
           <h3 class="font-headline-md text-headline-md text-on-surface text-center mb-2">添加到主屏幕</h3>
           <p class="font-body-md text-on-surface-variant text-center mb-5">将应用添加到主屏幕，获得全屏体验</p>
           <div class="bg-surface-container rounded-2xl p-4 space-y-3 font-body-md text-on-surface">
-            <div class="flex items-start gap-3">
-              <span class="shrink-0 w-6 h-6 rounded-full sunset-gradient text-white flex items-center justify-center text-xs font-bold">1</span>
-              <span>点击浏览器底部的 <strong>分享按钮</strong></span>
-            </div>
-            <div class="flex items-start gap-3">
-              <span class="shrink-0 w-6 h-6 rounded-full sunset-gradient text-white flex items-center justify-center text-xs font-bold">2</span>
-              <span>在弹出的菜单中选择 <strong>"添加到主屏幕"</strong></span>
-            </div>
-            <div class="flex items-start gap-3">
-              <span class="shrink-0 w-6 h-6 rounded-full sunset-gradient text-white flex items-center justify-center text-xs font-bold">3</span>
-              <span>点击 <strong>"添加"</strong> 即可</span>
-            </div>
+            <template v-if="isIOS">
+              <div class="flex items-start gap-3">
+                <span class="shrink-0 w-6 h-6 rounded-full sunset-gradient text-white flex items-center justify-center text-xs font-bold">1</span>
+                <span>点击浏览器底部的 <strong>分享按钮</strong></span>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="shrink-0 w-6 h-6 rounded-full sunset-gradient text-white flex items-center justify-center text-xs font-bold">2</span>
+                <span>在弹出的菜单中选择 <strong>"添加到主屏幕"</strong></span>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="shrink-0 w-6 h-6 rounded-full sunset-gradient text-white flex items-center justify-center text-xs font-bold">3</span>
+                <span>点击 <strong>"添加"</strong> 即可</span>
+              </div>
+            </template>
+            <template v-else>
+              <div class="flex items-start gap-3">
+                <span class="shrink-0 w-6 h-6 rounded-full sunset-gradient text-white flex items-center justify-center text-xs font-bold">1</span>
+                <span>点击浏览器地址栏右侧的 <strong>安装图标</strong></span>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="shrink-0 w-6 h-6 rounded-full sunset-gradient text-white flex items-center justify-center text-xs font-bold">2</span>
+                <span>在弹出的菜单中选择 <strong>"安装应用"</strong> 或 <strong>"添加到主屏幕"</strong></span>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="shrink-0 w-6 h-6 rounded-full sunset-gradient text-white flex items-center justify-center text-xs font-bold">3</span>
+                <span>点击 <strong>"安装"</strong> 即可</span>
+              </div>
+            </template>
           </div>
           <button
             @click="dismissInstall"
@@ -196,7 +220,7 @@ const showUserMenu = ref(false)
 const isKeyboardOpen = ref(false)
 
 // PWA 安装提示
-const { showInstallModal, promptInstall, dismissInstall, shouldShowPrompt } = usePwaInstall()
+const { isIOS, isStandalone, showInstallModal, promptInstall, installOrGuide, dismissInstall, shouldShowPrompt } = usePwaInstall()
 
 // 监听键盘弹出/收起
 function handleResize() {
@@ -255,6 +279,12 @@ function navigate(path) {
 function handleLogout() {
   authStore.logout()
   router.push('/login')
+  showUserMenu.value = false
+}
+
+// 下载应用：优先原生安装弹窗，不支持时展示手动添加引导
+function handleInstall() {
+  installOrGuide()
   showUserMenu.value = false
 }
 
