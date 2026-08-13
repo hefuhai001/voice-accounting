@@ -37,6 +37,9 @@ function handleTokenRefresh(failedConfig) {
       success: (res) => {
         const data = res.data
         if (data.code !== 200) {
+          // 刷新失败：拒绝所有等待中的请求并清空队列，避免请求永久挂起
+          pendingRequests.forEach(({ reject: r }) => r(new Error(data.message || '刷新Token失败')))
+          pendingRequests = []
           authStore.clearAuthState()
           uni.showToast({ title: '登录已过期，请重新登录', icon: 'none' })
           uni.reLaunch({ url: '/pages/login/login' })
@@ -44,7 +47,8 @@ function handleTokenRefresh(failedConfig) {
           return
         }
         authStore.setTokens(data.data.token, data.data.refreshToken)
-        pendingRequests.forEach(({ resolve: r }) => {
+        // 逐个用各自请求的 config 重试，避免所有请求重放第一个请求
+        pendingRequests.forEach(({ resolve: r, failedConfig }) => {
           r(request(failedConfig))
         })
         pendingRequests = []
@@ -95,8 +99,15 @@ function request(options) {
         if (data.code === 200) {
           resolve(data)
         } else if (data.code === 401) {
-          // Try refresh token
-          handleTokenRefresh(options).then(resolve).catch(reject)
+          // 登录/注册/找回密码的401表示凭证错误，不应触发Token刷新（避免死循环）
+          const url = options.url || ''
+          if (url.includes('/auth/login') || url.includes('/auth/register') || url.includes('/auth/reset-password')) {
+            uni.showToast({ title: data.message || '用户名或密码错误', icon: 'none' })
+            reject(new Error(data.message || '用户名或密码错误'))
+          } else {
+            // Try refresh token
+            handleTokenRefresh(options).then(resolve).catch(reject)
+          }
         } else {
           uni.showToast({ title: data.message || '请求失败', icon: 'none' })
           reject(new Error(data.message || '请求失败'))
