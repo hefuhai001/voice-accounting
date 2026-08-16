@@ -6,7 +6,7 @@ services:
       - "${DB_PORT}:3306"
     environment:
       TZ: ${TZ}
-      MYSQL_ROOT_PASSWORD: root@XH2001!
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: db_voice_accounting
     volumes:
       - mysql_data:/var/lib/mysql
@@ -31,12 +31,12 @@ services:
     volumes:
       - redis_data:/data
       - ${PWD}/redis/redis.conf:/usr/local/etc/redis/redis.conf
-    command: redis-server /usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--requirepass", "${REDIS_PASSWORD}"]
     restart: unless-stopped
     networks:
       - webnet
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "root@XH2001!", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -48,6 +48,15 @@ services:
       - "8080"
     environment:
       TZ: ${TZ}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD}
+      SPRING_MAIL_USERNAME: ${MAIL_USERNAME}
+      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD}
+      SPRING_AI_OPENAI_API_KEY: ${SPRING_AI_OPENAI_API_KEY}
+      ALIYUN_NLS_APP_KEY: ${ALIYUN_NLS_APP_KEY}
+      ALIYUN_NLS_ACCESS_KEY_ID: ${ALIYUN_NLS_ACCESS_KEY_ID}
+      ALIYUN_NLS_ACCESS_KEY_SECRET: ${ALIYUN_NLS_ACCESS_KEY_SECRET}
     volumes:
       - ${PWD}/backend/backend-0.0.1-SNAPSHOT.jar:/app/app.jar
       - ${PWD}/backend/application-prod.yml:/app/application-prod.yml

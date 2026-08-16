@@ -1,0 +1,32 @@
+# ============================================================
+# 本地开发配置模板
+# 使用方式：
+#   1. 复制本文件为 application-local.yaml
+#      （Windows:  copy application-local.yaml.example application-local.yaml
+#        Linux/macOS: cp application-local.yaml.example application-local.yaml）
+#   2. 将下方占位符替换为你自己的真实密钥
+#   3. 此文件已被 .gitignore 忽略，严禁提交入库
+# ============================================================
+
+spring:
+  # Spring AI - DeepSeek 密钥（在 https://platform.deepseek.com 获取）
+  ai:
+    openai:
+      api-key: YOUR_DEEPSEEK_API_KEY
+  datasource:
+    username: YOUR_DB_USERNAME
+    password: YOUR_DB_PASSWORD
+  data:
+    redis:
+      password: YOUR_REDIS_PASSWORD
+  mail:
+    username: YOUR_MAIL_ACCOUNT
+    # 163/QQ 邮箱需使用"客户端授权码"，不是登录密码
+    password: YOUR_MAIL_AUTH_CODE
+
+# 阿里云智能语音交互（在阿里云控制台创建 AccessKey 与 NLS AppKey）
+aliyun:
+  nls:
+    app-key: YOUR_NLS_APP_KEY
+    access-key-id: YOUR_ACCESS_KEY_ID
+    access-key-secret: YOUR_ACCESS_KEY_SECRET

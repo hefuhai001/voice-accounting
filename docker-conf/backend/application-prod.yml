@@ -4,7 +4,7 @@ spring:
   # Spring AI - DeepSeek
   ai:
     openai:
-      api-key: sk-f3a41495700249cc8f17a1bacb4f8f3a
+      api-key: ${SPRING_AI_OPENAI_API_KEY}
       base-url: https://api.deepseek.com
       chat:
         options:
@@ -12,13 +12,13 @@ spring:
           temperature: 0.7
   datasource:
     url: jdbc:mysql://mysql:3306/db_voice_accounting?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false
-    username: root
-    password: root@XH2001!
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   data:
     redis:
       host: redis
       port: 6379
-      password: root@XH2001!
+      password: ${SPRING_DATA_REDIS_PASSWORD}
       database: 0
       timeout: 10000ms
       lettuce:
@@ -29,8 +29,8 @@ spring:
   mail:
     host: smtp.163.com
     port: 994
-    username: 18365404517@163.com
-    password: NPRDDKVXCLILSNQP
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
     protocol: smtps
     default-encoding: UTF-8
     properties:
@@ -54,12 +54,12 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
 
-# 阿里云智能语音交互配置
+# 阿里云智能语音交互配置（敏感值通过环境变量注入）
 aliyun:
   nls:
-    app-key: nUZFPlJcV0JTuLXY
-    access-key-id: LTAI5t99pCFWCwYgy4YJZs9d
-    access-key-secret: hFQkHai2pacVrNr7kVYkJhIuLfDDbx
+    app-key: ${ALIYUN_NLS_APP_KEY}
+    access-key-id: ${ALIYUN_NLS_ACCESS_KEY_ID}
+    access-key-secret: ${ALIYUN_NLS_ACCESS_KEY_SECRET}
 
 server:
   port: 8080

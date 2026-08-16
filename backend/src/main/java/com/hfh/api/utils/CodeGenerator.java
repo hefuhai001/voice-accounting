@@ -17,9 +17,11 @@ import java.util.Collections;
 public class CodeGenerator {
 
     // ==================== 数据库配置 ====================
+    // 敏感信息（密码）从环境变量读取，避免硬编码入库
+    // 本地可在运行前设置环境变量，或直接修改下方的 USERNAME/PASSWORD
     private static final String URL = "jdbc:mysql://localhost:3306/mydb?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false";
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "root@XH2001!";
+    private static final String USERNAME = System.getenv().getOrDefault("DB_USER", "root");
+    private static final String PASSWORD = System.getenv().getOrDefault("DB_PASSWORD", "your_db_password");
 
     // ==================== 生成配置 ====================
     // 父包名
