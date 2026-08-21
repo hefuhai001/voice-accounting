@@ -70,6 +70,10 @@ services:
       SPRING_MAIL_USERNAME: ${MAIL_USERNAME}
       SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD}
       SA_TOKEN_TIMEOUT: ${SA_TOKEN_TIMEOUT}
+      SPRING_AI_OPENAI_API_KEY: ${SPRING_AI_OPENAI_API_KEY}
+      ALIYUN_NLS_APP_KEY: ${ALIYUN_NLS_APP_KEY}
+      ALIYUN_NLS_ACCESS_KEY_ID: ${ALIYUN_NLS_ACCESS_KEY_ID}
+      ALIYUN_NLS_ACCESS_KEY_SECRET: ${ALIYUN_NLS_ACCESS_KEY_SECRET}
     volumes:
       - ${PWD}/backend/backend-0.0.1-SNAPSHOT.jar:/app/app.jar
       - ${PWD}/backend/application-prod.yml:/app/application-prod.yml

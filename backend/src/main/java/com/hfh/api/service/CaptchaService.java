@@ -8,6 +8,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -35,6 +36,10 @@ public class CaptchaService {
 
     private final StringRedisTemplate redisTemplate;
     private final JavaMailSender mailSender;
+
+    /** 发件人地址，从邮件配置中读取，避免硬编码 */
+    @Value("${spring.mail.username:noreply@voice-accounting.com}")
+    private String fromEmail;
 
     private static final int WIDTH = 280;
     private static final int HEIGHT = 155;
@@ -271,7 +276,7 @@ public class CaptchaService {
     private void sendVerificationEmail(String email, String code) throws MessagingException, java.io.UnsupportedEncodingException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        helper.setFrom("18365404517@163.com", "语音记账");
+        helper.setFrom(fromEmail, "语音记账");
         helper.setTo(email);
         helper.setSubject("语音记账 - 邮箱验证码");
         helper.setText(

@@ -23,6 +23,8 @@ export default {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    max-width: 100vw;
   }
   body {
     background: linear-gradient(135deg, #f9f9fc 0%, #fff0eb 100%);

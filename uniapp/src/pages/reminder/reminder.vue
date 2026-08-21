@@ -58,7 +58,7 @@
         <!-- 日期和频率 -->
         <view class="flex items-center mb-2 ml-13">
           <text class="material-symbols-outlined text-sm text-on-surface-variant mr-1">calendar_today</text>
-          <text class="text-label-md text-on-surface-variant">{{ item.reminderDate }}</text>
+          <text class="text-label-md text-on-surface-variant">{{ item.remindDate }}</text>
           <text class="text-label-md text-on-surface-variant mx-2">·</text>
           <text class="text-label-md text-on-surface-variant">{{ getFrequencyLabel(item.frequency) }}</text>
         </view>
@@ -147,10 +147,10 @@
         <!-- Date -->
         <view class="mb-4">
           <text class="text-label-md text-on-surface-variant mb-1">提醒日期</text>
-          <picker mode="date" :value="form.reminderDate" @change="onDateChange">
+          <picker mode="date" :value="form.remindDate" @change="onDateChange">
             <view class="h-11 px-3 rounded-xl bg-surface-container text-on-surface text-body-md border border-outline/20 flex items-center">
               <text class="material-symbols-outlined text-on-surface-variant mr-2">calendar_today</text>
-              <text>{{ form.reminderDate || '请选择日期' }}</text>
+              <text>{{ form.remindDate || '请选择日期' }}</text>
             </view>
           </picker>
         </view>
@@ -220,18 +220,18 @@ const statusTabs = [
 ]
 
 const frequencyOptions = [
-  { label: '一次性', value: 0 },
-  { label: '每天', value: 1 },
-  { label: '每周', value: 2 },
-  { label: '每月', value: 3 },
-  { label: '每年', value: 4 },
+  { label: '一次性', value: 1 },
+  { label: '每天', value: 2 },
+  { label: '每周', value: 3 },
+  { label: '每月', value: 4 },
+  { label: '每年', value: 5 },
 ]
 
 const form = reactive({
   title: '',
   amount: '',
-  reminderDate: '',
-  frequency: 0,
+  remindDate: '',
+  frequency: 1,
   remark: '',
   userId: null,
   bookId: null,
@@ -263,12 +263,12 @@ function getStatusTextClass(status) {
 }
 
 function getFrequencyLabel(freq) {
-  const map = { 0: '一次性', 1: '每天', 2: '每周', 3: '每月', 4: '每年' }
+  const map = { 1: '一次性', 2: '每天', 3: '每周', 4: '每月', 5: '每年' }
   return map[freq] || '未知'
 }
 
 function onDateChange(e) {
-  form.reminderDate = e.detail.value
+  form.remindDate = e.detail.value
 }
 
 function goBack() {
@@ -295,8 +295,8 @@ function openAddModal() {
   editingReminder.value = null
   form.title = ''
   form.amount = ''
-  form.reminderDate = ''
-  form.frequency = 0
+  form.remindDate = ''
+  form.frequency = 1
   form.remark = ''
   form.userId = authStore.userInfo?.id
   form.bookId = authStore.userInfo?.currentBookId || null
@@ -307,7 +307,7 @@ function openEditModal(item) {
   editingReminder.value = item
   form.title = item.title
   form.amount = item.amount
-  form.reminderDate = item.reminderDate
+  form.remindDate = item.remindDate
   form.frequency = item.frequency
   form.remark = item.remark || ''
   form.userId = item.userId
@@ -324,7 +324,7 @@ async function saveReminder() {
     uni.showToast({ title: '请输入金额', icon: 'none' })
     return
   }
-  if (!form.reminderDate) {
+  if (!form.remindDate) {
     uni.showToast({ title: '请选择日期', icon: 'none' })
     return
   }
@@ -332,7 +332,7 @@ async function saveReminder() {
     const data = {
       title: form.title,
       amount: form.amount,
-      reminderDate: form.reminderDate,
+      remindDate: form.remindDate,
       frequency: form.frequency,
       remark: form.remark,
       userId: form.userId,

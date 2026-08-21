@@ -58,9 +58,32 @@ voice-accounting/
 
 ## 快速启动
 
+> ⚠️ **安全提醒**：本仓库为公开仓库，**严禁提交任何密钥/密码**。
+> 所有敏感配置（数据库密码、邮件授权码、DeepSeek/阿里云 API Key 等）一律通过
+> 本地文件或环境变量注入，并以 `.example` 模板占位符形式入库。密钥文件（
+> `.env`、`application-local.yaml`）已在 `.gitignore` 中，请勿强制添加。
+
 ### 1. 配置环境变量
 
-复制或编辑 `.env` 文件，配置数据库连接信息。
+#### 本地开发（后端）
+
+```bash
+# 在 backend 目录下
+copy application-local.yaml.example application-local.yaml   # Windows
+# cp application-local.yaml.example application-local.yaml  # Linux/macOS
+```
+
+编辑 `application-local.yaml`，填入你自己的密钥（DeepSeek / MySQL / Redis / 163邮箱授权码 / 阿里云 NLS）。
+
+#### Docker 部署
+
+```bash
+# 在 docker-env 或 docker-conf 目录下
+copy .env.example .env   # Windows
+# cp .env.example .env  # Linux/macOS
+```
+
+编辑 `.env`，配置数据库连接信息、邮件授权码、DeepSeek 与阿里云密钥。
 
 ### 2. 启动基础服务
 
