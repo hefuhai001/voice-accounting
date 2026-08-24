@@ -105,3 +105,14 @@ cd frontend
 npm install
 npm run dev
 ```
+## ☕ 捐赠支持
+
+如果这个项目对你有帮助，请我喝杯奶茶吧～你的支持是我持续维护的动力！
+
+<p align="center">
+  <img src="frontend/public/donation-qr.jpg" alt="捐赠二维码" width="240" />
+</p>
+
+## License
+
+内部项目，仅供学习交流使用。
