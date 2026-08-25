@@ -2,6 +2,7 @@ services:
   mysql:
     image: mysql:8.0.45
     container_name: va-mysql
+    restart: unless-stopped
     ports:
       - "${DB_PORT}:3306"
     environment:
@@ -12,7 +13,6 @@ services:
       - mysql_data:/var/lib/mysql
       - ${PWD}/mysql/my.cnf:/etc/my.cnf
     command: --default-authentication-plugin=mysql_native_password
-    restart: unless-stopped
     networks:
       - webnet
     healthcheck:
@@ -24,6 +24,7 @@ services:
   redis:
     image: redis:alpine
     container_name: va-redis
+    restart: unless-stopped
     ports:
       - "${REDIS_PORT}:6379"
     environment:
@@ -32,7 +33,6 @@ services:
       - redis_data:/data
       - ${PWD}/redis/redis.conf:/usr/local/etc/redis/redis.conf
     command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--requirepass", "${REDIS_PASSWORD}"]
-    restart: unless-stopped
     networks:
       - webnet
     healthcheck:
@@ -44,6 +44,7 @@ services:
   backend:
     image: eclipse-temurin:25-jre
     container_name: va-backend
+    restart: unless-stopped
     expose:
       - "8080"
     environment:
@@ -62,7 +63,6 @@ services:
       - ${PWD}/backend/application-prod.yml:/app/application-prod.yml
     working_dir: /app
     command: ["java", "-jar", "app.jar", "--spring.config.additional-location=file:./application-prod.yml"]
-    restart: unless-stopped
     networks:
       - webnet
     depends_on:
@@ -74,6 +74,7 @@ services:
   frontend:
     image: nginx:1.30-alpine
     container_name: va-frontend
+    restart: unless-stopped
     expose:
       - "80"
     environment:
@@ -81,7 +82,12 @@ services:
     volumes:
       - ${PWD}/frontend/dist:/usr/share/nginx/html
       - ${PWD}/frontend/nginx.conf:/etc/nginx/conf.d/default.conf
-    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks:
       - webnet
     depends_on:
