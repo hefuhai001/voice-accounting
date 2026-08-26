@@ -63,6 +63,12 @@ services:
       - ${PWD}/backend/application-prod.yml:/app/application-prod.yml
     working_dir: /app
     command: ["java", "-jar", "app.jar", "--spring.config.additional-location=file:./application-prod.yml"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       - webnet
     depends_on:
